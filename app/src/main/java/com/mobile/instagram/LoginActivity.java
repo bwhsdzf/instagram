@@ -1,5 +1,6 @@
 package com.mobile.instagram;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
@@ -96,7 +97,7 @@ public class LoginActivity extends AppCompatActivity implements
                 });
         // [END create_user_with_email]
     }
-    private void signIn(String email, String password) {
+    private void signIn(final String email, String password) {
         Log.d(TAG, "signIn:" + email);
         if (!validateForm()) {
             return;
@@ -113,6 +114,7 @@ public class LoginActivity extends AppCompatActivity implements
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
+                            toNavigation(email);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
@@ -200,11 +202,16 @@ public class LoginActivity extends AppCompatActivity implements
         } else {
             mStatusTextView.setText(R.string.sign_out);
             mDetailTextView.setText(null);
-
             findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
             findViewById(R.id.password).setVisibility(View.VISIBLE);
             findViewById(R.id.signedInButtons).setVisibility(View.GONE);
         }
+    }
+
+    public void toNavigation(String username){
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        intent.putExtra("Username",username);
+        startActivity(intent);
     }
 
     @Override
