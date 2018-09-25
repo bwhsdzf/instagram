@@ -50,9 +50,11 @@ public class LoginActivity extends AppCompatActivity implements
         findViewById(R.id.emailCreateAccountButton).setOnClickListener(this);
         findViewById(R.id.signOutButton).setOnClickListener(this);
 
+
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
+        System.out.println("onCreate");
     }
 
     // [START on_start_check_user]
