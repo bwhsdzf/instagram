@@ -119,14 +119,6 @@
                     android:layout_weight="1.0"
                     android:text="@string/sign_out" />
 
-                <Button
-                    android:id="@+id/verifyEmailButton"
-                    style="@style/Widget.AppCompat.Button.Colored"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.0"
-                    android:text="@string/email" />
-
             </LinearLayout>
 
         </LinearLayout>

@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FragmentFive.OnFragmentInteractionListener} interface
+ * {@link FragmentUserFeed.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FragmentFive#newInstance} factory method to
+ * Use the {@link FragmentUserFeed#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentFive extends Fragment {
+public class FragmentUserFeed extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -29,7 +29,7 @@ public class FragmentFive extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public FragmentFive() {
+    public FragmentUserFeed() {
         // Required empty public constructor
     }
 
@@ -39,11 +39,11 @@ public class FragmentFive extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentFive.
+     * @return A new instance of fragment FragmentUserFeed.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentFive newInstance(String param1, String param2) {
-        FragmentFive fragment = new FragmentFive();
+    public static FragmentUserFeed newInstance(String param1, String param2) {
+        FragmentUserFeed fragment = new FragmentUserFeed();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -64,7 +64,7 @@ public class FragmentFive extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_five, container, false);
+        return inflater.inflate(R.layout.fragment_userFeed, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -103,6 +103,6 @@ public class FragmentFive extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        public void onFragmentInteraction(Uri uri);
     }
 }

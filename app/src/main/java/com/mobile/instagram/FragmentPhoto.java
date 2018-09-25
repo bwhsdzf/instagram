@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FragmentFour.OnFragmentInteractionListener} interface
+ * {@link FragmentPhoto.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FragmentFour#newInstance} factory method to
+ * Use the {@link FragmentPhoto#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentFour extends Fragment {
+public class FragmentPhoto extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -29,7 +29,7 @@ public class FragmentFour extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public FragmentFour() {
+    public FragmentPhoto() {
         // Required empty public constructor
     }
 
@@ -39,11 +39,11 @@ public class FragmentFour extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentFour.
+     * @return A new instance of fragment FragmentPhoto.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentFour newInstance(String param1, String param2) {
-        FragmentFour fragment = new FragmentFour();
+    public static FragmentPhoto newInstance(String param1, String param2) {
+        FragmentPhoto fragment = new FragmentPhoto();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -64,7 +64,7 @@ public class FragmentFour extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_four, container, false);
+        return inflater.inflate(R.layout.fragment_photo, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -103,6 +103,6 @@ public class FragmentFour extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        public void onFragmentInteraction(Uri uri);
     }
 }
