@@ -10,6 +10,10 @@ import android.widget.TextView;
 
 import android.app.FragmentTransaction;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class NavigationActivity extends AppCompatActivity implements
         FragmentUserFeed.OnFragmentInteractionListener,
         FragmentDiscover.OnFragmentInteractionListener,
@@ -56,14 +60,21 @@ public class NavigationActivity extends AppCompatActivity implements
 
     };
 
+    private FirebaseAuth mAuth;
+    private DatabaseReference mDatabase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        mAuth = FirebaseAuth.getInstance();
         init();
         mTextMessage = (TextView) findViewById(R.id.message);
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
     }
 
     //init（）用来初始化组件
@@ -72,7 +83,7 @@ public class NavigationActivity extends AppCompatActivity implements
         discover =new FragmentDiscover();
         photo =new FragmentPhoto();
         activityFeed = new FragmentActivityFeed();
-        profile = new FragmentProfile();
+        profile = FragmentProfile.newInstance(mAuth,mDatabase);
         FragmentTransaction beginTransaction=getFragmentManager().beginTransaction();
         beginTransaction.add(R.id.content, userFeed).add(R.id.content, discover).add(R.id.content, photo).add(R.id.content, activityFeed).add(R.id.content, profile);
         beginTransaction.hide(userFeed).hide(discover).hide(photo).hide(activityFeed).hide(profile);//隐藏fragment
