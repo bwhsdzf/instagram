@@ -35,23 +35,18 @@ public class NavigationActivity extends AppCompatActivity implements
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_user_feed:
-                    mTextMessage.setText(R.string.title_user_feed);
                     showNav(R.id.navigation_user_feed);
                     return true;
                 case R.id.navigation_discover:
-                    mTextMessage.setText(R.string.title_discover);
                     showNav(R.id.navigation_discover);
                     return true;
                 case R.id.navigation_photo:
-                    mTextMessage.setText(R.string.title_photo);
                     showNav(R.id.navigation_photo);
                     return true;
                 case R.id.navigation_activity_feed:
-                    mTextMessage.setText(R.string.title_activity_feed);
                     showNav(R.id.navigation_activity_feed);
                     return true;
                 case R.id.navigation_profile:
-                    mTextMessage.setText(R.string.title_profile);
                     showNav(R.id.navigation_profile);
                     return true;
             }

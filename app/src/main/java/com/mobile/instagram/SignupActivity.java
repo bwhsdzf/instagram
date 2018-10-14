@@ -16,7 +16,10 @@ import com.google.firebase.auth.FirebaseAuth;
 
 
 import com.google.firebase.database.*;
+import com.mobile.instagram.models.DatabaseCon;
 import  com.mobile.instagram.models.User;
+
+import java.util.ArrayList;
 
 public class SignupActivity extends AppCompatActivity implements
     View.OnClickListener{
@@ -43,12 +46,12 @@ public class SignupActivity extends AppCompatActivity implements
         mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
-    private void createAccount(final String email, String password, String username) {
+    private void createAccount(final String email, String password, final String username) {
         Log.d(TAG, "createAccount:" + email);
         if (!validateForm()) {
             return;
         }
-        final User newUser = new User(username, email);
+
         Toast.makeText(SignupActivity.this, "Creating user",
                 Toast.LENGTH_LONG).show();
         // [START create_user_with_email]
@@ -60,8 +63,12 @@ public class SignupActivity extends AppCompatActivity implements
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             String userId = mAuth.getUid();
+                            User newUser = new User(userId, username, email, new ArrayList<String>(),
+                                    new ArrayList<String>(), new ArrayList<String>());
+                            Log.d(TAG, "User id is "+userId);
+                            Log.d(TAG, "write to db success 1");
                             mDatabase.child("users").child(userId).setValue(newUser);
-                            Log.d(TAG, "write to db success");
+                            Log.d(TAG, "write to db success 2");
                             Toast.makeText(SignupActivity.this, "Successfully created user",
                                     Toast.LENGTH_SHORT).show();
                             finish();
