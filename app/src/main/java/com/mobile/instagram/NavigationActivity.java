@@ -6,9 +6,10 @@ import android.support.design.widget.BottomNavigationView;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.content.Context;
 
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -22,12 +23,12 @@ public class NavigationActivity extends AppCompatActivity implements
         FragmentProfile.OnFragmentInteractionListener
 {
 
-    private TextView mTextMessage;
     private FragmentUserFeed userFeed;
     private FragmentDiscover discover;
     private FragmentPhoto photo;
     private FragmentActivityFeed activityFeed;
     private FragmentProfile profile;
+    private BottomNavigationView navigationView;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -57,6 +58,7 @@ public class NavigationActivity extends AppCompatActivity implements
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    private static Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,65 +66,71 @@ public class NavigationActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_navigation);
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
+        context = getApplicationContext();
         init();
-        mTextMessage = (TextView) findViewById(R.id.message);
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-
+        navigationView = (BottomNavigationView) findViewById(R.id.navigation);
+        navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        showNav(R.id.navigation_user_feed);
     }
 
-    //init（）用来初始化组件
+    public static Context getContext(){
+        return context;
+    }
+
+
     private void init(){
         userFeed =new FragmentUserFeed();
         discover =new FragmentDiscover();
         photo =new FragmentPhoto();
         activityFeed = new FragmentActivityFeed();
         profile = FragmentProfile.newInstance(mAuth,mDatabase);
-        FragmentTransaction beginTransaction=getFragmentManager().beginTransaction();
-        beginTransaction.add(R.id.content, userFeed).add(R.id.content, discover).add(R.id.content, photo).add(R.id.content, activityFeed).add(R.id.content, profile);
-        beginTransaction.hide(userFeed).hide(discover).hide(photo).hide(activityFeed).hide(profile);//隐藏fragment
-        beginTransaction.addToBackStack(null);//返回到上一个显示的fragment
-        beginTransaction.commit();//每一个事务最后操作必须是commit（），否则看不见效果
-        showNav(R.id.navigation_user_feed);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.fragment_container,userFeed);
+        ft.add(R.id.fragment_container,discover);
+        ft.add(R.id.fragment_container,photo);
+        ft.add(R.id.fragment_container,activityFeed);
+        ft.add(R.id.fragment_container,profile);
+        ft.hide(discover).hide(photo).hide(activityFeed).hide(profile);
+        ft.commit();
     }
 
     @Override
     public void onFragmentInteraction(Uri uri){
         //you can leave it empty
     }
+    @Override
+    public void onBackPressed(){
+        return;
+    }
 
     private void showNav(int navid){
-        FragmentTransaction beginTransaction=getFragmentManager().beginTransaction();
+        FragmentTransaction beginTransaction=getSupportFragmentManager().beginTransaction();
         switch (navid){
             case R.id.navigation_user_feed:
                 beginTransaction.hide(discover).hide(photo).hide(activityFeed).hide(profile);
                 beginTransaction.show(userFeed);
-                beginTransaction.addToBackStack(null);
                 beginTransaction.commit();
                 break;
             case R.id.navigation_discover:
                 beginTransaction.hide(userFeed).hide(photo).hide(activityFeed).hide(profile);
                 beginTransaction.show(discover);
-                beginTransaction.addToBackStack(null);
                 beginTransaction.commit();
                 break;
             case R.id.navigation_photo:
-                beginTransaction.hide(discover).hide(userFeed).hide(activityFeed).hide(profile);
+                beginTransaction.hide(userFeed).hide(discover).hide(activityFeed).hide(profile);
                 beginTransaction.show(photo);
-                beginTransaction.addToBackStack(null);
+//                navigationView.setSelectedItemId(R.id.navigation_photo);
                 beginTransaction.commit();
                 break;
             case R.id.navigation_activity_feed:
-                beginTransaction.hide(discover).hide(userFeed).hide(photo).hide(profile);
+                beginTransaction.hide(userFeed).hide(discover).hide(photo).hide(profile);
                 beginTransaction.show(activityFeed);
-                beginTransaction.addToBackStack(null);
                 beginTransaction.commit();
                 break;
             case R.id.navigation_profile:
-                beginTransaction.hide(discover).hide(userFeed).hide(photo).hide(activityFeed);
+                beginTransaction.hide(userFeed).hide(discover).hide(activityFeed).hide(photo);
                 beginTransaction.show(profile);
-                beginTransaction.addToBackStack(null);
                 beginTransaction.commit();
                 break;
         }

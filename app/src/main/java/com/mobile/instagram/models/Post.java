@@ -9,10 +9,10 @@ public class Post {
     public String message;
     public ArrayList<String> likes;
     public String location;
-    public ArrayList<String> comments;
+    public ArrayList<Comment> comments;
 
     public Post(long time, String postId, String uid, String message, String location,
-                ArrayList<String> likes, ArrayList<String> comments){
+                ArrayList<String> likes, ArrayList<Comment> comments){
         this.time = time;
         this.postId = postId;
         this.uid = uid;

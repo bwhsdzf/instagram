@@ -23,4 +23,5 @@ public class User {
         this.following = following;
         this.followers =followers;
     }
+
 }

@@ -5,6 +5,7 @@
     <string name="prompt_email">Email</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>
+    <string name="hint_password">Password must be longer than 6 digits</string>
     <string name="action_sign_in">Sign in or register</string>
     <string name="sign_in">Sign in</string>
     <string name="sign_up">Sign up</string>
@@ -29,6 +30,6 @@
     <string name="title_followers">Followers</string>
     <string name="title_posts">Posts</string>
     <string name="title_following">Following</string>
-
+    <string name="title_my_posts">My Posts:</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

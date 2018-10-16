@@ -29,6 +29,7 @@
 
     <Button
         android:id="@+id/signOutButton"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -37,7 +38,8 @@
         android:layout_marginTop="55dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:text="@string/sign_out" />
+        android:background="@android:color/holo_red_light"
+        android:text="@string/sign_out"/>
 
     <LinearLayout
         android:id="@+id/profileStatus"
@@ -51,19 +53,26 @@
         <LinearLayout
             android:id="@+id/posts"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="11dp"
             android:layout_weight="1"
+            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/posts"
-                android:layout_width="match_parent"
+                android:id="@+id/postsNum"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
+                android:gravity="center"
+                android:text="@string/sample_string"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 android:text="@string/title_posts" />
 
         </LinearLayout>
@@ -72,49 +81,72 @@
             android:id="@+id/following"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="11dp"
             android:layout_weight="1"
+            android:gravity="center"
             android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/followingNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/sample_string"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 android:text="@string/title_following" />
         </LinearLayout>
+
 
         <LinearLayout
             android:id="@+id/followers"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="11dp"
             android:layout_weight="1"
+            android:gravity="center"
             android:orientation="vertical">
 
             <TextView
-                android:layout_width="match_parent"
+                android:id="@+id/followerNum"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/sample_string"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
                 android:text="@string/title_followers" />
         </LinearLayout>
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="53dp"
-        android:layout_marginLeft="53dp"
-        android:layout_marginBottom="187dp"
-        android:text="Button" />
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/ivProfile"
+        android:layout_below="@+id/profileStatus"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="197dp"
-        android:text="TextView" />
+        android:layout_marginStart="17dp"
+        android:layout_marginLeft="17dp"
+        android:layout_marginTop="9dp"
+        android:layout_marginBottom="234dp"
+        android:text="@string/title_my_posts"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
+
 
 </RelativeLayout>

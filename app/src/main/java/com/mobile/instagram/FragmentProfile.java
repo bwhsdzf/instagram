@@ -1,15 +1,17 @@
 package com.mobile.instagram;
 
-import com.mobile.instagram.models.DatabaseCon;
 import com.mobile.instagram.models.User;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import	android.support.v4.graphics.drawable.*;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +26,7 @@ import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
 
+import java.io.*;
 
 
 /**
@@ -50,14 +53,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
     private DatabaseReference mDatabase;
     private StorageReference mStorageRef;
 
-    private DatabaseCon dc;
-
-    private TextView tv;
     private TextView username;
     private TextView posts;
     private TextView followers;
     private TextView following;
     private ImageView iv;
+    private boolean hasProfile = false;
 
 
 
@@ -81,7 +82,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         fragment.mDatabase = mDatabase;
         fragment.currentUser = mAuth.getCurrentUser();
         fragment.mStorageRef = FirebaseStorage.getInstance().getReference();
-        fragment.dc = new DatabaseCon(mDatabase);
         return fragment;
     }
 
@@ -96,92 +96,115 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_profile, container, false);
         view.findViewById(R.id.signOutButton).setOnClickListener(this);
-        view.findViewById(R.id.button).setOnClickListener(this);
         String uid = currentUser.getUid();
 
-//        TextView tv = view.findViewById(R.id.userName);
-        Log.d(TAG, dc.getUsername(uid).toString());
-        tv = view.findViewById(R.id.textView);
         iv = view.findViewById(R.id.ivProfile);
-        followers = view.findViewById(R.id.followers);
-        posts = view.findViewById(R.id.posts);
-        following = view.findViewById(R.id.following);
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d(TAG, "reading" );
-//                Log.d(TAG, value );
-                tv.setText(value);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        });
+        iv.setOnClickListener(this);
+        setCircleProfile(BitmapFactory.decodeResource(getResources(), R.drawable.ic_profile));
+        followers = view.findViewById(R.id.followerNum);
+        posts = view.findViewById(R.id.postsNum);
+        following = view.findViewById(R.id.followingNum);
 
         this.username = view.findViewById(R.id.userName);
-        mDatabase.child("users").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("users").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 Log.d(TAG, user.username );
                 username.setText(user.username);
-                posts.setText(user.posts.size());
-                followers.setText(user.followers.size());
-                following.setText(user.following.size());
+//                Log.d(TAG, user.posts.toString() );
+//                Integer num = new Integer(user.posts.size()-1);
+                posts.setText(new Integer(user.posts.size()-1).toString());
+                following.setText(new Integer(user.following.size()-1).toString());
+                followers.setText(new Integer(user.followers.size()-1).toString());
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
 
-        StorageReference riversRef = mStorageRef.child("profile.jpg");
-        final long ONE_MEGABYTE = 1024 * 1024;
-        try {
+        StorageReference riversRef = mStorageRef.child("profile_images/"+uid+".jpg");
+        final long ONE_MEGABYTE = 2048 * 2048;
 
-            riversRef.getBytes(ONE_MEGABYTE)
-                    .addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                            iv.setImageBitmap(bitmap);
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    // Handle failed download
-                    // ...
-                }
-            });
-        }catch (Exception e) {
-            Log.d(TAG, "create temp unsuccessful");
-        }
+        riversRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                            @Override
+                            public void onSuccess(byte[] bytes) {
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                                setCircleProfile(bitmap);
+                                hasProfile = true;
+
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                Log.d(TAG, exception.getMessage());
+                                hasProfile = false;
+                            }
+                        });
+
+
 
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+        switch(requestCode) {
+            case 1:
+                if(resultCode == getActivity().RESULT_OK){
+                    Uri selectedImage = imageReturnedIntent.getData();
+                    try{
+                    Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(NavigationActivity.getContext().getContentResolver(),
+                            selectedImage);
+                    setCircleProfile(bitmap);
+                    uploadProfile(bitmap);
+                    } catch (Exception e){
+                        Log.d(TAG, "didn't find context");
+                    }
+                }
+                break;
         }
     }
 
-    public void saveToDb(){
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
-        Log.d(TAG, "saving to db" );
-        myRef.setValue("Hello, World!");
+    private void uploadProfile(Bitmap bitmap){
+        String uid = currentUser.getUid();
+        StorageReference desertRef = mStorageRef.child("profile_images/"+uid+".jpg");
+
+        Toast.makeText(FragmentProfile.this.getActivity(), "Uploading new photo",
+                Toast.LENGTH_LONG).show();
+        // Delete the origin profile
+        desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d(TAG, "Origin uploaded profile deleted");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.d(TAG, "Hasn't upload yet");
+            }
+        });
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        final byte[] data = baos.toByteArray();
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference profileRef = storageRef.child("profile_images/" + uid + ".jpg");
+        UploadTask uploadTask = profileRef.putBytes(data);
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Toast.makeText(FragmentProfile.this.getActivity(), "Failed to upload photo.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+            }
+        });
+
     }
 
     @Override
@@ -199,6 +222,13 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    // Set the profile pic to circular
+    private void setCircleProfile(Bitmap bitmap){
+        RoundedBitmapDrawable mDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+        mDrawable.setCircular(true);
+        iv.setImageDrawable(mDrawable);
     }
 
     private void signOut(){
@@ -232,9 +262,10 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         int i = v.getId();
         if (i == R.id.signOutButton) {
             signOut();
-        }
-        else if (i == R.id.button) {
-            saveToDb();
+        } else if (i == R.id.ivProfile){
+            Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
         }
     }
 }
