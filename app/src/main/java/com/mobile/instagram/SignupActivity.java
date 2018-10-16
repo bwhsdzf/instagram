@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.net.Uri;
 
 import com.google.android.gms.tasks.*;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.*;
@@ -23,6 +22,8 @@ import com.google.firebase.storage.*;
 
 import com.google.firebase.database.*;
 import  com.mobile.instagram.models.User;
+import com.mobile.instagram.models.relationalModels.UserFollowing;
+import com.mobile.instagram.models.relationalModels.UserPosts;
 
 import java.util.ArrayList;
 import java.io.*;
@@ -75,17 +76,16 @@ public class SignupActivity extends AppCompatActivity implements
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             String userId = mAuth.getUid();
-                            ArrayList<String> followers = new ArrayList<String>();
-                            followers.add("0");
-                            ArrayList<String> following = new ArrayList<String>();
-                            following.add("0");
-                            ArrayList<String> post = new ArrayList<String>();
-                            post.add("0");
-                            User newUser = new User(userId, username, email, post,
-                                    following, followers);
+                            ArrayList<User> followers = new ArrayList<User>();
+                            ArrayList<User> following = new ArrayList<User>();
+                            User newUser = new User(userId, username, email);
+                            UserPosts up = new UserPosts(userId,0,null);
+                            UserFollowing uf = new UserFollowing(userId,0,following);
                             Log.d(TAG, "User id is "+userId);
                             Log.d(TAG, "write to db success 1");
                             mDatabase.child("users").child(userId).setValue(newUser);
+                            mDatabase.child("user-posts").child(userId).setValue(up);
+                            mDatabase.child("user-following").child(userId).setValue(uf);
                             Log.d(TAG, "write to db success 2");
                             Toast.makeText(SignupActivity.this, "Successfully created user",
                                     Toast.LENGTH_SHORT).show();
@@ -164,12 +164,15 @@ public class SignupActivity extends AppCompatActivity implements
         if (TextUtils.isEmpty(password)) {
             mPasswordField.setError("Required.");
             valid = false;
-        } else {
+        } else if(password.length() < 6){
+            mPasswordField.setError("Password length must be longer than 6");
+            valid = false;
+        }else{
             mPasswordField.setError(null);
         }
 
         String username = mUsernameField.getText().toString();
-        if (TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(username)) {
             mUsernameField.setError("Required.");
             valid = false;
         } else {

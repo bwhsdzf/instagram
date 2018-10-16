@@ -1,11 +1,10 @@
 package com.mobile.instagram;
 
-import com.mobile.instagram.models.User;
+import com.mobile.instagram.models.*;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import	android.support.v4.graphics.drawable.*;
 
 import android.content.Context;
@@ -25,6 +24,7 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
+import com.mobile.instagram.models.relationalModels.UserPosts;
 
 import java.io.*;
 
@@ -40,8 +40,6 @@ import java.io.*;
 public class FragmentProfile extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
     private static final String TAG = "Fragment Profile";
 
@@ -96,6 +94,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_profile, container, false);
         view.findViewById(R.id.signOutButton).setOnClickListener(this);
+        view.findViewById(R.id.toPost).setOnClickListener(this);
         String uid = currentUser.getUid();
 
         iv = view.findViewById(R.id.ivProfile);
@@ -114,9 +113,20 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
                 username.setText(user.username);
 //                Log.d(TAG, user.posts.toString() );
 //                Integer num = new Integer(user.posts.size()-1);
-                posts.setText(new Integer(user.posts.size()-1).toString());
-                following.setText(new Integer(user.following.size()-1).toString());
-                followers.setText(new Integer(user.followers.size()-1).toString());
+//                following.setText(new Integer(user.following.size()-1).toString());
+//                followers.setText(new Integer(user.followers.size()-1).toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+        mDatabase.child("user-posts").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserPosts userposts = dataSnapshot.getValue(UserPosts.class);
+                posts.setText(new Integer(userposts.getNum()).toString());
             }
 
             @Override
@@ -266,6 +276,9 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
             Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
+        } else if (i == R.id.toPost){
+            Intent intent = new Intent(getActivity(),PostActivity.class );
+            startActivity(intent);
         }
     }
 }

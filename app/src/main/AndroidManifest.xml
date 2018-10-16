@@ -33,7 +33,8 @@
             android:name=".NavigationActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SignupActivity"></activity>
+        <activity android:name=".SignupActivity" />
+        <activity android:name=".PostActivity"></activity>
     </application>
 
 </manifest>
