@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FragmentProfile">
+    tools:context=".fragments.FragmentProfile">
 
     <!-- TODO: Update blank fragment layout -->
 
@@ -159,6 +159,18 @@
         android:layout_marginEnd="125dp"
         android:layout_marginRight="125dp"
         android:text="Button" />
+
+    <GridView
+        android:id="@+id/pictureView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toPost"
+        android:layout_alignParentStart="true"
+        android:columnWidth="90dip"
+        android:gravity="center"
+        android:numColumns="auto_fit"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dip" />
 
 
 </RelativeLayout>

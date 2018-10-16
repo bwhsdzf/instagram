@@ -1,5 +1,8 @@
-package com.mobile.instagram;
+package com.mobile.instagram.fragments;
 
+import com.mobile.instagram.R;
+import com.mobile.instagram.activities.NavigationActivity;
+import com.mobile.instagram.activities.PostActivity;
 import com.mobile.instagram.models.*;
 
 import android.content.Intent;
@@ -19,11 +22,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.GridView;
 
 import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
+import com.mobile.instagram.models.relationalModels.UserFollower;
+import com.mobile.instagram.models.relationalModels.UserFollowing;
 import com.mobile.instagram.models.relationalModels.UserPosts;
 
 import java.io.*;
@@ -56,6 +62,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
     private TextView followers;
     private TextView following;
     private ImageView iv;
+    private GridView pictureView;
     private boolean hasProfile = false;
 
 
@@ -103,6 +110,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         followers = view.findViewById(R.id.followerNum);
         posts = view.findViewById(R.id.postsNum);
         following = view.findViewById(R.id.followingNum);
+        pictureView = view.findViewById(R.id.pictureView);
 
         this.username = view.findViewById(R.id.userName);
         mDatabase.child("users").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -127,6 +135,28 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 UserPosts userposts = dataSnapshot.getValue(UserPosts.class);
                 posts.setText(new Integer(userposts.getNum()).toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+        mDatabase.child("user-follower").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserFollower userFollower = dataSnapshot.getValue(UserFollower.class);
+                followers.setText(new Integer(userFollower.getNum()).toString());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+        mDatabase.child("user-following").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                UserFollowing userFollowing = dataSnapshot.getValue(UserFollowing.class);
+                following.setText(new Integer(userFollowing.getNum()).toString());
             }
 
             @Override
@@ -185,17 +215,19 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         Toast.makeText(FragmentProfile.this.getActivity(), "Uploading new photo",
                 Toast.LENGTH_LONG).show();
         // Delete the origin profile
-        desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Log.d(TAG, "Origin uploaded profile deleted");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.d(TAG, "Hasn't upload yet");
-            }
-        });
+        if (hasProfile) {
+            desertRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    Log.d(TAG, "Origin uploaded profile deleted");
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception exception) {
+                    Log.d(TAG, "Delete failed");
+                }
+            });
+        }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);

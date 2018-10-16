@@ -1,6 +1,7 @@
-package com.mobile.instagram;
+package com.mobile.instagram.activities;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.mobile.instagram.R;
 import com.mobile.instagram.models.Comment;
 import com.mobile.instagram.models.Post;
 

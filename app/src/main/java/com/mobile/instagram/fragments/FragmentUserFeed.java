@@ -1,4 +1,4 @@
-package com.mobile.instagram;
+package com.mobile.instagram.fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,16 +8,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mobile.instagram.R;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FragmentActivityFeed.OnFragmentInteractionListener} interface
+ * {@link FragmentUserFeed.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FragmentActivityFeed#newInstance} factory method to
+ * Use the {@link FragmentUserFeed#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentActivityFeed extends Fragment {
+public class FragmentUserFeed extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -29,7 +31,7 @@ public class FragmentActivityFeed extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public FragmentActivityFeed() {
+    public FragmentUserFeed() {
         // Required empty public constructor
     }
 
@@ -39,11 +41,11 @@ public class FragmentActivityFeed extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentActivityFeed.
+     * @return A new instance of fragment FragmentUserFeed.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentActivityFeed newInstance(String param1, String param2) {
-        FragmentActivityFeed fragment = new FragmentActivityFeed();
+    public static FragmentUserFeed newInstance(String param1, String param2) {
+        FragmentUserFeed fragment = new FragmentUserFeed();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -64,7 +66,7 @@ public class FragmentActivityFeed extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_activityfeed, container, false);
+        return inflater.inflate(R.layout.fragment_userfeed, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -103,6 +105,6 @@ public class FragmentActivityFeed extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        public void onFragmentInteraction(Uri uri);
     }
 }

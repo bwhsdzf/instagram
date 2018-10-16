@@ -1,4 +1,4 @@
-package com.mobile.instagram;
+package com.mobile.instagram.activities;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -9,13 +9,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
 import com.google.firebase.auth.FirebaseUser;
+import com.mobile.instagram.R;
 
 
 /**
@@ -36,15 +36,15 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(com.mobile.instagram.R.layout.activity_login);
 
         // Views
-        mEmailField = findViewById(R.id.email);
-        mPasswordField = findViewById(R.id.password);
+        mEmailField = findViewById(com.mobile.instagram.R.id.email);
+        mPasswordField = findViewById(com.mobile.instagram.R.id.password);
 
         // Buttons
-        findViewById(R.id.emailSignInButton).setOnClickListener(this);
-        findViewById(R.id.signUpButton).setOnClickListener(this);
+        findViewById(com.mobile.instagram.R.id.emailSignInButton).setOnClickListener(this);
+        findViewById(com.mobile.instagram.R.id.signUpButton).setOnClickListener(this);
 
 
         // [START initialize_auth]
@@ -120,12 +120,12 @@ public class LoginActivity extends AppCompatActivity implements
     private void updateUI(FirebaseUser user) {
 //        hideProgressDialog();
         if (user != null) {
-            findViewById(R.id.emailPasswordButtons).setVisibility(View.GONE);
-            findViewById(R.id.password).setVisibility(View.GONE);
-            findViewById(R.id.emailSignInButton).setVisibility(View.VISIBLE);
+            findViewById(com.mobile.instagram.R.id.emailPasswordButtons).setVisibility(View.GONE);
+            findViewById(com.mobile.instagram.R.id.password).setVisibility(View.GONE);
+            findViewById(com.mobile.instagram.R.id.emailSignInButton).setVisibility(View.VISIBLE);
         } else {
-            findViewById(R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
-            findViewById(R.id.password).setVisibility(View.VISIBLE);
+            findViewById(com.mobile.instagram.R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
+            findViewById(com.mobile.instagram.R.id.password).setVisibility(View.VISIBLE);
         }
     }
 
@@ -138,7 +138,7 @@ public class LoginActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.signUpButton) {
+        if (i == com.mobile.instagram.R.id.signUpButton) {
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
             startActivity(intent);
         } else if (i == R.id.emailSignInButton) {

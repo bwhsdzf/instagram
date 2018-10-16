@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,11 +30,11 @@
             android:exported="false" />
 
         <activity
-            android:name=".NavigationActivity"
+            android:name=".activities.NavigationActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".SignupActivity" />
-        <activity android:name=".PostActivity"></activity>
+        <activity android:name=".activities.SignupActivity" />
+        <activity android:name=".activities.PostActivity"></activity>
     </application>
 
 </manifest>

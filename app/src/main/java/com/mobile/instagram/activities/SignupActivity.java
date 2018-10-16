@@ -1,4 +1,4 @@
-package com.mobile.instagram;
+package com.mobile.instagram.activities;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -21,7 +21,9 @@ import com.google.firebase.storage.*;
 
 
 import com.google.firebase.database.*;
+import com.mobile.instagram.R;
 import  com.mobile.instagram.models.User;
+import com.mobile.instagram.models.relationalModels.UserFollower;
 import com.mobile.instagram.models.relationalModels.UserFollowing;
 import com.mobile.instagram.models.relationalModels.UserPosts;
 
@@ -80,16 +82,16 @@ public class SignupActivity extends AppCompatActivity implements
                             ArrayList<User> following = new ArrayList<User>();
                             User newUser = new User(userId, username, email);
                             UserPosts up = new UserPosts(userId,0,null);
-                            UserFollowing uf = new UserFollowing(userId,0,following);
+                            UserFollowing ufg = new UserFollowing(userId,0,following);
+                            UserFollower ufr = new UserFollower(userId,0,followers);
                             Log.d(TAG, "User id is "+userId);
-                            Log.d(TAG, "write to db success 1");
                             mDatabase.child("users").child(userId).setValue(newUser);
                             mDatabase.child("user-posts").child(userId).setValue(up);
-                            mDatabase.child("user-following").child(userId).setValue(uf);
-                            Log.d(TAG, "write to db success 2");
+                            mDatabase.child("user-following").child(userId).setValue(ufg);
+                            mDatabase.child("user-follower").child(userId).setValue(ufr);
+                            Log.d(TAG, "write to db success");
                             Toast.makeText(SignupActivity.this, "Successfully created user",
                                     Toast.LENGTH_SHORT).show();
-
                             if (selectedPhoto) {
                                 mProfilePhoto.setDrawingCacheEnabled(true);
                                 mProfilePhoto.buildDrawingCache();
@@ -124,7 +126,6 @@ public class SignupActivity extends AppCompatActivity implements
                         }
                     }
                 });
-//        String userId = mAuth.getUid();
 
 
         // [END create_user_with_email]

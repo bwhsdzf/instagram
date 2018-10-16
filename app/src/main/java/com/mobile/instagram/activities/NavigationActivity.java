@@ -1,4 +1,4 @@
-package com.mobile.instagram;
+package com.mobile.instagram.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -14,6 +14,12 @@ import android.support.v4.app.FragmentTransaction;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.mobile.instagram.fragments.FragmentActivityFeed;
+import com.mobile.instagram.fragments.FragmentDiscover;
+import com.mobile.instagram.fragments.FragmentPhoto;
+import com.mobile.instagram.fragments.FragmentProfile;
+import com.mobile.instagram.fragments.FragmentUserFeed;
+import com.mobile.instagram.R;
 
 public class NavigationActivity extends AppCompatActivity implements
         FragmentUserFeed.OnFragmentInteractionListener,
