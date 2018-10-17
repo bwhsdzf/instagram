@@ -22,6 +22,7 @@ import com.google.firebase.storage.*;
 
 import com.google.firebase.database.*;
 import com.mobile.instagram.R;
+import com.mobile.instagram.models.Post;
 import  com.mobile.instagram.models.User;
 import com.mobile.instagram.models.relationalModels.UserFollower;
 import com.mobile.instagram.models.relationalModels.UserFollowing;
@@ -80,10 +81,11 @@ public class SignupActivity extends AppCompatActivity implements
                             String userId = mAuth.getUid();
                             ArrayList<User> followers = new ArrayList<User>();
                             ArrayList<User> following = new ArrayList<User>();
+                            ArrayList<Post> posts = new ArrayList<Post>();
                             User newUser = new User(userId, username, email);
-                            UserPosts up = new UserPosts(userId,0,null);
-                            UserFollowing ufg = new UserFollowing(userId,0,following);
-                            UserFollower ufr = new UserFollower(userId,0,followers);
+                            UserPosts up = new UserPosts(posts);
+                            UserFollowing ufg = new UserFollowing(following);
+                            UserFollower ufr = new UserFollower(followers);
                             Log.d(TAG, "User id is "+userId);
                             mDatabase.child("users").child(userId).setValue(newUser);
                             mDatabase.child("user-posts").child(userId).setValue(up);
@@ -143,6 +145,7 @@ public class SignupActivity extends AppCompatActivity implements
                 break;
             case 1:
                 if(resultCode == RESULT_OK){
+                    selectedPhoto = true;
                     Uri selectedImage = imageReturnedIntent.getData();
                     mProfilePhoto.setImageURI(selectedImage);
                 }
@@ -191,7 +194,7 @@ public class SignupActivity extends AppCompatActivity implements
                     mUsernameField.getText().toString());
             Log.d(TAG, "creating account");
         }else if (i == R.id.profilePhoto){
-            selectedPhoto = true;
+
             Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(pickPhoto , 1);//one can be replaced with any action code

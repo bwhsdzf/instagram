@@ -122,7 +122,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             Map<String, Object> childUpdates = new HashMap<>();
             childUpdates.put("posts/"+key, postValue);
             childUpdates.put("user-posts/"+uid+"/"+key, postValue);
-            childUpdates.put("user-posts/"+uid+"/num", userposts.getNum()+1);
             mDatabaseRef.updateChildren(childUpdates);
 
             Bitmap bitmap = ((BitmapDrawable) photo.getDrawable()).getBitmap();
@@ -143,6 +142,8 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Toast.makeText(PostActivity.this, "Upload success",
+                            Toast.LENGTH_LONG).show();
                     finish();
                 }
             });

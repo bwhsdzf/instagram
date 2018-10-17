@@ -4,31 +4,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.FragmentProfile">
-
-    <!-- TODO: Update blank fragment layout -->
+    tools:context=".activities.ProfileActivity">
 
     <ImageView
-        android:id="@+id/fragmentProfile"
+        android:id="@+id/userProfile"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:contentDescription="@string/prompt_username"
         android:src="@drawable/ic_profile" />
 
     <TextView
-        android:id="@+id/fragmentUserName"
+        android:id="@+id/profileUserName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/fragmentProfile"
+        android:layout_below="@id/userProfile"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:textSize="20sp"
-        android:text="@string/sample_string" />
+        android:text="@string/sample_string"
+        android:textSize="20sp" />
 
     <Button
-        android:id="@+id/signOutButton"
+        android:id="@+id/profileFollowButton"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="wrap_content"
         android:layout_height="30dp"
@@ -38,20 +35,34 @@
         android:layout_marginTop="55dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:background="@android:color/holo_red_light"
-        android:text="@string/sign_out" />
+        android:background="@color/colorPrimary"
+        android:text="@string/follow" />
+
+    <Button
+        android:id="@+id/profileUnfollowButton"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="55dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:background="@color/colorAccent"
+        android:text="@string/unfollow" />
 
     <LinearLayout
-        android:id="@+id/fragmentStatus"
+        android:id="@+id/profileStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/fragmentUserName"
+        android:layout_below="@id/profileUserName"
         android:orientation="horizontal"
         android:baselineAligned="false">
 
 
         <LinearLayout
-            android:id="@+id/fragmentPosts"
+            android:id="@+id/profilePosts"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="11dp"
@@ -60,7 +71,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/fragmentPostsNum"
+                android:id="@+id/profilePostsNum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -71,14 +82,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_posts"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:text="@string/title_posts" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/FragmentFollowing"
+            android:id="@+id/profileFollowing"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="11dp"
@@ -87,7 +98,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/fragmentFollowingNum"
+                android:id="@+id/profileFollowingNum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -98,14 +109,14 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_following"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:text="@string/title_following" />
         </LinearLayout>
 
 
         <LinearLayout
-            android:id="@+id/FragmentFollowers"
+            android:id="@+id/profileFollowers"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="11dp"
@@ -114,7 +125,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/fragmentFollowerNum"
+                android:id="@+id/profileFollowerNum"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -125,9 +136,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/title_followers"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:text="@string/title_followers" />
         </LinearLayout>
 
     </LinearLayout>
@@ -136,7 +147,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fragmentStatus"
+        android:layout_below="@+id/profileStatus"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_marginStart="17dp"
@@ -145,40 +156,15 @@
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/toPost"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="-1dp"
-        android:layout_marginEnd="152dp"
-        android:layout_marginRight="152dp"
-        android:text="Button" />
-
     <GridView
-        android:id="@+id/fragmentPictureView"
+        android:id="@+id/pictureView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toPost"
+        android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
         android:columnWidth="90dip"
         android:gravity="center"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
         android:verticalSpacing="10dip" />
-
-    <Button
-        android:id="@+id/toProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginStart="33dp"
-        android:layout_marginLeft="33dp"
-        android:text="Button" />
-
-
 </RelativeLayout>

@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import com.mobile.instagram.models.Post;
 
 public class User {
-    public String username;
-    public String email;
-    public String uid;
-    public ArrayList<String> following;
-    public ArrayList<String> followers;
+    private String username;
+    private String email;
+    private String uid;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)

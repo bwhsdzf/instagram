@@ -3,6 +3,7 @@ package com.mobile.instagram.fragments;
 import com.mobile.instagram.R;
 import com.mobile.instagram.activities.NavigationActivity;
 import com.mobile.instagram.activities.PostActivity;
+import com.mobile.instagram.activities.ProfileActivity;
 import com.mobile.instagram.models.*;
 
 import android.content.Intent;
@@ -102,27 +103,24 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         View view =  inflater.inflate(R.layout.fragment_profile, container, false);
         view.findViewById(R.id.signOutButton).setOnClickListener(this);
         view.findViewById(R.id.toPost).setOnClickListener(this);
+        view.findViewById(R.id.toProfile).setOnClickListener(this);
         String uid = currentUser.getUid();
 
-        iv = view.findViewById(R.id.ivProfile);
+        iv = view.findViewById(R.id.fragmentProfile);
         iv.setOnClickListener(this);
         setCircleProfile(BitmapFactory.decodeResource(getResources(), R.drawable.ic_profile));
-        followers = view.findViewById(R.id.followerNum);
-        posts = view.findViewById(R.id.postsNum);
-        following = view.findViewById(R.id.followingNum);
+        followers = view.findViewById(R.id.fragmentFollowerNum);
+        posts = view.findViewById(R.id.fragmentPostsNum);
+        following = view.findViewById(R.id.fragmentFollowingNum);
         pictureView = view.findViewById(R.id.pictureView);
 
-        this.username = view.findViewById(R.id.userName);
+        this.username = view.findViewById(R.id.fragmentUserName);
         mDatabase.child("users").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
-                Log.d(TAG, user.username );
-                username.setText(user.username);
-//                Log.d(TAG, user.posts.toString() );
-//                Integer num = new Integer(user.posts.size()-1);
-//                following.setText(new Integer(user.following.size()-1).toString());
-//                followers.setText(new Integer(user.followers.size()-1).toString());
+                Log.d(TAG, user.getUsername());
+                username.setText(user.getUsername());
             }
 
             @Override
@@ -133,8 +131,16 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         mDatabase.child("user-posts").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserPosts userposts = dataSnapshot.getValue(UserPosts.class);
-                posts.setText(new Integer(userposts.getNum()).toString());
+                if (!dataSnapshot.exists()){
+                    posts.setText("0");
+                }
+                else{
+                    int postsCount = 0;
+                    for (DataSnapshot ds: dataSnapshot.getChildren()){
+                        postsCount ++;
+                    }
+                    posts.setText(Integer.toString(postsCount));
+                }
             }
 
             @Override
@@ -144,8 +150,16 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         mDatabase.child("user-follower").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserFollower userFollower = dataSnapshot.getValue(UserFollower.class);
-                followers.setText(new Integer(userFollower.getNum()).toString());
+                if (!dataSnapshot.exists()){
+                    followers.setText("0");
+                }
+                else{
+                    int followerCount = 0;
+                    for (DataSnapshot ds: dataSnapshot.getChildren()){
+                        followerCount ++;
+                    }
+                    following.setText(Integer.toString(followerCount));
+                }
             }
 
             @Override
@@ -155,8 +169,17 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         mDatabase.child("user-following").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserFollowing userFollowing = dataSnapshot.getValue(UserFollowing.class);
-                following.setText(new Integer(userFollowing.getNum()).toString());
+                if (!dataSnapshot.exists()){
+                    following.setText("0");
+                }
+                else{
+                    int followingCount = 0;
+                    for (DataSnapshot ds: dataSnapshot.getChildren()){
+                        followingCount ++;
+                    }
+                    following.setText(Integer.toString(followingCount));
+                }
+
             }
 
             @Override
@@ -304,12 +327,17 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         int i = v.getId();
         if (i == R.id.signOutButton) {
             signOut();
-        } else if (i == R.id.ivProfile){
+        } else if (i == R.id.fragmentProfile){
             Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
         } else if (i == R.id.toPost){
             Intent intent = new Intent(getActivity(),PostActivity.class );
+            startActivity(intent);
+        }else if (i == R.id.toProfile){
+            Intent intent = new Intent(getActivity(),ProfileActivity.class );
+            intent.putExtra("uid","p8x03XRZFvfa6W0tu8VIHdfxKtI3");
+            System.out.println("passing " + intent.getStringExtra("uid"));
             startActivity(intent);
         }
     }
