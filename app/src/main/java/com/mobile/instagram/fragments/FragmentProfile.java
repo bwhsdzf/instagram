@@ -9,6 +9,7 @@ import com.mobile.instagram.models.*;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Image;
 import	android.support.v4.graphics.drawable.*;
 
 import android.content.Context;
@@ -20,7 +21,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.GridView;
@@ -29,11 +32,16 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
-import com.mobile.instagram.models.relationalModels.UserFollower;
-import com.mobile.instagram.models.relationalModels.UserFollowing;
-import com.mobile.instagram.models.relationalModels.UserPosts;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.io.*;
+import java.util.ArrayList;
 
 
 /**
@@ -52,14 +60,16 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
 
     private OnFragmentInteractionListener mListener;
 
-    private FirebaseUser currentUser;
+    private User currentUser;
+    private ArrayList<Post> posts;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private StorageReference mStorageRef;
 
     private TextView username;
-    private TextView posts;
+    private TextView postsCount;
+    private int postsCountInt;
     private TextView followers;
     private TextView following;
     private ImageView iv;
@@ -86,7 +96,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         FragmentProfile fragment = new FragmentProfile();
         fragment.mAuth = mAuth;
         fragment.mDatabase = mDatabase;
-        fragment.currentUser = mAuth.getCurrentUser();
         fragment.mStorageRef = FirebaseStorage.getInstance().getReference();
         return fragment;
     }
@@ -104,23 +113,31 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         view.findViewById(R.id.signOutButton).setOnClickListener(this);
         view.findViewById(R.id.toPost).setOnClickListener(this);
         view.findViewById(R.id.toProfile).setOnClickListener(this);
-        String uid = currentUser.getUid();
-
+        String uid = FirebaseAuth.getInstance().getUid();
         iv = view.findViewById(R.id.fragmentProfile);
         iv.setOnClickListener(this);
         setCircleProfile(BitmapFactory.decodeResource(getResources(), R.drawable.ic_profile));
         followers = view.findViewById(R.id.fragmentFollowerNum);
-        posts = view.findViewById(R.id.fragmentPostsNum);
+        postsCount = view.findViewById(R.id.fragmentPostsNum);
         following = view.findViewById(R.id.fragmentFollowingNum);
-        pictureView = view.findViewById(R.id.pictureView);
+        pictureView = view.findViewById(R.id.fragmentPictureView);
+
+        posts = new ArrayList<Post>();
+
+
 
         this.username = view.findViewById(R.id.fragmentUserName);
-        mDatabase.child("users").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("users").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                Log.d(TAG, user.getUsername());
-                username.setText(user.getUsername());
+                currentUser = dataSnapshot.getValue(User.class);
+                Log.d(TAG, currentUser.getUsername());
+                username.setText(currentUser.getUsername());
+                if (currentUser.getProfileUrl() != null) {
+                    ImageLoader.getInstance().displayImage(currentUser.getProfileUrl(), iv);
+                    hasProfile = true;
+                }
+
             }
 
             @Override
@@ -128,26 +145,30 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
             }
         });
 
-        mDatabase.child("user-posts").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("user-posts").child(uid).addChildEventListener(new ChildEventListener() {
+
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
-                    posts.setText("0");
-                }
-                else{
-                    int postsCount = 0;
-                    for (DataSnapshot ds: dataSnapshot.getChildren()){
-                        postsCount ++;
-                    }
-                    posts.setText(Integer.toString(postsCount));
-                }
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
+                postsCountInt ++;
+                postsCount.setText(Integer.toString(postsCountInt));
+                posts.add(dataSnapshot.getValue(Post.class));
+            }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+            }
         });
-        mDatabase.child("user-follower").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("user-follower").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()){
@@ -166,7 +187,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-        mDatabase.child("user-following").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("user-following").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()){
@@ -187,27 +208,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
             }
         });
 
-        StorageReference riversRef = mStorageRef.child("profile_images/"+uid+".jpg");
-        final long ONE_MEGABYTE = 2048 * 2048;
-
-        riversRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                            @Override
-                            public void onSuccess(byte[] bytes) {
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                                setCircleProfile(bitmap);
-                                hasProfile = true;
-
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                Log.d(TAG, exception.getMessage());
-                                hasProfile = false;
-                            }
-                        });
-
-
-
+        pictureView.setAdapter(new ImageAdapter(getActivity(),posts));
         return view;
     }
 
@@ -221,7 +222,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
                     try{
                     Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(NavigationActivity.getContext().getContentResolver(),
                             selectedImage);
-                    setCircleProfile(bitmap);
+                    ImageLoader.getInstance().displayImage(selectedImage.toString(),iv);
                     uploadProfile(bitmap);
                     } catch (Exception e){
                         Log.d(TAG, "didn't find context");
@@ -251,9 +252,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
                 }
             });
         }
-
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
         final byte[] data = baos.toByteArray();
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference profileRef = storageRef.child("profile_images/" + uid + ".jpg");
@@ -267,6 +267,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+                while (!urlTask.isSuccessful());
+                Uri downloadUrl = urlTask.getResult();
+                currentUser.setProfileUrl(downloadUrl.toString());
+                mDatabase.child("users").child(currentUser.getUid())
+                        .setValue(currentUser);
             }
         });
 
@@ -340,5 +346,93 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
             System.out.println("passing " + intent.getStringExtra("uid"));
             startActivity(intent);
         }
+    }
+
+
+    private class ImageAdapter extends BaseAdapter {
+
+        private ArrayList<Post> posts;
+
+        private LayoutInflater inflater;
+
+        private DisplayImageOptions options;
+
+        ImageAdapter(Context context, ArrayList<Post> posts) {
+            inflater = LayoutInflater.from(context);
+
+            this.posts = posts;
+            options = new DisplayImageOptions.Builder()
+                    .showImageForEmptyUri(R.mipmap.ic_img_ept)
+                    .showImageOnFail(R.mipmap.ic_img_err)
+                    .cacheInMemory(true)
+                    .cacheOnDisk(true)
+                    .considerExifParams(true)
+                    .bitmapConfig(Bitmap.Config.RGB_565)
+                    .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+                    .displayer(new FadeInBitmapDisplayer(100))
+                    .build();
+        }
+
+        @Override
+        public int getCount() {
+            return posts.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            final ViewHolder holder;
+            View view = convertView;
+            if (view == null) {
+                view = inflater.inflate(R.layout.post_layout, parent, false);
+                holder = new ViewHolder();
+                assert view != null;
+                holder.imageView = (ImageView) view.findViewById(R.id.photo);
+                holder.progressBar = (ProgressBar) view.findViewById(R.id.progress);
+                view.setTag(holder);
+            } else {
+                holder = (ViewHolder) view.getTag();
+            }
+
+            ImageLoader.getInstance()
+                    .displayImage(posts.get(position).getImgUrl(), holder.imageView, options, new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String imageUri, View view) {
+                            holder.progressBar.setProgress(0);
+                            holder.progressBar.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            holder.progressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            holder.progressBar.setVisibility(View.GONE);
+                        }
+                    }, new ImageLoadingProgressListener() {
+                        @Override
+                        public void onProgressUpdate(String imageUri, View view, int current, int total) {
+                            holder.progressBar.setProgress(Math.round(100.0f * current / total));
+                        }
+                    });
+
+            return view;
+        }
+    }
+
+    static class ViewHolder {
+        ImageView imageView;
+        ProgressBar progressBar;
     }
 }

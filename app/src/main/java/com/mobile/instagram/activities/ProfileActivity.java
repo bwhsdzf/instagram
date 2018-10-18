@@ -154,12 +154,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     int followerCount = 0;
                     for (DataSnapshot ds: dataSnapshot.getChildren()){
                         followerCount ++;
-                        if (ds.getValue(User.class)!= null){
+                        try{
                             if (ds.getValue(User.class).getUid().equals(currentUser.getUid())){
                                 followButton.setVisibility(View.GONE);
                                 unfollowButton.setVisibility(View.VISIBLE);
                             }
+                        } catch(NullPointerException e){
+                            Log.e(TAG,"Null pointer for user again");
                         }
+
                     }
                     followers.setText(Integer.toString(followerCount));
                 }

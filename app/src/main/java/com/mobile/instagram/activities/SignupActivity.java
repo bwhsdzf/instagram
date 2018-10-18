@@ -82,7 +82,7 @@ public class SignupActivity extends AppCompatActivity implements
                             ArrayList<User> followers = new ArrayList<User>();
                             ArrayList<User> following = new ArrayList<User>();
                             ArrayList<Post> posts = new ArrayList<Post>();
-                            User newUser = new User(userId, username, email);
+                            final User newUser = new User(userId, username, email,"");
                             UserPosts up = new UserPosts(posts);
                             UserFollowing ufg = new UserFollowing(following);
                             UserFollower ufr = new UserFollower(followers);
@@ -99,7 +99,7 @@ public class SignupActivity extends AppCompatActivity implements
                                 mProfilePhoto.buildDrawingCache();
                                 Bitmap bitmap = ((BitmapDrawable) mProfilePhoto.getDrawable()).getBitmap();
                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                                bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
                                 final byte[] data = baos.toByteArray();
                                 Toast.makeText(SignupActivity.this, "Uploading profile photo",
                                         Toast.LENGTH_LONG).show();
@@ -116,6 +116,12 @@ public class SignupActivity extends AppCompatActivity implements
                                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                                     @Override
                                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                        Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+                                        while (!urlTask.isSuccessful());
+                                        Uri downloadUrl = urlTask.getResult();
+                                        newUser.setProfileUrl(downloadUrl.toString());
+                                        mDatabase.child("users").child(newUser.getUid())
+                                                .setValue(newUser);
                                         finish();
                                     }
                                 });

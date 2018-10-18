@@ -112,17 +112,9 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         if(!validateForm()){
         }
         else{
-            long time = Calendar.getInstance().getTimeInMillis();
-            String uid = currentUser.getUid();
-            String key = mDatabaseRef.child("posts").push().getKey();
-            Post post = new Post(time,key,uid,postMessage.getText().toString(),"0",
-                    new ArrayList<String>(),new ArrayList<Comment>());
-            Map<String, Object> postValue = post.toMap();
-
-            Map<String, Object> childUpdates = new HashMap<>();
-            childUpdates.put("posts/"+key, postValue);
-            childUpdates.put("user-posts/"+uid+"/"+key, postValue);
-            mDatabaseRef.updateChildren(childUpdates);
+            final long time = Calendar.getInstance().getTimeInMillis();
+            final String uid = currentUser.getUid();
+            final String key = mDatabaseRef.child("posts").push().getKey();
 
             Bitmap bitmap = ((BitmapDrawable) photo.getDrawable()).getBitmap();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -144,6 +136,18 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Toast.makeText(PostActivity.this, "Upload success",
                             Toast.LENGTH_LONG).show();
+                    Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+                    while (!urlTask.isSuccessful());
+                    String downloadUrl = urlTask.getResult().toString();
+                    Post post = new Post(time,key,uid,postMessage.getText().toString(),"0",
+                            downloadUrl,
+                            new ArrayList<String>(),new ArrayList<Comment>());
+                    Map<String, Object> postValue = post.toMap();
+
+                    Map<String, Object> childUpdates = new HashMap<>();
+                    childUpdates.put("posts/"+key, postValue);
+                    childUpdates.put("user-posts/"+uid+"/"+key, postValue);
+                    mDatabaseRef.updateChildren(childUpdates);
                     finish();
                 }
             });

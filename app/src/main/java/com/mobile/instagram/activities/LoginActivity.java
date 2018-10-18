@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -16,6 +17,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
 import com.google.firebase.auth.FirebaseUser;
 import com.mobile.instagram.R;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 
 /**
@@ -29,6 +32,8 @@ public class LoginActivity extends AppCompatActivity implements
     private EditText mEmailField;
     private EditText mPasswordField;
 
+    private ProgressBar progress;
+
     // [START declare_auth]
     private FirebaseAuth mAuth;
     // [END declare_auth]
@@ -41,6 +46,8 @@ public class LoginActivity extends AppCompatActivity implements
         // Views
         mEmailField = findViewById(com.mobile.instagram.R.id.email);
         mPasswordField = findViewById(com.mobile.instagram.R.id.password);
+        progress = findViewById(R.id.login_progress);
+        progress.setVisibility(View.GONE);
 
         // Buttons
         findViewById(com.mobile.instagram.R.id.emailSignInButton).setOnClickListener(this);
@@ -50,6 +57,14 @@ public class LoginActivity extends AppCompatActivity implements
         // [START initialize_auth]
         mAuth = FirebaseAuth.getInstance();
         // [END initialize_auth]
+
+        ImageLoader.getInstance().init(getDefaultConfig());
+    }
+
+    private ImageLoaderConfiguration getDefaultConfig() {
+        ImageLoaderConfiguration config = ImageLoaderConfiguration
+                .createDefault(getApplicationContext());
+        return config;
     }
 
     // [START on_start_check_user]
@@ -70,6 +85,7 @@ public class LoginActivity extends AppCompatActivity implements
         if (!validateForm()) {
             return;
         }
+        progress.setVisibility(View.VISIBLE);
 
         Toast.makeText(LoginActivity.this, "Signing in",
                 Toast.LENGTH_LONG).show();
