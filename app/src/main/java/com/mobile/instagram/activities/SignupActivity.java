@@ -22,13 +22,8 @@ import com.google.firebase.storage.*;
 
 import com.google.firebase.database.*;
 import com.mobile.instagram.R;
-import com.mobile.instagram.models.Post;
 import  com.mobile.instagram.models.User;
-import com.mobile.instagram.models.relationalModels.UserFollower;
-import com.mobile.instagram.models.relationalModels.UserFollowing;
-import com.mobile.instagram.models.relationalModels.UserPosts;
 
-import java.util.ArrayList;
 import java.io.*;
 
 public class SignupActivity extends AppCompatActivity implements
@@ -79,18 +74,9 @@ public class SignupActivity extends AppCompatActivity implements
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             String userId = mAuth.getUid();
-                            ArrayList<User> followers = new ArrayList<User>();
-                            ArrayList<User> following = new ArrayList<User>();
-                            ArrayList<Post> posts = new ArrayList<Post>();
                             final User newUser = new User(userId, username, email,"");
-                            UserPosts up = new UserPosts(posts);
-                            UserFollowing ufg = new UserFollowing(following);
-                            UserFollower ufr = new UserFollower(followers);
                             Log.d(TAG, "User id is "+userId);
                             mDatabase.child("users").child(userId).setValue(newUser);
-                            mDatabase.child("user-posts").child(userId).setValue(up);
-                            mDatabase.child("user-following").child(userId).setValue(ufg);
-                            mDatabase.child("user-follower").child(userId).setValue(ufr);
                             Log.d(TAG, "write to db success");
                             Toast.makeText(SignupActivity.this, "Successfully created user",
                                     Toast.LENGTH_SHORT).show();

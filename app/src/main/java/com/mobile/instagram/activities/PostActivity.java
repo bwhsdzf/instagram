@@ -9,8 +9,6 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.*;
 import com.google.firebase.database.*;
-import com.mobile.instagram.models.User;
-import com.mobile.instagram.models.relationalModels.UserPosts;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -42,9 +40,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
 
-    private User userModel;
-    private UserPosts userposts;
-
     private boolean hasPicture = false;
 
     @Override
@@ -60,33 +55,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-
-        mDatabaseRef.child("users").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                userModel = user;
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        mDatabaseRef.child("user-posts").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserPosts up = dataSnapshot.getValue(UserPosts.class);
-                userposts = up;
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
@@ -122,8 +90,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             final byte[] data = baos.toByteArray();
             Toast.makeText(PostActivity.this, "Uploading photo",
                     Toast.LENGTH_LONG).show();
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-            StorageReference profileRef = storageRef.child("post_images/" + key + ".jpg");
+            StorageReference profileRef = mStorageRef.child("post_images/" + key + ".jpg");
             UploadTask uploadTask = profileRef.putBytes(data);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override

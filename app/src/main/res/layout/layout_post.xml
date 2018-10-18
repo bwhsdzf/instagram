@@ -9,6 +9,8 @@
         android:layout_height="90dip"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
         android:src="@drawable/ic_photo" />
 
     <ProgressBar

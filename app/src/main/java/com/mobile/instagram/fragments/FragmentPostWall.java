@@ -149,7 +149,7 @@ public class FragmentPostWall extends Fragment {
             final FragmentProfile.ViewHolder holder;
             View view = convertView;
             if (view == null) {
-                view = inflater.inflate(R.layout.post_layout, parent, false);
+                view = inflater.inflate(R.layout.layout_post, parent, false);
                 holder = new FragmentProfile.ViewHolder();
                 assert view != null;
                 holder.imageView = (ImageView) view.findViewById(R.id.photo);
