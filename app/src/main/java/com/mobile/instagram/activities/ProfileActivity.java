@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.mobile.instagram.R;
+import com.mobile.instagram.fragments.FragmentProfile;
 import com.mobile.instagram.models.*;
 
 import android.content.Intent;
@@ -20,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.GridView;
@@ -30,8 +32,13 @@ import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.CircleBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListener;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -89,7 +96,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         this.followers = findViewById(R.id.profileFollowerNum);
         this.following = findViewById(R.id.profileFollowingNum);
         this.profilePhoto = findViewById(R.id.userProfile);
+        this.pictureView = findViewById(R.id.pictureView);
         postsCount.setText("0");
+        followers.setText("0");
+        following.setText("0");
         init();
     }
 //    @Override
@@ -105,10 +115,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 User getUser = dataSnapshot.getValue(User.class);
                 username.setText(getUser.getUsername());
                 user = getUser;
-//                Log.d(TAG, user.postsCount.toString() );
-//                Integer num = new Integer(user.postsCount.size()-1);
-//                following.setText(new Integer(user.following.size()-1).toString());
-//                followers.setText(new Integer(user.followers.size()-1).toString());
             }
 
             @Override
@@ -200,7 +206,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-
+        pictureView.setAdapter(new ImageAdapter(this, this.posts));
         StorageReference riversRef = mStorageRef.child("profile_images/"+uidString+".jpg");
         final long ONE_MEGABYTE = 2048 * 2048;
         riversRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -238,11 +244,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         String activityKey = mDatabase.child("user-activities").child(currentUser.getUid()).push().
                 getKey();
         childUpdate.put("user-activities/"+ currentUser.getUid()+"/"+activityKey, ua);
+        activityKey = mDatabase.child("user-activities").child(user.getUid()).push().
+                getKey();
+        childUpdate.put("user-activities/"+ user.getUid()+"/"+activityKey, ua);
         mDatabase.updateChildren(childUpdate);
         Toast.makeText(ProfileActivity.this, "Followed this user",
                 Toast.LENGTH_LONG).show();
         followButton.setVisibility(View.GONE);
         unfollowButton.setVisibility(View.VISIBLE);
+        unfollowButton.setEnabled(true);
     }
 
     private void unfollowUser(){
@@ -252,16 +262,105 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 Toast.LENGTH_LONG).show();
         unfollowButton.setVisibility(View.GONE);
         followButton.setVisibility(View.VISIBLE);
+        followButton.setEnabled(true);
     }
 
     @Override
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.profileFollowButton){
+            followButton.setEnabled(false);
             followUser();
         } else if ( i == R.id.profileUnfollowButton){
+            unfollowButton.setEnabled(false);
             unfollowUser();
         }
     }
 
+    private class ImageAdapter extends BaseAdapter {
+
+        private ArrayList<Post> posts;
+
+        private LayoutInflater inflater;
+
+        private DisplayImageOptions option;
+
+        ImageAdapter(Context context, ArrayList<Post> posts) {
+            inflater = LayoutInflater.from(context);
+
+            this.posts = posts;
+            option = new DisplayImageOptions.Builder()
+                    .showImageForEmptyUri(R.mipmap.ic_img_ept)
+                    .showImageOnFail(R.mipmap.ic_img_err)
+                    .cacheInMemory(true)
+                    .cacheOnDisk(true)
+                    .considerExifParams(true)
+                    .bitmapConfig(Bitmap.Config.RGB_565)
+                    .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+                    .displayer(new FadeInBitmapDisplayer(100))
+                    .build();
+        }
+
+        @Override
+        public int getCount() {
+            return posts.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return posts.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            final ViewHolder holder;
+            View view = convertView;
+            if (view == null) {
+                view = inflater.inflate(R.layout.layout_post, parent, false);
+                holder = new ViewHolder();
+                assert view != null;
+                holder.imageView = (ImageView) view.findViewById(R.id.photo);
+                holder.progressBar = (ProgressBar) view.findViewById(R.id.progress);
+                view.setTag(holder);
+            } else {
+                holder = (ViewHolder) view.getTag();
+            }
+
+            ImageLoader.getInstance()
+                    .displayImage(posts.get(position).getImgUrl(), holder.imageView, option, new SimpleImageLoadingListener() {
+                        @Override
+                        public void onLoadingStarted(String imageUri, View view) {
+                            holder.progressBar.setProgress(0);
+                            holder.progressBar.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                            holder.progressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+                            holder.progressBar.setVisibility(View.GONE);
+                        }
+                    }, new ImageLoadingProgressListener() {
+                        @Override
+                        public void onProgressUpdate(String imageUri, View view, int current, int total) {
+                            holder.progressBar.setProgress(Math.round(100.0f * current / total));
+                        }
+                    });
+
+            return view;
+        }
+    }
+
+    static class ViewHolder {
+        ImageView imageView;
+        ProgressBar progressBar;
+    }
 }

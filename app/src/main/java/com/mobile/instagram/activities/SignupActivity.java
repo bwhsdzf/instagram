@@ -81,8 +81,6 @@ public class SignupActivity extends AppCompatActivity implements
                             Toast.makeText(SignupActivity.this, "Successfully created user",
                                     Toast.LENGTH_SHORT).show();
                             if (selectedPhoto) {
-                                mProfilePhoto.setDrawingCacheEnabled(true);
-                                mProfilePhoto.buildDrawingCache();
                                 Bitmap bitmap = ((BitmapDrawable) mProfilePhoto.getDrawable()).getBitmap();
                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
@@ -108,6 +106,8 @@ public class SignupActivity extends AppCompatActivity implements
                                         newUser.setProfileUrl(downloadUrl.toString());
                                         mDatabase.child("users").child(newUser.getUid())
                                                 .setValue(newUser);
+                                        Toast.makeText(SignupActivity.this,
+                                                "Profile photo uploaded", Toast.LENGTH_SHORT).show();
                                         finish();
                                     }
                                 });
@@ -115,8 +115,9 @@ public class SignupActivity extends AppCompatActivity implements
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(SignupActivity.this, "Create user unsuccessful",
-                                    Toast.LENGTH_SHORT).show();
+                            findViewById(R.id.emailCreateAccountButton).setEnabled(true);
+                            Toast.makeText(SignupActivity.this, "Create user unsuccessful. "+
+                                            task.getException(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -182,6 +183,7 @@ public class SignupActivity extends AppCompatActivity implements
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.emailCreateAccountButton) {
+            findViewById(R.id.emailCreateAccountButton).setEnabled(false);
             createAccount(mEmailField.getText().toString(), mPasswordField.getText().toString(),
                     mUsernameField.getText().toString());
             Log.d(TAG, "creating account");
