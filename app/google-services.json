@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "1018173729288-aqu548vqctpdmfg9068ku9v16svnc1ho.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mobile.instagram",
+            "certificate_hash": "65d3e3b753d6269bc8cc104f337423fea57ed233"
+          }
+        },
+        {
           "client_id": "1018173729288-vstuua0fiq7t7vu9h7n1npr4dnt2fgg6.apps.googleusercontent.com",
           "client_type": 3
         }
