@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +48,8 @@ import java.util.Comparator;
  */
 public class FragmentActivityFeed extends Fragment {
 
+    private static final String TAG = "FragmentActivityFeed";
+
     private DatabaseReference mDatabaseRef;
     private User currentUser;
 
@@ -70,10 +73,9 @@ public class FragmentActivityFeed extends Fragment {
      * @return A new instance of fragment FragmentActivityFeed.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentActivityFeed newInstance() {
+    public static FragmentActivityFeed newInstance(User currentUser) {
         FragmentActivityFeed fragment = new FragmentActivityFeed();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
+        fragment.currentUser = currentUser;
         return fragment;
     }
 
@@ -92,82 +94,59 @@ public class FragmentActivityFeed extends Fragment {
         activityList = view.findViewById(R.id.activityList);
         activities = new ArrayList<>();
         ia = new ImageAdapter(getActivity(),activities);
-        mDatabaseRef.child("users").child(FirebaseAuth.getInstance().getUid()).addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        currentUser = dataSnapshot.getValue(User.class);
-                        activities.clear();
-                        mDatabaseRef.child("user-following").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (!dataSnapshot.exists()){
-                                }
-                                else{
-                                    for (DataSnapshot ds: dataSnapshot.getChildren()){
-                                        User followedUser = ds.getValue(User.class);
-                                        mDatabaseRef.child("user-activities").child(followedUser.getUid())
-                                                .addChildEventListener(
-                                                new ChildEventListener() {
-                                                    @Override
-                                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                                        UserActivity ua = dataSnapshot.getValue(UserActivity.class);
-                                                        activities.add(0,ua);
-                                                        ia.notifyDataSetChanged();
-                                                    }
-
-                                                    @Override
-                                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                                    }
-
-                                                    @Override
-                                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                                                        ia.notifyDataSetChanged();
-                                                    }
-
-                                                    @Override
-                                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                    }
+        mDatabaseRef.child("user-following").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()){
+                }
+                else{
+                    for (DataSnapshot ds: dataSnapshot.getChildren()){
+                        try {
+                            User followedUser = ds.getValue(User.class);
+                            mDatabaseRef.child("user-activities").child(followedUser.getUid())
+                                    .addChildEventListener(
+                                            new ChildEventListener() {
+                                                @Override
+                                                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                                    UserActivity ua = dataSnapshot.getValue(UserActivity.class);
+                                                    activities.add(0, ua);
+                                                    Collections.sort(activities, new ActivityTimeSorter());
+                                                    ia.notifyDataSetChanged();
                                                 }
-                                        );
-                                    }
-                                }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                            }
-                        });
+                                                @Override
+                                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                        Collections.sort(activities, new ActivityTimeSorter());
-                        System.out.println(activities.toString());
-                        activityList.setAdapter(ia);
-                    }
+                                                }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                @Override
+                                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                                                    ia.notifyDataSetChanged();
+                                                }
 
+                                                @Override
+                                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            }
+                                    );
+                        }catch(Exception e){
+                            Log.d(TAG, e.getMessage());
+                        }
                     }
                 }
-        );
-
-
-
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+        activityList.setAdapter(ia);
         return view;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override

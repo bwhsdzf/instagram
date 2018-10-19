@@ -36,7 +36,6 @@ public class ImagePagerActivity extends AppCompatActivity {
         Bundle b = getIntent().getBundleExtra("bundle");
         if (b != null){
             posts = b.getParcelableArrayList("posts");
-            System.out.println(posts.toString());
         }
         int position = getIntent().getIntExtra("position",0);
         ViewPager pager = findViewById(R.id.pager);

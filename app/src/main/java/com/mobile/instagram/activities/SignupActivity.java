@@ -79,7 +79,8 @@ public class SignupActivity extends AppCompatActivity implements
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             String userId = mAuth.getUid();
-                            final User newUser = new User(userId, username, email,"");
+                            final User newUser = new User(userId, username, email,"",
+                                    0,0);
                             Log.d(TAG, "User id is "+userId);
                             mDatabase.child("users").child(userId).setValue(newUser);
                             Log.d(TAG, "write to db success");
@@ -88,7 +89,7 @@ public class SignupActivity extends AppCompatActivity implements
                             if (selectedPhoto) {
                                 mProfilePhoto.setDrawingCacheEnabled(true);
                                 mProfilePhoto.buildDrawingCache();
-                                Bitmap bitmap = ((BitmapDrawable) mProfilePhoto.getDrawable()).getBitmap();
+                                Bitmap bitmap = ((RoundedBitmapDrawable) mProfilePhoto.getDrawable()).getBitmap();
                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
                                 final byte[] data = baos.toByteArray();

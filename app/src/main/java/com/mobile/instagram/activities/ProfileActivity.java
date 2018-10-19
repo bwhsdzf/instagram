@@ -3,6 +3,7 @@ package com.mobile.instagram.activities;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.mobile.instagram.R;
@@ -32,6 +33,7 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
+import com.mobile.instagram.models.Util.PostWallAdapter;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -64,6 +66,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private TextView username;
     private TextView postsCount;
     private int postsCountInt;
+    private int currentFollowingCount;
     private TextView followers;
     private TextView following;
     private ImageView profilePhoto;
@@ -107,12 +110,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 //    }
 
     private void init(){
-        mDatabase.child("users").child(uidString).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("users").child(uidString).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User getUser = dataSnapshot.getValue(User.class);
-                username.setText(getUser.getUsername());
                 user = getUser;
+                username.setText(user.getUsername());
+                following.setText(Integer.toString(user.getFollowingCount()));
+                followers.setText(Integer.toString(user.getFollowerCount()));
                 if (mAuth.getUid().equals( getUser.getUid())){
                     followButton.setVisibility(View.GONE);
                     unfollowButton.setVisibility(View.GONE);
@@ -133,7 +138,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-        mDatabase.child("user-posts").child(uidString).addChildEventListener(new ChildEventListener() {
+        mDatabase.child("user-posts").child(uidString).limitToFirst(50).addChildEventListener(new ChildEventListener() {
 
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
@@ -156,48 +161,34 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             public void onChildRemoved(DataSnapshot dataSnapshot) {
             }
         });
-        mDatabase.child("user-follower").child(uidString).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("user-follower").child(mAuth.getUid()).addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
-                    followers.setText("0");
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                User follower = dataSnapshot.getValue(User.class);
+                if(follower.getUid().equals(mAuth.getUid())){
+                    followButton.setVisibility(View.GONE);
+                    unfollowButton.setVisibility(View.VISIBLE);
                 }
-                else{
-                    int followerCount = 0;
-                    for (DataSnapshot ds: dataSnapshot.getChildren()){
-                        followerCount ++;
-                        try{
-                            if (ds.getValue(User.class).getUid().equals(currentUser.getUid())){
-                                followButton.setVisibility(View.GONE);
-                                unfollowButton.setVisibility(View.VISIBLE);
-                            }
-                        } catch(NullPointerException e){
-                            Log.e(TAG,"Null pointer for user again");
-                        }
+            }
 
-                    }
-                    followers.setText(Integer.toString(followerCount));
-                }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-        mDatabase.child("user-following").child(uidString).child("num").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
-                    following.setText("0");
-                }
-                else{
-                    Integer followingCount = dataSnapshot.getValue(Integer.class);
-                    following.setText(followingCount.toString());
-                }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
 
@@ -215,7 +206,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 Log.d(TAG, exception.getMessage());
             }
         });
-        pictureView.setAdapter(new ImageAdapter(this,this.posts));
+        pictureView.setAdapter(new PostWallAdapter(this,this.posts));
         pictureView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -239,11 +230,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void followUser(){
         Map<String, Object> childUpdate = new HashMap<String, Object>();
         childUpdate.put("user-following/"+currentUser.getUid()+"/"+user.getUid(), user);
-        childUpdate.put("user-following/"+currentUser.getUid()+"/num",
-                Integer.parseInt(following.getText().toString()) + 1);
+        childUpdate.put("users/"+currentUser.getUid()+"/"+"followingCount",
+                currentUser.getFollowingCount()+1);
         childUpdate.put("user-follower/"+user.getUid()+"/"+currentUser.getUid(), currentUser);
-        childUpdate.put("user-follower/"+user.getUid()+"/num",
-                Integer.parseInt(followers.getText().toString()) + 1);
+        childUpdate.put("users/"+user.getUid()+"/"+"followerCount",
+                user.getFollowerCount()+1);
         UserActivity ua = new UserActivity(currentUser.getUid(),user.getUid(),
                 false,"0", Calendar.getInstance().getTimeInMillis());
         String activityKey = mDatabase.child("user-activities").child(currentUser.getUid()).push().
@@ -283,90 +274,5 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             unfollowUser();
         }
     }
-    private class ImageAdapter extends BaseAdapter {
 
-        private ArrayList<Post> posts;
-
-        private LayoutInflater inflater;
-
-        private DisplayImageOptions option;
-
-        ImageAdapter(Context context, ArrayList<Post> posts) {
-            inflater = LayoutInflater.from(context);
-
-            this.posts = posts;
-            option = new DisplayImageOptions.Builder()
-                    .showImageForEmptyUri(R.mipmap.ic_img_ept)
-                    .showImageOnFail(R.mipmap.ic_img_err)
-                    .cacheInMemory(true)
-                    .cacheOnDisk(true)
-                    .considerExifParams(true)
-                    .bitmapConfig(Bitmap.Config.RGB_565)
-                    .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
-                    .displayer(new FadeInBitmapDisplayer(100))
-                    .build();
-        }
-
-        @Override
-        public int getCount() {
-            return posts.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return posts.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            final ViewHolder holder;
-            View view = convertView;
-            if (view == null) {
-                view = inflater.inflate(R.layout.layout_post, parent, false);
-                holder = new ViewHolder();
-                assert view != null;
-                holder.imageView = (ImageView) view.findViewById(R.id.photo);
-                holder.progressBar = (ProgressBar) view.findViewById(R.id.progress);
-                view.setTag(holder);
-            } else {
-                holder = (ViewHolder) view.getTag();
-            }
-
-            ImageLoader.getInstance()
-                    .displayImage(posts.get(position).getImgUrl(), holder.imageView, option, new SimpleImageLoadingListener() {
-                        @Override
-                        public void onLoadingStarted(String imageUri, View view) {
-                            holder.progressBar.setProgress(0);
-                            holder.progressBar.setVisibility(View.VISIBLE);
-                        }
-
-                        @Override
-                        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-                            holder.progressBar.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                            holder.progressBar.setVisibility(View.GONE);
-                        }
-                    }, new ImageLoadingProgressListener() {
-                        @Override
-                        public void onProgressUpdate(String imageUri, View view, int current, int total) {
-                            holder.progressBar.setProgress(Math.round(100.0f * current / total));
-                        }
-                    });
-
-            return view;
-        }
-    }
-
-    static class ViewHolder {
-        ImageView imageView;
-        ProgressBar progressBar;
-    }
 }

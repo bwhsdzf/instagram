@@ -87,7 +87,9 @@ public class Post implements Parcelable {
         return comments;
     }
 
-
+    public void addLike(String username){
+        this.likes.add(username);
+    }
     @Override
     public int describeContents() {
         return 0;

@@ -79,7 +79,7 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         currentUser = dataSnapshot.getValue(User.class);
-                        findMayKnow(currentUser);
+//                        findMayKnow(currentUser);
                     }
 
                     @Override

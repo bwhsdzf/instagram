@@ -1,14 +1,32 @@
 package com.mobile.instagram.fragments;
 
+import android.app.admin.SystemUpdatePolicy;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mobile.instagram.R;
+import com.mobile.instagram.models.Post;
+import com.mobile.instagram.models.User;
+import com.mobile.instagram.models.Util.FirebasePushController;
+import com.mobile.instagram.models.Util.PostAdapter;
+
+import java.util.ArrayList;
 
 
 /**
@@ -19,17 +37,17 @@ import com.mobile.instagram.R;
  * Use the {@link FragmentUserFeed#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentUserFeed extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class FragmentUserFeed extends Fragment implements View.OnClickListener{
 
     private OnFragmentInteractionListener mListener;
+
+    private ArrayList<Post> posts;
+
+    private User currentUser;
+
+    private RecyclerView recyclerView;
+
+    private PostAdapter pa;
 
     public FragmentUserFeed() {
         // Required empty public constructor
@@ -38,35 +56,118 @@ public class FragmentUserFeed extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment FragmentUserFeed.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentUserFeed newInstance(String param1, String param2) {
+    public static FragmentUserFeed newInstance(User currentUser) {
         FragmentUserFeed fragment = new FragmentUserFeed();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        fragment.currentUser = currentUser;
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_userfeed, container, false);
+        View view = inflater.inflate(R.layout.fragment_userfeed, container, false);
+        this.recyclerView = view.findViewById(R.id.postList);
+        this.posts = new ArrayList<>();
+        this.pa = new PostAdapter(this.getActivity(), posts, currentUser, new PostAdapter.ClickListener() {
+            @Override
+            public void onLikeClicked(int position) {
+                FirebasePushController.likePost(posts.get(position));
+            }
+            @Override
+            public void onCommentClicked(int position, String content){
+                FirebasePushController.writeComment( content, posts.get(position));
+            }
+        });
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(pa);
+        final DatabaseReference df = FirebaseDatabase.getInstance().getReference();
+        df.child("users").child(FirebaseAuth.getInstance().getUid())
+                .addValueEventListener( new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentUser = dataSnapshot.getValue(User.class);
+                System.out.println("looking for following for "+ currentUser.getUsername());
+                df.child("user-following").child(currentUser.getUid()).addChildEventListener(
+                        new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                User following = dataSnapshot.getValue(User.class);
+                                System.out.println("looking for posts from "+ following.getUsername());
+                                final String userId = following.getUid();
+                                df.child("user-posts").child(userId).orderByChild("time").limitToFirst(10)
+                                        .addChildEventListener(new ChildEventListener() {
+                                            @Override
+                                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                                System.out.println("found one post");
+                                                Post p = dataSnapshot.getValue(Post.class);
+                                                posts.add(p);
+                                                System.out.println(p.getPostId());
+                                                pa.notifyDataSetChanged();
+                                            }
+
+                                            @Override
+                                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                            }
+
+                                            @Override
+                                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                                            }
+
+                                            @Override
+                                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+                            }
+
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        }
+                );
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -106,5 +207,10 @@ public class FragmentUserFeed extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
     }
 }

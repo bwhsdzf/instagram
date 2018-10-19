@@ -116,10 +116,11 @@
                                   </option>
                                   <option name="values">
                                     <map>
+                                      <entry key="assetType" value="IMAGE" />
                                       <entry key="backgroundColor" value="fefefe" />
                                       <entry key="iconShape" value="NONE" />
-                                      <entry key="imageAsset" value="C:\Users\Eric\Documents\Android-Universal-Image-Loader\sample\src\main\res\drawable-xhdpi\ic_empty.png" />
-                                      <entry key="outputName" value="ic_upload_profile" />
+                                      <entry key="imageAsset" value="E:\Android-Instagram-Clone-master\app\src\main\res\drawable-mdpi\ic_heart_outline.png" />
+                                      <entry key="outputName" value="ic_unliked" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -143,6 +144,44 @@
                         <option name="values">
                           <map>
                             <entry key="outputIconType" value="LAUNCHER_LEGACY" />
+                          </map>
+                        </option>
+                      </PersistentState>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </PersistentState>
+          </value>
+        </entry>
+        <entry key="vectorWizard">
+          <value>
+            <PersistentState>
+              <option name="children">
+                <map>
+                  <entry key="vectorAssetStep">
+                    <value>
+                      <PersistentState>
+                        <option name="children">
+                          <map>
+                            <entry key="clipartAsset">
+                              <value>
+                                <PersistentState>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_thumb_up_black_24dp.xml" />
+                                    </map>
+                                  </option>
+                                </PersistentState>
+                              </value>
+                            </entry>
+                          </map>
+                        </option>
+                        <option name="values">
+                          <map>
+                            <entry key="color" value="4bfefe" />
+                            <entry key="outputName" value="ic_liked" />
+                            <entry key="sourceFile" value="C:\Users\Eric" />
                           </map>
                         </option>
                       </PersistentState>
