@@ -85,8 +85,6 @@ public class FragmentDiscover extends Fragment {
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-
      * @return A new instance of fragment FragmentDiscover.
      */
     // TODO: Rename and change types and number of parameters
@@ -136,24 +134,24 @@ public class FragmentDiscover extends Fragment {
             }
         });
 
-        StorageReference sre = storage.child("profile_images/"+uid+".jpg");
-        final long ONE_MEGABYTE = 2048 * 2048;
-
-        sre.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
-                setCircleProfile(bitmap);
-                hasProfile = true;
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                Log.d(Tag, exception.getMessage());
-                hasProfile = false;
-            }
-        });
+//        StorageReference sre = storage.child("profile_images/"+uid+".jpg");
+//        final long ONE_MEGABYTE = 2048 * 2048;
+//
+//        sre.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+//            @Override
+//            public void onSuccess(byte[] bytes) {
+//                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+//                setCircleProfile(bitmap);
+//                hasProfile = true;
+//
+//            }
+//        }).addOnFailureListener(new OnFailureListener() {
+//            @Override
+//            public void onFailure(@NonNull Exception exception) {
+//                Log.d(Tag, exception.getMessage());
+//                hasProfile = false;
+//            }
+//        });
 
         return inflater.inflate(R.layout.fragment_discover, container, false);
     }

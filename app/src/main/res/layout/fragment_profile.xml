@@ -15,6 +15,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:contentDescription="@string/prompt_username"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_profile" />
 
     <TextView
@@ -77,6 +78,11 @@
 
         </LinearLayout>
 
+        <android:View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark" />
+
         <LinearLayout
             android:id="@+id/FragmentFollowing"
             android:layout_width="0dp"
@@ -103,6 +109,10 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <android:View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark" />
 
         <LinearLayout
             android:id="@+id/FragmentFollowers"
@@ -132,11 +142,19 @@
 
     </LinearLayout>
 
+    <android:View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/fragmentStatus"
+        android:layout_margin="5dp"
+        android:background="@color/colorPrimaryDark"/>
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fragmentStatus"
+        android:layout_below="@+id/line"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_marginStart="17dp"
@@ -163,11 +181,12 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/toPost"
         android:layout_alignParentStart="true"
-        android:columnWidth="90dip"
+        android:columnWidth="90dp"
         android:gravity="center"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="10dip" />
+        android:horizontalSpacing="2dp"
+        android:verticalSpacing="2dp" />
 
     <Button
         android:id="@+id/toProfile"

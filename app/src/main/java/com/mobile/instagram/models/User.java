@@ -7,16 +7,17 @@ public class User {
     private String username;
     private String email;
     private String uid;
+    private String profileUrl;
 
     public User() {
         // Default constructor required for calls to DataSnapshot.getValue(User.class)
     }
 
-    public User(String uid, String username, String email) {
+    public User(String uid, String username, String email, String profileUrl) {
         this.uid = uid;
         this.username = username;
         this.email = email;
-//        this.posts = posts;
+        this.profileUrl = profileUrl;
     }
 
     public String getUid() {
@@ -29,5 +30,13 @@ public class User {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getProfileUrl() {
+        return profileUrl;
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
     }
 }
