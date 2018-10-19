@@ -1,4 +1,4 @@
-package com.mobile.instagram.models.Util;
+package com.mobile.instagram.Util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -35,6 +35,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingProgressListe
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder>{
     private ArrayList<Post> posts;
@@ -53,6 +54,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         void onLikeClicked(int position);
 
         void onCommentClicked(int position, String text);
+
+        void onUnlikeClicked(int position);
     }
 
     public PostAdapter(Context context, ArrayList<Post> posts, User user, ClickListener listener) {
@@ -154,7 +157,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         });
         holder.postMessageView.setText(post.getMessage());
         ArrayList<String> likes = post.getLikes();
-        if (likes == null) {} else {
+        if (likes == null || likes.size() == 0) {} else {
             if (likes.size() > 3) {
                 holder.likeListView.setText(likes.get(0) + ", "+likes.get(1) + ", " + likes.get(2) + " and "+
                         (likes.size()-3) + " Others liked this post");
@@ -167,11 +170,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 holder.likeListView.setText(likes.get(0) + " liked this post");
             }
         }
-        for(String username : post.getLikes()){
-            if (username.equals(currentUser.getUsername())){
-                holder.setUnlikeButton();
+        if (post.getLikes() != null) {
+            for (String username : post.getLikes()) {
+                if (username.equals(currentUser.getUsername())) {
+                    holder.setUnlikeButton();
+                }
             }
         }
+        long timeDiff = Calendar.getInstance().getTimeInMillis() - post.getTime();
+        int days = (int)Math.floor(timeDiff/1000/60/60/14);
+        if(days < 1) holder.timeview.setText("Today");
+        else if(days == 1) holder.timeview.setText("1 Day ago");
+        else holder.timeview.setText(days+ " Days ago");
 
 
     }
@@ -179,10 +189,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     static class PostViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         ImageView userView;
         TextView usernameView;
+        TextView locationView;
         ImageView postImageView;
         TextView postMessageView;
         TextView likeListView;
         ProgressBar progressBar;
+        TextView timeview;
         ImageView likeButton;
         ImageView unlikeButton;
         Button commentButton;
@@ -196,8 +208,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             super(view);
             userView = view.findViewById(R.id.userView);
             usernameView = view.findViewById(R.id.usernameView);
+            locationView = view.findViewById(R.id.locationView);
             postImageView = view.findViewById(R.id.postImageView);
             postMessageView = view.findViewById(R.id.postMessageView);
+            timeview = view.findViewById(R.id.timeView);
             progressBar = view.findViewById(R.id.progressBar2);
             likeButton = view.findViewById(R.id.likeButton);
             unlikeButton = view.findViewById(R.id.unlikeButton);
@@ -207,6 +221,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             commentList = view.findViewById(R.id.commentList);
             likeButton.setOnClickListener(this);
             commentButton.setOnClickListener(this);
+            unlikeButton.setOnClickListener(this);
             setLikeButton();
             listenerRef = new WeakReference<>(listener);
         }
@@ -232,6 +247,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 listenerRef.get().onCommentClicked(getAdapterPosition(), commentField.getText().toString());
                 }
             } else if (v.getId() == unlikeButton.getId()){
+
+                listenerRef.get().onUnlikeClicked(getAdapterPosition());
                 setLikeButton();
             }
 

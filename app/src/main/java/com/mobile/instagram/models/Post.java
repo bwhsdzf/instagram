@@ -88,7 +88,22 @@ public class Post implements Parcelable {
     }
 
     public void addLike(String username){
+        if (this.likes == null) this.likes = new ArrayList<>();
         this.likes.add(username);
+    }
+    public void removeLike(String username){
+        String remove = "";
+        for(String l: likes){
+            if (l.equals(username)){
+                remove = l;
+            }
+        }
+        if (remove != "")likes.remove(remove);
+    }
+    public void addComment(String username, String comment, long time){
+        Comment comment1 = new Comment(username,this.postId,comment,time);
+        if(this.comments == null) this.comments = new ArrayList<>();
+        this.comments.add(comment1);
     }
     @Override
     public int describeContents() {

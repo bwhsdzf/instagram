@@ -1,4 +1,4 @@
-package com.mobile.instagram.models.Util;
+package com.mobile.instagram.Util;
 
 import android.support.annotation.NonNull;
 
@@ -13,7 +13,6 @@ import com.google.firebase.storage.StorageReference;
 import com.mobile.instagram.models.Comment;
 import com.mobile.instagram.models.Post;
 import com.mobile.instagram.models.User;
-import com.mobile.instagram.R;
 import com.mobile.instagram.models.UserActivity;
 
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class FirebasePushController {
     private static final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
 
-    public static void writeComment(final String content, final Post post){
+    public static void writeComment(final Comment comment, final Post post){
         final String uid = mAuth.getUid();
         mDatabase.child("users").child(uid).addListenerForSingleValueEvent(
                 new ValueEventListener() {
@@ -35,12 +34,10 @@ public class FirebasePushController {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         User user = dataSnapshot.getValue(User.class);
                         ArrayList<Comment> comments = post.getComments();
-                        if (comments == null) comments = new ArrayList<>();
-                        Comment comment = new Comment(user.getUsername(), post.getPostId(), content,
-                                Calendar.getInstance().getTimeInMillis());
-                        comments.add(comment);
                         Map<String, Object> childUpdate = new HashMap<>();
                         childUpdate.put("posts/"+post.getPostId()+"/comments", comments);
+                        childUpdate.put("user-posts/"+post.getUid()+"/"+post.getPostId()+
+                        "/comments",comments);
                         mDatabase.updateChildren(childUpdate);
                     }
 
@@ -53,7 +50,6 @@ public class FirebasePushController {
     }
 
     public static void likePost(final Post post){
-
         final String uid = mAuth.getUid();
         mDatabase.child("users").child(uid).addListenerForSingleValueEvent(
                 new ValueEventListener() {
@@ -61,8 +57,6 @@ public class FirebasePushController {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         User user = dataSnapshot.getValue(User.class);
                         ArrayList<String> likes = post.getLikes();
-                        if (likes == null) likes = new ArrayList<>();
-                        likes.add(user.getUsername());
                         Map<String, Object> childUpdate = new HashMap<>();
                         childUpdate.put("posts/"+post.getPostId()+"/likes", likes);
                         childUpdate.put("user-posts/"+post.getUid()+"/"+post.getPostId()+"/likes",
@@ -89,14 +83,8 @@ public class FirebasePushController {
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        User user = dataSnapshot.getValue(User.class);
                         ArrayList<String> likes = post.getLikes();
-                        for (String username: likes){
-                            if (username.equals(user.getUsername())){
-                                likes.remove(username);
-                                break;
-                            }
-                        }
+                        if(likes.isEmpty()) likes = new ArrayList<>();
                         Map<String, Object> childUpdate = new HashMap<>();
                         childUpdate.put("posts/"+post.getPostId()+"/likes", likes);
                         childUpdate.put("user-posts/"+post.getUid()+"/"+post.getPostId()+"/likes",

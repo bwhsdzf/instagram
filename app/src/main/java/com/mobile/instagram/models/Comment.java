@@ -7,6 +7,8 @@ public class Comment {
     public String pid;
     public long time;
 
+    public Comment(){}
+
     public Comment(String username, String pid, String content, long time){
         this.pid = pid;
         this.username = username;

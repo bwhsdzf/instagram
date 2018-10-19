@@ -1,4 +1,4 @@
-package com.mobile.instagram.models.Util;
+package com.mobile.instagram.Util;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -53,7 +53,7 @@ public class CommentAdapter extends BaseAdapter {
             holder = (ViewHolder) view.getTag();
         }
         holder.username.setText(comments.get(position).getUsername());
-        holder.commentContent.setText(comments.get(position).getUsername());
+        holder.commentContent.setText(comments.get(position).getContent());
 
         return view;
     }

@@ -1,12 +1,12 @@
 package com.mobile.instagram.fragments;
 
-import android.app.admin.SystemUpdatePolicy;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,12 +21,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mobile.instagram.R;
+import com.mobile.instagram.models.Comment;
 import com.mobile.instagram.models.Post;
 import com.mobile.instagram.models.User;
-import com.mobile.instagram.models.Util.FirebasePushController;
-import com.mobile.instagram.models.Util.PostAdapter;
+import com.mobile.instagram.Util.FirebasePushController;
+import com.mobile.instagram.Util.PostAdapter;
+import com.mobile.instagram.Util.PostTimeSorter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 
 
 /**
@@ -80,42 +84,70 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
         this.pa = new PostAdapter(this.getActivity(), posts, currentUser, new PostAdapter.ClickListener() {
             @Override
             public void onLikeClicked(int position) {
+                posts.get(position).addLike(currentUser.getUsername());
                 FirebasePushController.likePost(posts.get(position));
+                pa.notifyDataSetChanged();
             }
             @Override
             public void onCommentClicked(int position, String content){
-                FirebasePushController.writeComment( content, posts.get(position));
+                long time = Calendar.getInstance().getTimeInMillis();
+                Comment comment1 = new Comment(currentUser.getUsername(),
+                        posts.get(position).getPostId(),content,time);
+                posts.get(position).addComment(currentUser.getUsername(),content,time);
+                FirebasePushController.writeComment(comment1, posts.get(position));
+                pa.notifyDataSetChanged();
+            }
+            @Override
+            public void onUnlikeClicked(int position){
+                posts.get(position).removeLike(currentUser.getUsername());
+                FirebasePushController.unlikePost(posts.get(position));
+                pa.notifyDataSetChanged();
             }
         });
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
+
+        recyclerView.setLayoutManager(lm);
         recyclerView.setAdapter(pa);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                ((LinearLayoutManager) lm).getOrientation());
+        recyclerView.addItemDecoration(dividerItemDecoration);
         final DatabaseReference df = FirebaseDatabase.getInstance().getReference();
         df.child("users").child(FirebaseAuth.getInstance().getUid())
                 .addValueEventListener( new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 currentUser = dataSnapshot.getValue(User.class);
-                System.out.println("looking for following for "+ currentUser.getUsername());
                 df.child("user-following").child(currentUser.getUid()).addChildEventListener(
                         new ChildEventListener() {
                             @Override
                             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                 User following = dataSnapshot.getValue(User.class);
-                                System.out.println("looking for posts from "+ following.getUsername());
                                 final String userId = following.getUid();
                                 df.child("user-posts").child(userId).orderByChild("time").limitToFirst(10)
                                         .addChildEventListener(new ChildEventListener() {
                                             @Override
                                             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                                System.out.println("found one post");
                                                 Post p = dataSnapshot.getValue(Post.class);
-                                                posts.add(p);
-                                                System.out.println(p.getPostId());
+                                                posts.add(0,p);
+                                                Collections.sort(posts, new PostTimeSorter());
                                                 pa.notifyDataSetChanged();
                                             }
 
                                             @Override
                                             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                                Post post = dataSnapshot.getValue(Post.class);
+                                                System.out.println(post.getPostId());
+                                                for(Post p : posts){
+                                                    if (p.getPostId().equals(post)){
+                                                        posts.remove(p);
+                                                        posts.add(post);
+                                                        System.out.println("removed and added");
+                                                        Collections.sort(posts, new PostTimeSorter());
+                                                        pa.notifyDataSetChanged();
+                                                        break;
+                                                    }
+                                                }
+
 
                                             }
 
@@ -165,8 +197,47 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
 
             }
         });
+        df.child("user-posts").child(currentUser.getUid()).orderByChild("time").limitToFirst(20).addChildEventListener(
+                new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        Post post = dataSnapshot.getValue(Post.class);
+                        posts.add(0,post);
+                        Collections.sort(posts, new PostTimeSorter());
+                        pa.notifyDataSetChanged();
+                    }
 
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        Post post = dataSnapshot.getValue(Post.class);
+                        System.out.println(post.getPostId());
+                        for(Post p : posts){
+                            if (p.getPostId().equals(post)){
+                                posts.remove(p);
+                                posts.add(post);
+                                System.out.println("removed and added");
+                                Collections.sort(posts, new PostTimeSorter());
+                                pa.notifyDataSetChanged();
+                                break;
+                            }
+                        }
+                    }
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                }
+        );
         return view;
     }
 

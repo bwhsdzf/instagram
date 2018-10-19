@@ -1,4 +1,4 @@
-package com.mobile.instagram.models.Util;
+package com.mobile.instagram.Util;
 
 import com.mobile.instagram.models.UserActivity;
 

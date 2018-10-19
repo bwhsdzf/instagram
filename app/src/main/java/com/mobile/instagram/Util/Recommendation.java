@@ -1,4 +1,4 @@
-package com.mobile.instagram.models.Util;
+package com.mobile.instagram.Util;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;

@@ -6,14 +6,14 @@
 
     <ImageView
         android:id="@+id/userView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="49dp"
+        android:layout_height="46dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="22dp"
-        android:layout_marginLeft="22dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="13dp"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="14dp"
         app:srcCompat="@drawable/ic_profile" />
 
     <TextView
@@ -25,8 +25,19 @@
         android:layout_alignParentLeft="true"
         android:layout_marginStart="80dp"
         android:layout_marginLeft="80dp"
+        android:layout_marginTop="-5dp"
         android:layout_toRightOf="@id/userView"
-        android:text="TextView" />
+        android:text="@string/sample_string"
+        android:textSize="20dp" />
+
+    <TextView
+        android:id="@+id/timeView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/usernameView"
+        android:layout_alignBottom="@+id/userView"
+        android:text="@string/sample_string"
+        android:textSize="12dp" />
 
     <ImageView
         android:id="@+id/postImageView"
@@ -62,13 +73,15 @@
         android:layout_below="@id/postMessageView"
         android:layout_alignTop="@id/likeButton"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="30dp" />
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="5dp"
+        android:textSize="15dp" />
 
     <Button
         android:id="@+id/commentButton"
         android:layout_width="wrap_content"
         android:layout_height="38dp"
-        android:layout_below="@id/likeButton"
+        android:layout_below="@id/likeListView"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="17dp"
@@ -116,10 +129,22 @@
     <ListView
         android:id="@+id/commentList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@id/commentInput"
+
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"/>
+        android:layout_marginRight="20dp" />
+
+    <TextView
+        android:id="@+id/locationView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/commentList"
+        android:layout_alignBottom="@+id/postMessageView"
+        android:layout_marginEnd="17dp"
+        android:layout_marginBottom="2dp"
+        android:text="@string/sample_string"
+        android:textSize="10dp" />
 
 
 </RelativeLayout>
