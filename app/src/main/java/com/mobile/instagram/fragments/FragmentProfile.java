@@ -32,7 +32,7 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
-import com.mobile.instagram.util.PostWallAdapter;
+import com.mobile.instagram.adapters.PostWallAdapter;
 import com.mobile.instagram.util.Recommendation;
 
 import java.io.*;
@@ -109,8 +109,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_profile, container, false);
         view.findViewById(R.id.signOutButton).setOnClickListener(this);
-        view.findViewById(R.id.toPost).setOnClickListener(this);
-        view.findViewById(R.id.toProfile).setOnClickListener(this);
         String uid = FirebaseAuth.getInstance().getUid();
         iv = view.findViewById(R.id.fragmentProfile);
         iv.setOnClickListener(this);
@@ -332,14 +330,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
             Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(pickPhoto , SELECT_PHOTO);//one can be replaced with any action code
-        } else if (i == R.id.toPost){
-            Intent intent = new Intent(getActivity(),PostActivity.class );
-            startActivity(intent);
-        }else if (i == R.id.toProfile){
-            Intent intent = new Intent(getActivity(),ProfileActivity.class );
-            intent.putExtra("uid","M10b6IDiadh47z10NBWwZ6VPSxm2");
-            System.out.println("passing " + intent.getStringExtra("uid"));
-            startActivity(intent);
         }
     }
 

@@ -65,6 +65,7 @@ public class FirebasePushController {
                                 post.getPostId(), Calendar.getInstance().getTimeInMillis());
                         String key = mDatabase.child("user-activities").child(user.getUid()).push().getKey();
                         childUpdate.put("user-activities/"+user.getUid()+ "/"+key, ua);
+                        childUpdate.put("activities-user/"+ post.getUid()+"/"+key, ua);
                         mDatabase.updateChildren(childUpdate);
                     }
 

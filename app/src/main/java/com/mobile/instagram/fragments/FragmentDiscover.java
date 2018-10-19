@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -27,7 +25,7 @@ import com.mobile.instagram.models.User;
 import com.mobile.instagram.util.Recommendation;
 
 import com.mobile.instagram.R;
-import com.mobile.instagram.util.SearchListAdapter;
+import com.mobile.instagram.adapters.SearchListAdapter;
 
 import java.util.ArrayList;
 

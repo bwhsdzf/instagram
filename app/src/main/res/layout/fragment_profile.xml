@@ -39,7 +39,7 @@
         android:layout_marginTop="55dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:background="@android:color/holo_red_light"
+        android:background="@drawable/logout_roundedbutton"
         android:text="@string/sign_out" />
 
     <LinearLayout
@@ -163,23 +163,11 @@
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/toPost"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="-1dp"
-        android:layout_marginEnd="152dp"
-        android:layout_marginRight="152dp"
-        android:text="Button" />
-
     <GridView
         android:id="@+id/fragmentPictureView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toPost"
+        android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
         android:columnWidth="90dp"
         android:gravity="center"
@@ -187,17 +175,6 @@
         android:stretchMode="columnWidth"
         android:horizontalSpacing="2dp"
         android:verticalSpacing="2dp" />
-
-    <Button
-        android:id="@+id/toProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginStart="33dp"
-        android:layout_marginLeft="33dp"
-        android:text="Button" />
 
 
 </RelativeLayout>

@@ -26,7 +26,7 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
-import com.mobile.instagram.util.PostWallAdapter;
+import com.mobile.instagram.adapters.PostWallAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -213,6 +213,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         String activityKey = mDatabase.child("user-activities").child(currentUser.getUid()).push().
                 getKey();
         childUpdate.put("user-activities/"+ currentUser.getUid()+"/"+activityKey, ua);
+        childUpdate.put("activities-user/"+user.getUid()+"/"+activityKey,ua);
         mDatabase.updateChildren(childUpdate);
         Toast.makeText(ProfileActivity.this, "Followed this user",
                 Toast.LENGTH_LONG).show();

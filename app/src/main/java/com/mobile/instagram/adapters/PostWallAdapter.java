@@ -1,4 +1,4 @@
-package com.mobile.instagram.util;
+package com.mobile.instagram.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;

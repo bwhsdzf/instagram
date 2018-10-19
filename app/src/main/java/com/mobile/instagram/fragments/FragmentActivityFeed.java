@@ -3,7 +3,6 @@ import com.google.firebase.database.ChildEventListener;
 import com.mobile.instagram.models.UserActivity;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,12 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,11 +21,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mobile.instagram.R;
 import com.mobile.instagram.models.User;
-import com.mobile.instagram.util.ActivityAdapter;
+import com.mobile.instagram.adapters.ActivityAdapter;
 import com.mobile.instagram.util.ActivityTimeSorter;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.display.CircleBitmapDisplayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +46,7 @@ public class FragmentActivityFeed extends Fragment {
     private ListView activityList;
 
     private ArrayList<UserActivity> activities;
+    private ArrayList<UserActivity> activitiesNotify;
 
     private ActivityAdapter ia;
 
@@ -90,6 +83,7 @@ public class FragmentActivityFeed extends Fragment {
         View view = inflater.inflate(R.layout.fragment_activityfeed, container, false);
         activityList = view.findViewById(R.id.activityList);
         activities = new ArrayList<>();
+        activitiesNotify = new ArrayList<>();
         ia = new ActivityAdapter(getActivity(),activities);
         mDatabaseRef.child("user-following").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
@@ -100,7 +94,7 @@ public class FragmentActivityFeed extends Fragment {
                     for (DataSnapshot ds: dataSnapshot.getChildren()){
                         try {
                             User followedUser = ds.getValue(User.class);
-                            mDatabaseRef.child("user-activities").child(followedUser.getUid())
+                            mDatabaseRef.child("user-activities").child(followedUser.getUid()).orderByChild("time")
                                     .addChildEventListener(
                                             new ChildEventListener() {
                                                 @Override
@@ -118,7 +112,6 @@ public class FragmentActivityFeed extends Fragment {
 
                                                 @Override
                                                 public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                                                    ia.notifyDataSetChanged();
                                                 }
 
                                                 @Override
@@ -142,6 +135,31 @@ public class FragmentActivityFeed extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+        mDatabaseRef.child("activities-user").child(currentUser.getUid()).orderByChild("time").limitToFirst(20)
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        UserActivity ua = dataSnapshot.getValue(UserActivity.class);
+                        activities.add(ua);
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                });
         activityList.setAdapter(ia);
         return view;
     }
