@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,10 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
     private ArrayList<User> list;
     private User currentUser;
 
+    private ArrayList<User> searchResult;
+
+    private SearchView searchView;
+
     private OnFragmentInteractionListener mListener;
 
     public FragmentDiscover() {
@@ -52,10 +57,9 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
      * @return A new instance of fragment FragmentDiscover.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentDiscover newInstance(String param1, String param2) {
+    public static FragmentDiscover newInstance(User currentUser) {
         FragmentDiscover fragment = new FragmentDiscover();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
+        fragment.currentUser = currentUser;
         return fragment;
     }
 
@@ -64,6 +68,7 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         result = new ArrayList<>();
         list = new ArrayList<>();
+        searchResult = new ArrayList<>();
     }
 
     @Override
@@ -71,21 +76,9 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_discover, container, false);
-        DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
-        dr.child("users").child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        currentUser = dataSnapshot.getValue(User.class);
-//                        findMayKnow(currentUser);
-                    }
+        searchView = view.findViewById(R.id.searchview);
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                    }
-                }
-        );
-        ;
+
 
         return view;
     }

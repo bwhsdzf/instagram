@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mobile.instagram.R;
+import com.mobile.instagram.models.User;
 import com.mobile.instagram.util.LocationService;
 
 import java.util.List;
@@ -42,6 +43,8 @@ public class FragmentPhoto extends Fragment implements  View.OnClickListener{
     private static final int REQUEST_GPS = 1;
     private LocationService ls;
 
+    private User currentUser;
+
     private LocationManager locationManager;
     private String provider;
     private Location location;
@@ -61,10 +64,9 @@ public class FragmentPhoto extends Fragment implements  View.OnClickListener{
      * @return A new instance of fragment FragmentPhoto.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentPhoto newInstance() {
+    public static FragmentPhoto newInstance(User currentUser) {
         FragmentPhoto fragment = new FragmentPhoto();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
+        fragment.currentUser = currentUser;
         return fragment;
     }
 

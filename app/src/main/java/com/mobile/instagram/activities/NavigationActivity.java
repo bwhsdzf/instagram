@@ -92,8 +92,8 @@ public class NavigationActivity extends AppCompatActivity implements
 
     private void init(){
         userFeed =FragmentUserFeed.newInstance(currentUser);
-        discover =new FragmentDiscover();
-        photo =new FragmentPhoto();
+        discover =FragmentDiscover.newInstance(currentUser);
+        photo =FragmentPhoto.newInstance(currentUser);
         activityFeed = FragmentActivityFeed.newInstance(currentUser);
         profile = FragmentProfile.newInstance(currentUser);
         FragmentManager fm = getSupportFragmentManager();
