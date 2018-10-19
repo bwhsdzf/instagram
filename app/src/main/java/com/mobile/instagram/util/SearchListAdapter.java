@@ -1,4 +1,4 @@
-package com.mobile.instagram.util;
+/*package com.mobile.instagram.util;
 
 import android.view.LayoutInflater;
 import android.widget.BaseAdapter;
@@ -13,3 +13,4 @@ public class SearchListAdapter extends BaseAdapter {
     private LayoutInflater inflater;
 
 }
+*/

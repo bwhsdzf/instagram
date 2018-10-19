@@ -172,6 +172,7 @@ public class FragmentPhoto extends Fragment implements  View.OnClickListener{
         System.out.println(ls.getCity(coor[0],coor[1]));
     }
 
+
     public void onClick(View view){
         int i = view.getId();
         if( i == R.id.gpsTest){
