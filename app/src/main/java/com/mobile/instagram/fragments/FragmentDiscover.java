@@ -1,8 +1,10 @@
 package com.mobile.instagram.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +12,8 @@ import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -18,10 +22,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mobile.instagram.activities.ProfileActivity;
 import com.mobile.instagram.models.User;
 import com.mobile.instagram.util.Recommendation;
 
 import com.mobile.instagram.R;
+import com.mobile.instagram.util.SearchListAdapter;
 
 import java.util.ArrayList;
 
@@ -44,6 +50,9 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
     private ArrayList<User> searchResult;
 
     private SearchView searchView;
+    private ListView resultView;
+
+    private SearchListAdapter sla;
 
     private OnFragmentInteractionListener mListener;
 
@@ -77,9 +86,63 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_discover, container, false);
         searchView = view.findViewById(R.id.searchview);
+        resultView = view.findViewById(R.id.searchResultView);
+        sla = new SearchListAdapter(this.getActivity(), searchResult);
+        resultView.setAdapter(sla);
+        final DatabaseReference df = FirebaseDatabase.getInstance().getReference();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchResult.clear();
+                sla.notifyDataSetChanged();
+                df.child("users").orderByChild("username").equalTo(query).limitToFirst(10)
+                        .addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                User user = dataSnapshot.getValue(User.class);
+                                searchResult.add(user);
+                                sla.notifyDataSetChanged();
+                            }
 
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
+                            }
 
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        resultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity(), ProfileActivity.class);
+                intent.putExtra("uid",searchResult.get(i).getUid());
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("currentUser",currentUser);
+                intent.putExtra("bundle",bundle);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 

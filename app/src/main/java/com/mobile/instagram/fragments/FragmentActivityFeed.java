@@ -57,7 +57,6 @@ public class FragmentActivityFeed extends Fragment {
 
     private ActivityAdapter ia;
 
-
     private OnFragmentInteractionListener mListener;
 
     public FragmentActivityFeed() {

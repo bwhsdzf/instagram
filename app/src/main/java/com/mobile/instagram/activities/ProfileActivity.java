@@ -69,6 +69,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         Intent it = getIntent();
         uidString = it.getStringExtra("uid");
         System.out.print("uid is" + uidString);
+        Bundle bundle = it.getBundleExtra("bundle");
+        if(bundle!= null){
+            currentUser = bundle.getParcelable("currentUser");
+        }
 
         followButton = findViewById(R.id.profileFollowButton);
         followButton.setOnClickListener(this);
@@ -87,11 +91,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         postsCount.setText("0");
         init();
     }
-//    @Override
-//    public void onStart(){
-//        super.onResume();
-//        init();
-//    }
 
     private void init(){
         mDatabase.child("users").child(uidString).addValueEventListener(new ValueEventListener() {
@@ -108,16 +107,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User getUser = dataSnapshot.getValue(User.class);
-                currentUser = getUser;
-            }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
