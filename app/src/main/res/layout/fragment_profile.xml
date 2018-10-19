@@ -185,7 +185,6 @@
         android:gravity="center"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:horizontalSpacing="4dip"
         android:verticalSpacing="10dip" />
 
     <Button

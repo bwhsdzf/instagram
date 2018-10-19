@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity implements
         if (!validateForm()) {
             return;
         }
-
+        progress.setVisibility(View.VISIBLE);
 
         Toast.makeText(LoginActivity.this, "Signing in",
                 Toast.LENGTH_LONG).show();
@@ -103,8 +103,9 @@ public class LoginActivity extends AppCompatActivity implements
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
-                            Toast.makeText(LoginActivity.this, "Authentication failed. "
-                                    + task.getException(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                            updateUI(null);
                         }
                     }
                 });
@@ -132,10 +133,21 @@ public class LoginActivity extends AppCompatActivity implements
 
         return valid;
     }
+    private void updateUI(FirebaseUser user) {
+//        hideProgressDialog();
+        if (user != null) {
+            findViewById(com.mobile.instagram.R.id.emailPasswordButtons).setVisibility(View.GONE);
+            findViewById(com.mobile.instagram.R.id.password).setVisibility(View.GONE);
+            findViewById(com.mobile.instagram.R.id.emailSignInButton).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(com.mobile.instagram.R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
+            findViewById(com.mobile.instagram.R.id.password).setVisibility(View.VISIBLE);
+        }
+    }
 
     public void toNavigation(String username){
-        Toast.makeText(LoginActivity.this, "Sign in success ", Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(LoginActivity.this, NavigationActivity.class);
+        intent.putExtra("Username",username);
         startActivity(intent);
     }
 
@@ -146,8 +158,6 @@ public class LoginActivity extends AppCompatActivity implements
             Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
             startActivity(intent);
         } else if (i == R.id.emailSignInButton) {
-            findViewById(R.id.emailSignInButton).setEnabled(false);
-            progress.setVisibility(View.VISIBLE);
             signIn(mEmailField.getText().toString(), mPasswordField.getText().toString());
         }
     }

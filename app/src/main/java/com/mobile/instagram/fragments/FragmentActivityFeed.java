@@ -2,7 +2,6 @@ package com.mobile.instagram.fragments;
 import com.google.firebase.database.ChildEventListener;
 import com.mobile.instagram.models.UserActivity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
@@ -10,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +34,7 @@ import com.nostra13.universalimageloader.core.display.CircleBitmapDisplayer;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 
 /**
@@ -48,10 +47,8 @@ import java.util.Collections;
  */
 public class FragmentActivityFeed extends Fragment {
 
-    private static final String TAG = "Fragment Activity Feed";
-
     private DatabaseReference mDatabaseRef;
-    private static User currentUser;
+    private User currentUser;
 
     private ListView activityList;
 
@@ -93,15 +90,14 @@ public class FragmentActivityFeed extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_activityfeed, container, false);
         activityList = view.findViewById(R.id.activityList);
-        activities = new ArrayList<>();
         ia = new ImageAdapter(getActivity(),activities);
         mDatabaseRef.child("users").child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         currentUser = dataSnapshot.getValue(User.class);
-                        ia.notifyDataSetChanged();
-                        activities.clear();
+                        activities = new ArrayList<>();
+                        final ArrayList<String> following = new ArrayList<>();
                         mDatabaseRef.child("user-following").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -110,7 +106,7 @@ public class FragmentActivityFeed extends Fragment {
                                 else{
                                     for (DataSnapshot ds: dataSnapshot.getChildren()){
                                         User followedUser = ds.getValue(User.class);
-                                        Log.d(TAG,"Found following user "+ followedUser.getUid() );
+                                        System.out.println("folloinh user" + followedUser.getUid());
                                         mDatabaseRef.child("user-activities").child(followedUser.getUid())
                                                 .addChildEventListener(
                                                 new ChildEventListener() {
@@ -152,7 +148,8 @@ public class FragmentActivityFeed extends Fragment {
                             }
                         });
 
-
+                        Collections.sort(activities, new ActivityTimeSorter());
+                        activityList.setAdapter(new ImageAdapter(getActivity(), activities));
                     }
 
                     @Override
@@ -162,9 +159,8 @@ public class FragmentActivityFeed extends Fragment {
                 }
         );
 
-        Collections.sort(activities, new ActivityTimeSorter());
-        ia.notifyDataSetChanged();
-        activityList.setAdapter(ia);
+
+
         return view;
     }
 
@@ -192,26 +188,6 @@ public class FragmentActivityFeed extends Fragment {
         mListener = null;
     }
 
-    public static String getActivityText(User u1, User u2, boolean isLike){
-        String text;
-        if (u2.getUid().equals(FirebaseAuth.getInstance().getUid())){
-            if(isLike){
-                text = u1.getUsername() + " Liked your post";
-            }
-            else{
-                text = u1.getUsername() + " Started following you";
-            }
-        } else{
-            if( isLike){
-                text = u1.getUsername() + " Liked " + u2.getUsername() + "'s post";
-            }else{
-                text = u1.getUsername() + "Started following "+u2.getUsername();
-            }
-        }
-
-        return text;
-    }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -234,12 +210,7 @@ public class FragmentActivityFeed extends Fragment {
 
         private DisplayImageOptions options;
 
-        private Activity activity;
-
-        private User user1, user2;
-
         ImageAdapter(Context context, ArrayList<UserActivity> userActivities) {
-            this.activity = (Activity) context;
             inflater = LayoutInflater.from(context);
             this.userActivities = userActivities;
             options = new DisplayImageOptions.Builder()
@@ -275,6 +246,8 @@ public class FragmentActivityFeed extends Fragment {
                 view = inflater.inflate(R.layout.layout_activity, parent, false);
                 holder = new ViewHolder();
                 holder.activityText = view.findViewById(R.id.activityText);
+                holder.username1 = view.findViewById(R.id.username1);
+                holder.username2 = view.findViewById(R.id.username2);
                 holder.user1= view.findViewById(R.id.user1);
                 holder.user2= view.findViewById(R.id.user2);
                 view.setTag(holder);
@@ -287,12 +260,10 @@ public class FragmentActivityFeed extends Fragment {
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            User u1 = dataSnapshot.getValue(User.class);
-                            if (u1 != null) {
-                                ImageLoader.getInstance().displayImage(user1.getProfileUrl(),
-                                        holder.user1, options);
-                                user1 = u1;
-                            }
+                            User user1 = dataSnapshot.getValue(User.class);
+                            ImageLoader.getInstance().displayImage(user1.getProfileUrl(),
+                                    holder.user1, options);
+                            holder.username1.setText(user1.getUsername());
                         }
 
                         @Override
@@ -305,12 +276,10 @@ public class FragmentActivityFeed extends Fragment {
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            User u2 = dataSnapshot.getValue(User.class);
-                            if (u2 != null) {
-                                ImageLoader.getInstance().displayImage(user2.getProfileUrl(),
-                                        holder.user2, options);
-                                user2 = u2;
-                            }
+                            User user2 = dataSnapshot.getValue(User.class);
+                            ImageLoader.getInstance().displayImage(user2.getProfileUrl(),
+                                    holder.user2, options);
+                            holder.username2.setText(user2.getUsername());
                         }
 
                         @Override
@@ -319,9 +288,13 @@ public class FragmentActivityFeed extends Fragment {
                         }
                     }
             );
-            if( user1 != null && user2 != null){
-                holder.activityText.setText(FragmentActivityFeed.getActivityText(user1, user2, ua.isLike()));
+            if (ua.isLike()){
+                holder.activityText.setText(" liked post from ");
+            } else{
+                holder.activityText.setText("followed");
             }
+
+
             return view;
         }
     }
@@ -330,5 +303,7 @@ public class FragmentActivityFeed extends Fragment {
         ImageView user1;
         ImageView user2;
         TextView activityText;
+        TextView username1;
+        TextView username2;
     }
 }

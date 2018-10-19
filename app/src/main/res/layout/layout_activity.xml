@@ -17,16 +17,35 @@
         app:srcCompat="@drawable/ic_profile" />
 
     <TextView
+        android:id="@+id/username1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/activityText"
+        android:layout_toRightOf="@id/user1"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
+        android:text="@string/sample_string" />
+
+    <TextView
         android:id="@+id/activityText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/user1"
-        android:layout_toRightOf="@id/user1"
+        android:layout_toRightOf="@id/username1"
         android:layout_marginTop="10dp"
         android:layout_marginStart="40dp"
         android:layout_marginLeft="40dp"
         android:text="@string/sample_string" />
 
+    <TextView
+        android:id="@+id/username2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/activityText"
+        android:layout_toRightOf="@id/activityText"
+        android:layout_marginStart="40dp"
+        android:layout_marginLeft="40dp"
+        android:text="@string/sample_string" />
 
     <ImageView
         android:id="@+id/user2"
