@@ -26,7 +26,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mobile.instagram.R;
 import com.mobile.instagram.models.User;
-import com.mobile.instagram.Util.ActivityTimeSorter;
+import com.mobile.instagram.util.ActivityTimeSorter;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.display.CircleBitmapDisplayer;

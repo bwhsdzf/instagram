@@ -26,7 +26,7 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
-import com.mobile.instagram.Util.PostWallAdapter;
+import com.mobile.instagram.util.PostWallAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -9,9 +9,11 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.*;
 import com.google.firebase.database.*;
+import com.mobile.instagram.util.LocationService;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.location.Location;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -83,6 +85,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             final long time = Calendar.getInstance().getTimeInMillis();
             final String uid = currentUser.getUid();
             final String key = mDatabaseRef.child("posts").push().getKey();
+            final double[] coor = LocationService.getCoordinates();
 
             Bitmap bitmap = ((BitmapDrawable) photo.getDrawable()).getBitmap();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -106,8 +109,8 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                     Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
                     while (!urlTask.isSuccessful());
                     String downloadUrl = urlTask.getResult().toString();
-                    Post post = new Post(time,key,uid,postMessage.getText().toString(),"0",
-                            downloadUrl,
+                    Post post = new Post(time,key,uid,postMessage.getText().toString(),
+                            downloadUrl,coor[0],coor[1],
                             new ArrayList<String>(),new ArrayList<Comment>());
                     Map<String, Object> postValue = post.toMap();
 

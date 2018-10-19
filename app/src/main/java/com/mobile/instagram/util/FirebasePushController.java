@@ -1,4 +1,4 @@
-package com.mobile.instagram.Util;
+package com.mobile.instagram.util;
 
 import android.support.annotation.NonNull;
 
@@ -84,7 +84,7 @@ public class FirebasePushController {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         ArrayList<String> likes = post.getLikes();
-                        if(likes.isEmpty()) likes = new ArrayList<>();
+                        if( likes == null) likes = new ArrayList<>();
                         Map<String, Object> childUpdate = new HashMap<>();
                         childUpdate.put("posts/"+post.getPostId()+"/likes", likes);
                         childUpdate.put("user-posts/"+post.getUid()+"/"+post.getPostId()+"/likes",

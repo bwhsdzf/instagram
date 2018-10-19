@@ -18,7 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mobile.instagram.models.User;
-import com.mobile.instagram.Util.Recommendation;
+import com.mobile.instagram.util.Recommendation;
 
 import com.mobile.instagram.R;
 
@@ -71,7 +71,6 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_discover, container, false);
-        view.findViewById(R.id.refreshButtom).setOnClickListener(this);
         DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
         dr.child("users").child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(
                 new ValueEventListener() {
@@ -206,8 +205,5 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         int i = v.getId();
-        if (i == R.id.refreshButtom) {
-            printRecommend();
-        }
     }
 }

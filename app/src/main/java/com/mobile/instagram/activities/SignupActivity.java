@@ -117,6 +117,8 @@ public class SignupActivity extends AppCompatActivity implements
                                         finish();
                                     }
                                 });
+                            }else{
+                                finish();
                             }
                         } else {
                             // If sign in fails, display a message to the user.

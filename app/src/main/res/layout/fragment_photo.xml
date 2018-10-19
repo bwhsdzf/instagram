@@ -17,10 +17,22 @@
             android:gravity="center"/>
 
         <Button
-            android:id="@+id/toPostButton"
+            android:id="@+id/gpsTest"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Button" />
+
+        <TextView
+            android:id="@+id/gpsX"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/gpsY"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TextView" />
 
     </LinearLayout>
 </LinearLayout>

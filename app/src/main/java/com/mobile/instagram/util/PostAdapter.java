@@ -1,4 +1,4 @@
-package com.mobile.instagram.Util;
+package com.mobile.instagram.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -184,6 +184,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         if(days < 1) holder.timeview.setText("Today");
         else if(days == 1) holder.timeview.setText("1 Day ago");
         else holder.timeview.setText(days+ " Days ago");
+
+        holder.locationView.setText(LocationService.getCity(post.getLat(),post.getLng()));
 
 
     }

@@ -12,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -24,9 +26,10 @@ import com.mobile.instagram.R;
 import com.mobile.instagram.models.Comment;
 import com.mobile.instagram.models.Post;
 import com.mobile.instagram.models.User;
-import com.mobile.instagram.Util.FirebasePushController;
-import com.mobile.instagram.Util.PostAdapter;
-import com.mobile.instagram.Util.PostTimeSorter;
+import com.mobile.instagram.util.FirebasePushController;
+import com.mobile.instagram.util.PostAdapter;
+import com.mobile.instagram.util.PostLocationSorter;
+import com.mobile.instagram.util.PostTimeSorter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,6 +53,7 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
     private User currentUser;
 
     private RecyclerView recyclerView;
+
 
     private PostAdapter pa;
 
@@ -105,7 +109,6 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
             }
         });
         RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
-
         recyclerView.setLayoutManager(lm);
         recyclerView.setAdapter(pa);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
@@ -238,6 +241,17 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
                     }
                 }
         );
+        ToggleButton sortButtom = view.findViewById(R.id.locationSortToggle);
+        sortButtom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    Collections.sort(posts, new PostLocationSorter());
+                }else{
+                    Collections.sort(posts, new PostTimeSorter());
+                }
+            }
+        });
         return view;
     }
 

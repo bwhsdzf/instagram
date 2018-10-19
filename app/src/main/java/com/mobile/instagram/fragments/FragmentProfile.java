@@ -32,8 +32,8 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
-import com.mobile.instagram.Util.PostWallAdapter;
-import com.mobile.instagram.Util.Recommendation;
+import com.mobile.instagram.util.PostWallAdapter;
+import com.mobile.instagram.util.Recommendation;
 
 import java.io.*;
 import java.util.ArrayList;
