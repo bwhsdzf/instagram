@@ -181,11 +181,12 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/toPost"
         android:layout_alignParentStart="true"
-        android:columnWidth="90dip"
+        android:columnWidth="90dp"
         android:gravity="center"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="10dip" />
+        android:horizontalSpacing="2dp"
+        android:verticalSpacing="2dp" />
 
     <Button
         android:id="@+id/toProfile"

@@ -88,7 +88,7 @@ public class NavigationActivity extends AppCompatActivity implements
         userFeed =new FragmentUserFeed();
         discover =new FragmentDiscover();
         photo =new FragmentPhoto();
-        activityFeed = new FragmentActivityFeed();
+        activityFeed = FragmentActivityFeed.newInstance();
         profile = FragmentProfile.newInstance(mAuth,mDatabase);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();

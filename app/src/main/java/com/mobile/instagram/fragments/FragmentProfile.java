@@ -1,10 +1,13 @@
 package com.mobile.instagram.fragments;
 
 import com.mobile.instagram.R;
+import com.mobile.instagram.activities.ImagePagerActivity;
 import com.mobile.instagram.activities.NavigationActivity;
 import com.mobile.instagram.activities.PostActivity;
 import com.mobile.instagram.activities.ProfileActivity;
 import com.mobile.instagram.models.*;
+
+import android.os.Parcelable;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,6 +24,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -60,6 +64,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
     private static final String TAG = "Fragment Profile";
 
     private OnFragmentInteractionListener mListener;
+    private static final int SELECT_PHOTO  = 1;
+    private static final int CROP_PHOTO = 0;
 
     private User currentUser;
     private ArrayList<Post> posts;
@@ -125,9 +131,18 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         posts = new ArrayList<Post>();
         postsCount.setText("0");
 
-
         this.username = view.findViewById(R.id.fragmentUserName);
-
+        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                User getUser = dataSnapshot.getValue(User.class);
+                currentUser = getUser;
+                username.setText(currentUser.getUsername());
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
         mDatabase.child("user-posts").child(uid).addChildEventListener(new ChildEventListener() {
 
             @Override
@@ -206,6 +221,13 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
                 Log.d(TAG, exception.getMessage());
             }
         });
+
+        pictureView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                startImagePagerActivity(position);
+            }
+        });
         return view;
     }
 
@@ -213,20 +235,39 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
     public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
         switch(requestCode) {
-            case 1:
+            case SELECT_PHOTO:
                 if(resultCode == getActivity().RESULT_OK){
                     Uri selectedImage = imageReturnedIntent.getData();
-                    try{
-                    Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(NavigationActivity.getContext().getContentResolver(),
-                            selectedImage);
-                    setCircleProfile(bitmap);
-                    uploadProfile(bitmap);
-                    } catch (Exception e){
-                        Log.d(TAG, "didn't find context");
-                    }
+                    doCrop(selectedImage);
                 }
                 break;
+            case CROP_PHOTO:
+                if(resultCode == getActivity().RESULT_OK){
+                    Bundle b = imageReturnedIntent.getExtras();
+                    Bitmap bitmap = b.getParcelable("data");
+                    setCircleProfile(bitmap);
+                    uploadProfile(bitmap);
+                }
         }
+    }
+
+    private void doCrop(Uri uri){
+        //call the standard crop action intent (the user device may not support it)
+        Intent cropIntent = new Intent("com.android.camera.action.CROP");
+        //indicate image type and Uri
+        cropIntent.setDataAndType(uri, "image/*");
+        //set crop properties
+        cropIntent.putExtra("crop", "true");
+        //indicate aspect of desired crop
+        cropIntent.putExtra("aspectX", 1);
+        cropIntent.putExtra("aspectY", 1);
+        //indicate output X and Y
+        cropIntent.putExtra("outputX", 256);
+        cropIntent.putExtra("outputY", 256);
+        //retrieve data on return
+        cropIntent.putExtra("return-data", true);
+        //start the activity - we handle returning in onActivityResult
+        startActivityForResult(cropIntent, CROP_PHOTO);
     }
 
     private void uploadProfile(Bitmap bitmap){
@@ -309,6 +350,15 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         }
     }
 
+    private void startImagePagerActivity(int position) {
+        Intent intent = new Intent(getActivity(), ImagePagerActivity.class);
+        Bundle b = new Bundle();
+        b.putParcelableArrayList("posts", (ArrayList<? extends Parcelable>) posts);
+        intent.putExtra("bundle",b);
+        intent.putExtra("position",position);
+        startActivity(intent);
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -332,7 +382,7 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         } else if (i == R.id.fragmentProfile){
             Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
+            startActivityForResult(pickPhoto , SELECT_PHOTO);//one can be replaced with any action code
         } else if (i == R.id.toPost){
             Intent intent = new Intent(getActivity(),PostActivity.class );
             startActivity(intent);

@@ -116,11 +116,10 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="IMAGE" />
                                       <entry key="backgroundColor" value="fefefe" />
                                       <entry key="iconShape" value="NONE" />
                                       <entry key="imageAsset" value="C:\Users\Eric\Documents\Android-Universal-Image-Loader\sample\src\main\res\drawable-xhdpi\ic_empty.png" />
-                                      <entry key="outputName" value="ic_img_ept" />
+                                      <entry key="outputName" value="ic_upload_profile" />
                                     </map>
                                   </option>
                                 </PersistentState>

@@ -146,6 +146,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     public void toNavigation(String username){
+        this.progress.setVisibility(View.GONE);
         Intent intent = new Intent(LoginActivity.this, NavigationActivity.class);
         intent.putExtra("Username",username);
         startActivity(intent);
