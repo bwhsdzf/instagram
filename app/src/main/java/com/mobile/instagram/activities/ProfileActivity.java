@@ -184,18 +184,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-        mDatabase.child("user-following").child(uidString).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("user-following").child(uidString).child("num").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (!dataSnapshot.exists()){
                     following.setText("0");
                 }
                 else{
-                    int followingCount = 0;
-                    for (DataSnapshot ds: dataSnapshot.getChildren()){
-                        followingCount ++;
-                    }
-                    following.setText(Integer.toString(followingCount));
+                    Integer followingCount = dataSnapshot.getValue(Integer.class);
+                    following.setText(followingCount.toString());
                 }
             }
 
@@ -242,7 +239,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void followUser(){
         Map<String, Object> childUpdate = new HashMap<String, Object>();
         childUpdate.put("user-following/"+currentUser.getUid()+"/"+user.getUid(), user);
+        childUpdate.put("user-following/"+currentUser.getUid()+"/num",
+                Integer.parseInt(following.getText().toString()) + 1);
         childUpdate.put("user-follower/"+user.getUid()+"/"+currentUser.getUid(), currentUser);
+        childUpdate.put("user-follower/"+user.getUid()+"/num",
+                Integer.parseInt(followers.getText().toString()) + 1);
         UserActivity ua = new UserActivity(currentUser.getUid(),user.getUid(),
                 false,"0", Calendar.getInstance().getTimeInMillis());
         String activityKey = mDatabase.child("user-activities").child(currentUser.getUid()).push().

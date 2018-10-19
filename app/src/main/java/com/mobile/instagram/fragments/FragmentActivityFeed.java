@@ -114,7 +114,7 @@ public class FragmentActivityFeed extends Fragment {
                                                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                                         UserActivity ua = dataSnapshot.getValue(UserActivity.class);
                                                         System.out.println(ua.getUid1() + "u1" + ua.getUid2() + "u2");
-                                                        activities.add(ua);
+                                                        activities.add(0,ua);
                                                         ia.notifyDataSetChanged();
                                                     }
 

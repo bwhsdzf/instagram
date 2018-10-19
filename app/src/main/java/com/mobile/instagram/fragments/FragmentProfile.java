@@ -36,6 +36,7 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
+import com.mobile.instagram.models.Util.Recommendation;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -82,6 +83,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
     private ImageView iv;
     private GridView pictureView;
     private boolean hasProfile = false;
+
+    private Recommendation reco;
 
 
 
@@ -131,6 +134,8 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
         posts = new ArrayList<Post>();
         postsCount.setText("0");
 
+        reco = new Recommendation();
+
         this.username = view.findViewById(R.id.fragmentUserName);
         mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -138,6 +143,13 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
                 User getUser = dataSnapshot.getValue(User.class);
                 currentUser = getUser;
                 username.setText(currentUser.getUsername());
+                ArrayList<User> list= reco.findMayKnow(currentUser);
+                System.out.println("Looking for follower");
+                if (list.size() != 0){
+                    System.out.println("found follower");
+                    System.out.println(list.get(0).getUsername());
+                }
+
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
