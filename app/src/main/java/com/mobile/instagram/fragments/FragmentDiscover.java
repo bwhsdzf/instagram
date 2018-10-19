@@ -3,14 +3,27 @@ package com.mobile.instagram.fragments;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.mobile.instagram.models.User;
 import com.mobile.instagram.models.Util.Recommendation;
 
 import com.mobile.instagram.R;
+
+import java.util.ArrayList;
 
 
 /**
@@ -21,13 +34,12 @@ import com.mobile.instagram.R;
  * Use the {@link FragmentDiscover#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentDiscover extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class FragmentDiscover extends Fragment implements View.OnClickListener {
 
     private Recommendation recommendation;
+    private ArrayList<User> result;
+    private ArrayList<User> list;
+    private User currentUser;
 
     private OnFragmentInteractionListener mListener;
 
@@ -44,8 +56,6 @@ public class FragmentDiscover extends Fragment {
     public static FragmentDiscover newInstance(String param1, String param2) {
         FragmentDiscover fragment = new FragmentDiscover();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,21 +63,35 @@ public class FragmentDiscover extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        result = new ArrayList<>();
+        list = new ArrayList<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_discover, container, false);
+        View view =  inflater.inflate(R.layout.fragment_discover, container, false);
+        view.findViewById(R.id.refreshButtom).setOnClickListener(this);
+        DatabaseReference dr = FirebaseDatabase.getInstance().getReference();
+        dr.child("users").child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        currentUser = dataSnapshot.getValue(User.class);
+                        findMayKnow(currentUser);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                }
+        );
+        ;
+
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -80,10 +104,89 @@ public class FragmentDiscover extends Fragment {
         }
     }
 
+    public void printRecommend(){
+        for(User u : result){
+            System.out.println(u.getUsername());
+        }
+        System.out.println("result size is "+ result.size());
+        removeDup();
+        for(User u : list){
+            System.out.print(u.getUsername());
+        }
+        System.out.println("result size is "+ list.size());
+    }
+
+    private void removeDup(){
+        list.add(result.get(0));
+        for(User u : result){
+            for( User l: list){
+                while(u.getUid().equals(l.getUid()));
+            }
+            list.add(u);
+        }
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void findMayKnow(User user){
+        result.clear();
+        final DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+        // Find followers are following who
+        mDatabaseRef.child("user-follower").child(user.getUid()).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(!dataSnapshot.exists()){
+                        }else{
+                            System.out.println("Looking at this user ");
+                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                final User u = ds.getValue(User.class);
+                                mDatabaseRef.child("user-following").child(u.getUid()).addChildEventListener(
+                                        new ChildEventListener() {
+                                            @Override
+                                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                                System.out.println("Found one following for " + u.getUsername());
+                                                User following = dataSnapshot.getValue(User.class);
+                                                if (result.size() < 100){
+                                                    result.add(following);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                            }
+
+                                            @Override
+                                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                                            }
+
+                                            @Override
+                                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        }
+                                );
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                }
+        );
     }
 
     /**
@@ -99,5 +202,13 @@ public class FragmentDiscover extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+        if (i == R.id.refreshButtom) {
+            printRecommend();
+        }
     }
 }

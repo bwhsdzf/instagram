@@ -106,14 +106,12 @@ public class FragmentActivityFeed extends Fragment {
                                 else{
                                     for (DataSnapshot ds: dataSnapshot.getChildren()){
                                         User followedUser = ds.getValue(User.class);
-                                        System.out.println("folloing user" + followedUser.getUid());
                                         mDatabaseRef.child("user-activities").child(followedUser.getUid())
                                                 .addChildEventListener(
                                                 new ChildEventListener() {
                                                     @Override
                                                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                                         UserActivity ua = dataSnapshot.getValue(UserActivity.class);
-                                                        System.out.println(ua.getUid1() + "u1" + ua.getUid2() + "u2");
                                                         activities.add(0,ua);
                                                         ia.notifyDataSetChanged();
                                                     }

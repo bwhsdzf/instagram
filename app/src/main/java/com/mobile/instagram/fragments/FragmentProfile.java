@@ -143,12 +143,12 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
                 User getUser = dataSnapshot.getValue(User.class);
                 currentUser = getUser;
                 username.setText(currentUser.getUsername());
-                ArrayList<User> list= reco.findMayKnow(currentUser);
-                System.out.println("Looking for follower");
-                if (list.size() != 0){
-                    System.out.println("found follower");
-                    System.out.println(list.get(0).getUsername());
-                }
+//                ArrayList<User> list= reco.findMayKnow(currentUser);
+//                System.out.println("Looking for follower");
+//                if (list.size() != 0){
+//                    System.out.println("found follower");
+//                    System.out.println(list.get(0).getUsername());
+//                }
 
             }
             @Override
