@@ -3,59 +3,55 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/mRefreshLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="0dp">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
+        <ListView
+            android:id="@+id/circleLv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="0dp"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@null"
+            android:dividerHeight="0px"
+            android:fadingEdge="none"
+            android:fadingEdgeLength="0dp"
+            android:focusable="true"
+            android:listSelector="@android:color/transparent"
+            android:transcriptMode="normal"></ListView>
 
-            <ListView
-                android:id="@+id/circleLv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:cacheColorHint="@android:color/transparent"
-                android:divider="@null"
-                android:dividerHeight="0px"
-                android:fadingEdge="none"
-                android:fadingEdgeLength="0dp"
-                android:focusable="true"
-                android:listSelector="@android:color/transparent"
-                android:transcriptMode="normal"></ListView>
+        <LinearLayout
+            android:id="@+id/editTextBodyLl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="#f6f6f6"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            android:visibility="gone">
 
-            <LinearLayout
-                android:id="@+id/editTextBodyLl"
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/circleEt"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:background="#f6f6f6"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:hint="Say something" />
+
+            <TextView
+                android:id="@+id/sendTv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:background="@android:color/white"
                 android:padding="8dp"
-                android:visibility="gone">
+                android:text="Send"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </RelativeLayout>
 
-                <EditText
-                    android:id="@+id/circleEt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="Say something" />
-
-                <TextView
-                    android:id="@+id/sendTv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="6dp"
-                    android:layout_marginRight="6dp"
-                    android:background="@android:color/white"
-                    android:padding="8dp"
-                    android:text="Send"
-                    android:textSize="16sp" />
-            </LinearLayout>
-        </RelativeLayout>
-    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>
