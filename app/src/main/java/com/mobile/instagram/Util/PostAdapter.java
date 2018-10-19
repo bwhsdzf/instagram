@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -112,6 +113,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     {
         Post post = posts.get(position);
         holder.commentList.setAdapter(new CommentAdapter( this.context, post.getComments()));
+        setListViewHeightBasedOnChildren(holder.commentList);
         final ImageLoader il = ImageLoader.getInstance();
         il.displayImage(post.getImgUrl(), holder.postImageView
                 , option1, new ImageLoadingListener() {
@@ -186,6 +188,32 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     }
 
+    public static void setListViewHeightBasedOnChildren
+            (ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) return;
+        int desiredWidth = View.MeasureSpec.makeMeasureSpec(listView.getWidth(),
+                View.MeasureSpec.UNSPECIFIED);
+        int totalHeight = 0;
+        View view = null;
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            view = listAdapter.getView(i, view, listView);
+            if (i == 0) view.setLayoutParams(new
+                    ViewGroup.LayoutParams(desiredWidth,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            view.measure(desiredWidth, View.MeasureSpec.UNSPECIFIED);
+            totalHeight += view.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+
+        params.height = totalHeight + (listView.getDividerHeight()*(listAdapter.getCount()-1));
+
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+    }
+
     static class PostViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         ImageView userView;
         TextView usernameView;
@@ -253,5 +281,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
 
         }
+
+
     }
 }

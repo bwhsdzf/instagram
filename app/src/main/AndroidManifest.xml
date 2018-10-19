@@ -32,7 +32,8 @@
         <activity android:name=".activities.SignupActivity" />
         <activity android:name=".activities.PostActivity" />
         <activity android:name=".activities.ProfileActivity" />
-        <activity android:name=".activities.ImagePagerActivity"></activity>
+        <activity android:name=".activities.ImagePagerActivity" />
+
     </application>
 
 </manifest>

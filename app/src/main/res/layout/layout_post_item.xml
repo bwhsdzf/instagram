@@ -73,7 +73,7 @@
         android:layout_below="@id/postMessageView"
         android:layout_alignTop="@id/likeButton"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="40dp"
+        android:layout_marginLeft="50dp"
         android:layout_marginTop="5dp"
         android:textSize="15dp" />
 
@@ -113,8 +113,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/postMessageView"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="20dp"
         app:srcCompat="@drawable/ic_unliked" />
 
     <ImageView
@@ -122,8 +123,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/postMessageView"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="20dp"
         app:srcCompat="@drawable/ic_liked" />
 
     <ListView
@@ -133,6 +135,7 @@
         android:layout_below="@id/commentInput"
 
         android:layout_marginLeft="20dp"
+        android:layout_marginTop="-5dp"
         android:layout_marginRight="20dp" />
 
     <TextView
