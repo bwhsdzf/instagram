@@ -15,7 +15,9 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/instagramTheme">
+        android:theme="@style/instagramTheme"
+        android:name=".activities.User_Feed.MyApplication">
+
         <activity
             android:name=".activities.LoginActivity"
             android:label="@string/app_name"
@@ -28,12 +30,21 @@
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".Login"
+            android:exported="false" />
+
         <activity
             android:name=".activities.NavigationActivity"
             android:label="@string/title_activity_main"/>
         <activity android:name=".activities.SignupActivity" />
         <activity android:name=".activities.PostActivity" />
         <activity android:name=".activities.ProfileActivity"></activity>
+
+        <activity android:name=".activities.User_Feed.ImagePagerActivity"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Black.NoTitleBar"></activity>
+
     </application>
 
 </manifest>
