@@ -7,34 +7,43 @@ android:layout_height="fill_parent"
 
         <Button
             android:id="@+id/on"
-            android:layout_width="132dp"
+            android:layout_width="122dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="450dp"
-            android:text="grid on" />
+            android:background="@drawable/roundedbutton"
+            android:text="grid on"
+            android:textColor="@color/black" />
 
         <Button
             android:id="@+id/off"
-            android:layout_width="132dp"
+            android:layout_width="122dp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/on"
             android:layout_alignLeft="@+id/on"
             android:layout_marginTop="500dp"
-            android:text="grid off" />
+            android:background="@drawable/roundedbutton"
+            android:text="grid off"
+            android:textColor="@color/black" />
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="capture"
-            android:layout_marginTop="450dp"
             android:layout_marginLeft="250dp"
-            android:text="capture with flash" />
+            android:layout_marginTop="450dp"
+            android:background="@drawable/roundedbutton"
+            android:onClick="capture"
+            android:text="capture with flash"
+            android:textColor="@color/black" />
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="capture2"
             android:layout_marginTop="500dp"
             android:layout_marginLeft="250dp"
+            android:textColor="@color/black"
+            android:background="@drawable/roundedbutton"
             android:text="capture2 without flash" />
         <SurfaceView
             android:id="@+id/preview"

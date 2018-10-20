@@ -13,16 +13,50 @@
                       <PersistentState>
                         <option name="children">
                           <map>
+<<<<<<< HEAD
                             <entry key="launcher">
                               <value>
                                 <PersistentState>
                                   <option name="children">
                                     <map>
                                       <entry key="foregroundClipArt">
+=======
+                            <entry key="actionbar">
+                              <value>
+                                <PersistentState>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="imageAsset" value="C:\Users\Eric\Pictures\camera.png" />
+                                      <entry key="outputName" value="ic_camera" />
+                                    </map>
+                                  </option>
+                                </PersistentState>
+                              </value>
+                            </entry>
+                            <entry key="launcher">
+                              <value>
+                                <PersistentState>
+                                  <option name="values">
+                                    <map>
+                                      <entry key="foregroundImage" value="C:\Users\Eric\instagram\app\src\main\res\drawable-mdpi\camera.png" />
+                                    </map>
+                                  </option>
+                                </PersistentState>
+                              </value>
+                            </entry>
+                            <entry key="launcherLegacy">
+                              <value>
+                                <PersistentState>
+                                  <option name="children">
+                                    <map>
+                                      <entry key="image">
+>>>>>>> origin/recover_branch
                                         <value>
                                           <PersistentState>
                                             <option name="values">
                                               <map>
+<<<<<<< HEAD
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -35,6 +69,9 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="trimmed" value="true" />
+=======
+                                                <entry key="paddingPercent" value="10" />
+>>>>>>> origin/recover_branch
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -44,12 +81,19 @@
                                   </option>
                                   <option name="values">
                                     <map>
+<<<<<<< HEAD
                                       <entry key="backgroundAssetType" value="COLOR" />
                                       <entry key="backgroundColor" value="ffffff" />
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
                                       <entry key="foregroundImage" value="D:\back.png" />
                                       <entry key="foregroundLayerName" value="ic_launcher_foreground" />
                                       <entry key="outputName" value="ic_back" />
+=======
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="iconShape" value="CIRCLE" />
+                                      <entry key="imageAsset" value="C:\Users\Eric\Pictures\camera.png" />
+                                      <entry key="outputName" value="ic_camera" />
+>>>>>>> origin/recover_branch
                                     </map>
                                   </option>
                                 </PersistentState>
