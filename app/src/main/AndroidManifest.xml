@@ -33,7 +33,6 @@
             android:name=".activities.NavigationActivity"
             android:label="@string/title_activity_main" />
         <activity android:name=".activities.SignupActivity" />
-        <activity android:name=".activities.PostActivity" />
         <activity android:name=".activities.ImagePagerActivity" />
         <activity android:name=".activities.ProfileActivity"/>
         <activity android:name=".activities.CustomCamera" />
@@ -41,8 +40,6 @@
         <activity android:name=".activities.PrimaryColor" />
         <activity android:name=".activities.PermissionsActivity" />
         <activity android:name=".activities.ChangePixel" />
-        <activity android:name=".activities.ChangePixel2" />
-        <activity android:name=".activities.ChangePixel3" />
         <activity android:name=".activities.LastActivity" />
         <provider
             android:name="android.support.v4.content.FileProvider"

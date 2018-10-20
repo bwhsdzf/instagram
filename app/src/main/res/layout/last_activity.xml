@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/snow"
-    tools:context=".activities.PostActivity">
+    tools:context=".activities.LastActivity">
 
     <EditText
         android:id="@+id/postMessage"
@@ -39,38 +38,41 @@
         android:layout_marginStart="9dp"
         android:layout_marginLeft="9dp"
         android:layout_marginTop="6dp"
-        android:background="@drawable/cancel" />
+        android:text="Cancel"
+        android:background="@drawable/roundedbutton" />
 
     <Button
         android:id="@+id/postButton"
         android:layout_width="59dp"
         android:layout_height="57dp"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="-55dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginStart="-51dp"
+        android:layout_marginTop="5dp"
         android:layout_toEndOf="@+id/postImage"
-        android:background="@drawable/continue1" />
+        android:background="@drawable/roundedbutton"
+        android:text="Post" />
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="92dp"
-        android:layout_height="36dp"
+        android:layout_width="112dp"
+        android:layout_height="49dp"
         android:layout_alignStart="@+id/back_l"
         android:layout_alignParentTop="true"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="102dp"
-        android:text="Post content:" />
+        android:layout_marginTop="89dp"
+        android:text="Post content:"
+        android:textSize="17dp" />
 
     <Switch
         android:id="@+id/gps_switch"
-        android:layout_width="175dp"
+        android:layout_width="228dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="106dp"
-        android:layout_marginRight="106dp"
-        android:layout_marginBottom="33dp"
-        android:text="Need GPS or not?" />
+        android:layout_marginEnd="76dp"
+        android:layout_marginRight="76dp"
+        android:layout_marginBottom="39dp"
+        android:text="Share location or not?" />
 
 </RelativeLayout>

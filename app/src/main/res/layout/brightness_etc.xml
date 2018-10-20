@@ -15,10 +15,12 @@
             android:layout_width="62dp"
             android:layout_height="57dp"
             android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
             android:layout_marginTop="0dp"
             android:layout_marginRight="10dp"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/continue1" />
+            android:text="Next"
+            android:textColor="@color/black"
+            android:background="@drawable/roundedbutton" />
 
         <Button
             android:id="@+id/reset_b"
@@ -26,7 +28,9 @@
             android:layout_height="57dp"
             android:layout_alignParentTop="true"
             android:layout_marginRight="10dp"
-            android:background="@drawable/cancel" />
+            android:text="Back"
+            android:textColor="@color/black"
+            android:background="@drawable/roundedbutton" />
     </RelativeLayout>
 
     <ImageView

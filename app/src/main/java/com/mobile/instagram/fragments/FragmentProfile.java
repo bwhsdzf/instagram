@@ -2,8 +2,6 @@ package com.mobile.instagram.fragments;
 
 import com.mobile.instagram.R;
 import com.mobile.instagram.activities.ImagePagerActivity;
-import com.mobile.instagram.activities.PostActivity;
-import com.mobile.instagram.activities.ProfileActivity;
 import com.mobile.instagram.models.*;
 
 import android.os.Parcelable;

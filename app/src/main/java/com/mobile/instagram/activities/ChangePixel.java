@@ -28,6 +28,7 @@ public class ChangePixel extends Activity implements View.OnClickListener {
         //if(intent!=null) {
         //    bitmap = intent.getParcelableExtra("bitmap");
         //}
+
         if(intent!=null){
             if(intent.getParcelableExtra("uri")!=null){
                 uri=intent.getParcelableExtra("uri");
@@ -38,6 +39,8 @@ public class ChangePixel extends Activity implements View.OnClickListener {
             e.printStackTrace();
         }
         imageView = (ImageView) findViewById(R.id.imageView_f);
+
+            imageView.setImageBitmap((bitmap));
 
             Button r_f= findViewById(R.id.reset_f);
             r_f.setOnClickListener(this);
