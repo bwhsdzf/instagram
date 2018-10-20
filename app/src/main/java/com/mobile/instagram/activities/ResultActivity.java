@@ -69,7 +69,7 @@ public class ResultActivity extends Activity implements View.OnClickListener{
                         Intent intent = new Intent(this, PrimaryColor.class);
                         intent.putExtra("uri", outputUri);
                         startActivity(intent);
-                        finish();
+
                     }
                     break;
             }

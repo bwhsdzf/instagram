@@ -114,7 +114,7 @@ public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeLis
             Intent intent= new Intent(this,ChangePixel.class);
             intent.putExtra("uri",uri2);
             startActivity(intent);
-            finish();
+
         }
     }
 }
