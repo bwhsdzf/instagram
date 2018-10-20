@@ -23,8 +23,9 @@
         android:layout_alignEnd="@+id/spinner_f"
         android:layout_alignParentTop="true"
         android:layout_marginTop="5dp"
+        android:background="@drawable/continue1"
         android:layout_marginEnd="7dp"
-        android:background="@drawable/continue" />
+        />
 
     <ImageView
         android:id="@+id/imageView_f"

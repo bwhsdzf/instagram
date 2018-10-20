@@ -42,14 +42,14 @@
         android:background="@drawable/cancel" />
 
     <Button
-        android:id="@+id/post"
+        android:id="@+id/postButton"
         android:layout_width="59dp"
         android:layout_height="57dp"
         android:layout_alignParentTop="true"
         android:layout_marginStart="-55dp"
         android:layout_marginTop="7dp"
         android:layout_toEndOf="@+id/postImage"
-        android:background="@drawable/continue" />
+        android:background="@drawable/continue1" />
 
     <TextView
         android:id="@+id/textView2"
