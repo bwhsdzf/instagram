@@ -291,8 +291,6 @@ public class LastActivity extends AppCompatActivity implements View.OnClickListe
          if (i == R.id.postButton){
             uploadPost();
         }else if(i==R.id.back_l){
-             Intent intent= new Intent(this,ChangePixel.class);
-             startActivity(intent);
              finish();
         }
     }
