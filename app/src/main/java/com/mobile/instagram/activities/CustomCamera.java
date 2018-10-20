@@ -13,11 +13,14 @@ import java.io.IOException;
 import java.io.File;
 import android.graphics.ImageFormat;
 import com.mobile.instagram.R;
+import android.widget.Button;
 
 public class CustomCamera extends Activity implements SurfaceHolder.Callback {
     private Camera mCamera;
     private SurfaceView mPreView;
     private SurfaceHolder mHolder;
+    private GridLine gl;
+    private Button switchon,switchoff;
     private Camera.PictureCallback mPictureCallback=new Camera.PictureCallback(){
         public void onPictureTaken(byte[] data, Camera camera){
             File tempFile=new File("/sdcard/temp.png");
@@ -34,6 +37,7 @@ public class CustomCamera extends Activity implements SurfaceHolder.Callback {
             }catch(IOException e){
                 e.printStackTrace();
             }
+
         }
     };
     protected void onCreate(Bundle saveInstanceState){
@@ -48,6 +52,25 @@ public class CustomCamera extends Activity implements SurfaceHolder.Callback {
                 mCamera.autoFocus(null);
             }
         });
+        gl=(GridLine)findViewById(R.id.grid);
+        switchon=(Button)findViewById(R.id.on);
+        switchoff=(Button)findViewById(R.id.off);
+
+        switchon.setOnClickListener(new View.OnClickListener() {
+
+
+            public void onClick(View arg0) {
+                gl.setInf(360, 360, 1280, 1280);
+            }
+        });
+        switchoff.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View arg0) {
+                gl.clearLine();
+            }
+        });
+
+
     }
 
     public void capture(View view){
@@ -139,3 +162,5 @@ public class CustomCamera extends Activity implements SurfaceHolder.Callback {
         releaseCamera();
     }
 }
+
+
