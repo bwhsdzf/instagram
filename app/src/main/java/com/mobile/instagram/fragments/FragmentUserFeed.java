@@ -1,6 +1,7 @@
 package com.mobile.instagram.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mobile.instagram.R;
+import com.mobile.instagram.activities.ImagePagerActivity;
 import com.mobile.instagram.models.Comment;
 import com.mobile.instagram.models.Post;
 import com.mobile.instagram.models.User;
@@ -83,11 +85,9 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_userfeed, container, false);
-
         init(view);
-
-        ToggleButton sortButtom = view.findViewById(R.id.locationSortToggle);
-        sortButtom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        ToggleButton sortButton = view.findViewById(R.id.locationSortToggle);
+        sortButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (b){
@@ -125,6 +125,10 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
                 FirebasePushController.unlikePost(posts.get(position));
                 pa.notifyDataSetChanged();
             }
+            @Override
+            public void onImageClicked(int position){
+                startImagePagerActivity(position);
+            }
         });
         RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(lm);
@@ -133,91 +137,68 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
                 ((LinearLayoutManager) lm).getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
         final DatabaseReference df = FirebaseDatabase.getInstance().getReference();
-        df.child("users").child(FirebaseAuth.getInstance().getUid())
-                .addValueEventListener( new ValueEventListener() {
+
+        // Posts from followed users
+        df.child("user-following").child(currentUser.getUid()).addChildEventListener(
+                new ChildEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        currentUser = dataSnapshot.getValue(User.class);
-                        df.child("user-following").child(currentUser.getUid()).addChildEventListener(
-                                new ChildEventListener() {
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        User following = dataSnapshot.getValue(User.class);
+                        final String userId = following.getUid();
+                        df.child("user-posts").child(userId).orderByChild("time").limitToFirst(10)
+                                .addChildEventListener(new ChildEventListener() {
                                     @Override
                                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                        User following = dataSnapshot.getValue(User.class);
-                                        final String userId = following.getUid();
-                                        df.child("user-posts").child(userId).orderByChild("time").limitToFirst(10)
-                                                .addChildEventListener(new ChildEventListener() {
-                                                    @Override
-                                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                                        Post p = dataSnapshot.getValue(Post.class);
-                                                        posts.add(0,p);
-                                                        Collections.sort(posts, new PostTimeSorter());
-                                                        pa.notifyDataSetChanged();
-                                                    }
-
-                                                    @Override
-                                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                                        Post post = dataSnapshot.getValue(Post.class);
-                                                        System.out.println(post.getPostId());
-                                                        for(Post p : posts){
-                                                            if (p.getPostId().equals(post)){
-                                                                posts.remove(p);
-                                                                posts.add(post);
-                                                                System.out.println("removed and added");
-                                                                Collections.sort(posts, new PostTimeSorter());
-                                                                pa.notifyDataSetChanged();
-                                                                break;
-                                                            }
-                                                        }
-
-
-                                                    }
-
-                                                    @Override
-                                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                                                    }
-
-                                                    @Override
-                                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                    }
-                                                });
+                                        Post p = dataSnapshot.getValue(Post.class);
+                                        posts.add(0,p);
+                                        Collections.sort(posts, new PostTimeSorter());
+                                        pa.notifyDataSetChanged();
                                     }
-
                                     @Override
                                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                                        Post post = dataSnapshot.getValue(Post.class);
+                                        System.out.println(post.getPostId());
+                                        for(Post p : posts){
+                                            if (p.getPostId().equals(post)){
+                                                posts.remove(p);
+                                                posts.add(post);
+                                                System.out.println("removed and added");
+                                                Collections.sort(posts, new PostTimeSorter());
+                                                pa.notifyDataSetChanged();
+                                                break;
+                                            }
+                                        }
                                     }
 
                                     @Override
                                     public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
                                     }
 
                                     @Override
                                     public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                                     }
-
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                                     }
-                                }
-                        );
+                                });
+                        }
 
-                    }
+                        @Override
+                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        }
+                        @Override
+                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                        }
+                        @Override
+                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
                 });
+
+        // Posts from self
         df.child("user-posts").child(currentUser.getUid()).orderByChild("time").limitToFirst(20).addChildEventListener(
                 new ChildEventListener() {
                     @Override
@@ -283,6 +264,17 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private void startImagePagerActivity(int position) {
+        Intent intent = new Intent(this.getActivity(), ImagePagerActivity.class);
+        Bundle b = new Bundle();
+        ArrayList<Post> singlePost = new ArrayList<>();
+        singlePost.add(posts.get(position));
+        b.putParcelableArrayList("posts", singlePost);
+        intent.putExtra("bundle",b);
+        intent.putExtra("position",0);
+        startActivity(intent);
     }
 
     /**

@@ -58,6 +58,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         void onCommentClicked(int position, String text);
 
         void onUnlikeClicked(int position);
+
+        void onImageClicked(int position);
     }
 
     public PostAdapter(Context context, ArrayList<Post> posts, User user, ClickListener listener) {
@@ -73,7 +75,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .cacheOnDisk(true)
                 .considerExifParams(true)
                 .bitmapConfig(Bitmap.Config.RGB_565)
-                .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+                .imageScaleType(ImageScaleType.EXACTLY)
                 .displayer(new FadeInBitmapDisplayer(100))
                 .build();
 
@@ -253,6 +255,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             likeButton.setOnClickListener(this);
             commentButton.setOnClickListener(this);
             unlikeButton.setOnClickListener(this);
+            postImageView.setOnClickListener(this);
             setLikeButton();
             listenerRef = new WeakReference<>(listener);
         }
@@ -269,18 +272,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         @Override
         public void onClick(View v) {
-            System.out.println("pressed");
             if (v.getId() == likeButton.getId()) {
                 listenerRef.get().onLikeClicked(getAdapterPosition());
                 setUnlikeButton();
             } else if (v.getId() == commentButton.getId()){
                 if (!TextUtils.isEmpty(commentField.getText().toString())){
                 listenerRef.get().onCommentClicked(getAdapterPosition(), commentField.getText().toString());
+                commentField.clearComposingText();
                 }
             } else if (v.getId() == unlikeButton.getId()){
-
                 listenerRef.get().onUnlikeClicked(getAdapterPosition());
                 setLikeButton();
+            }else if (v.getId() == postImageView.getId()){
+                listenerRef.get().onImageClicked(getAdapterPosition());
             }
 
         }

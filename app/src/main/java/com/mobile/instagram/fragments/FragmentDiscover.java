@@ -284,7 +284,7 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
         Bundle b = new Bundle();
         b.putParcelableArrayList("posts", news);
         intent.putExtra("bundle",b);
-        intent.putExtra("position",0);
+        intent.putExtra("position",position);
         startActivity(intent);
     }
 

@@ -50,7 +50,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private TextView username;
     private TextView postsCount;
     private int postsCountInt;
-    private int currentFollowingCount;
     private TextView followers;
     private TextView following;
     private ImageView profilePhoto;
@@ -89,6 +88,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         this.profilePhoto = findViewById(R.id.userProfile);
         this.pictureView = findViewById(R.id.pictureView);
         postsCount.setText("0");
+        init();
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
         init();
     }
 
@@ -134,11 +139,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             public void onChildRemoved(DataSnapshot dataSnapshot) {
             }
         });
-        mDatabase.child("user-follower").child(mAuth.getUid()).addChildEventListener(new ChildEventListener() {
+        mDatabase.child("user-following").child(mAuth.getUid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                User follower = dataSnapshot.getValue(User.class);
-                if(follower.getUid().equals(mAuth.getUid())){
+                User following = dataSnapshot.getValue(User.class);
+                if(uidString.equals(following.getUid())){
                     followButton.setVisibility(View.GONE);
                     unfollowButton.setVisibility(View.VISIBLE);
                 }
