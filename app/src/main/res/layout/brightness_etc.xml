@@ -1,61 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/black">
 
-    <SeekBar
-        android:id="@+id/seekbarHue3"
-        android:layout_width="275dp"
-        android:layout_height="46dp"
-        android:layout_above="@id/seekbarSaturation3"
-        android:layout_alignLeft="@id/seekbarSaturation3"
-        android:layout_marginBottom="15dp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <SeekBar
-        android:id="@+id/seekbarSaturation3"
-        android:layout_width="288dp"
-        android:layout_height="46dp"
-        android:layout_above="@id/seekbatLum3"
-        android:layout_alignLeft="@id/seekbatLum3"
-        android:layout_marginBottom="15dp" />
+        <Button
+            android:id="@+id/store_continue_b"
+            android:layout_width="62dp"
+            android:layout_height="57dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"
+            android:background="@drawable/continue1" />
 
-    <SeekBar
-        android:id="@+id/seekbatLum3"
-        android:layout_width="289dp"
-        android:layout_height="46dp"
-        android:layout_below="@id/seekbarSaturation"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="35dp"
-        android:layout_marginBottom="61dp" />
-
-    <Button
-        android:id="@+id/reset_b"
-        android:layout_width="62dp"
-        android:layout_height="57dp"
-        android:background="@drawable/cancel" />
+        <Button
+            android:id="@+id/reset_b"
+            android:layout_width="62dp"
+            android:layout_height="57dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/cancel" />
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/imageView_b"
-        android:layout_width="301dp"
-        android:layout_height="485dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="29dp"
-        android:layout_marginLeft="29dp"
-        android:layout_marginBottom="29dp" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-    <Button
-        android:id="@+id/store_continue_b"
-        android:layout_width="58dp"
-        android:layout_height="59dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="9dp"
-        android:layout_marginBottom="508dp"
-        android:background="@drawable/continue1" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="60dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="vertical">
 
-</RelativeLayout>
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <SeekBar
+                android:id="@+id/seekbarHue3"
+                android:layout_width="230dp"
+                android:layout_height="45dp"
+                android:layout_toRightOf="@id/imageView2"
+               />
+
+            <TextView
+                android:id="@+id/imageView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="11dp"
+                android:text="H"
+                android:textColor="@color/colorPrimary"
+                android:textSize="25dp"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <SeekBar
+                android:id="@+id/seekbarSaturation3"
+                android:layout_width="230dp"
+                android:layout_height="45dp"
+                android:layout_toRightOf="@id/imageView5"
+
+                 />
+
+            <TextView
+                android:id="@+id/imageView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="11dp"
+                android:textSize="25dp"
+                android:textColor="@color/colorPrimary"
+                android:text="C"/>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <SeekBar
+                android:id="@+id/seekbatLum3"
+                android:layout_width="230dp"
+                android:layout_height="45dp"
+                android:layout_toRightOf="@id/imageView8"
+                android:layout_marginBottom="60dp" />
+
+            <TextView
+                android:id="@+id/imageView8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="11dp"
+                android:textColor="@color/colorPrimary"
+                android:textSize="25dp"
+                android:text="B"/>
+
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</FrameLayout>

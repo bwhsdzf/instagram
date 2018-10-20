@@ -51,13 +51,6 @@ public class ResultActivity extends Activity implements View.OnClickListener{
             //System.out.println("333");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-<<<<<<< HEAD
-        }
-
-      
-=======
-
->>>>>>> 6828406a6c4b57561f87868b447f1173bd0d4f5e
         }
     }
         public void onClick (View v){

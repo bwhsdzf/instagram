@@ -30,7 +30,7 @@
         app:srcCompat="@mipmap/ic_upload_profile" />
 
     <Button
-        android:id="@+id/button7"
+        android:id="@+id/back_l"
         android:layout_width="59dp"
         android:layout_height="57dp"
         android:layout_alignParentStart="true"
@@ -55,7 +55,7 @@
         android:id="@+id/textView2"
         android:layout_width="92dp"
         android:layout_height="36dp"
-        android:layout_alignStart="@+id/button7"
+        android:layout_alignStart="@+id/back_l"
         android:layout_alignParentTop="true"
         android:layout_marginStart="5dp"
         android:layout_marginTop="102dp"

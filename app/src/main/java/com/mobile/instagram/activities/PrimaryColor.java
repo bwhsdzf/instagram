@@ -14,8 +14,9 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import java.io.IOException;
+import android.os.Build;
 
-public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeListener{
+public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeListener,View.OnClickListener {
 
     private ImageView mImageView;
     private SeekBar mSeekbarhue,mSeekbarSaturation, mSeekbarLum;
@@ -53,9 +54,9 @@ public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeLis
         //byte[] x=intent.getByteArrayExtra("bitmap");
         //bitmap=BitmapFactory.decodeByteArray(x, 0, x.length);
         mImageView = (ImageView) findViewById(R.id.imageView_b);
-        mSeekbarhue = (SeekBar) findViewById(R.id.seekbarHue);
-        mSeekbarSaturation = (SeekBar) findViewById(R.id.seekbarSaturation);
-        mSeekbarLum = (SeekBar) findViewById(R.id.seekbatLum);
+        mSeekbarhue = (SeekBar) findViewById(R.id.seekbarHue3);
+        mSeekbarSaturation = (SeekBar) findViewById(R.id.seekbarSaturation3);
+        mSeekbarLum = (SeekBar) findViewById(R.id.seekbatLum3);
         mSeekbarhue.setOnSeekBarChangeListener(this);
         mSeekbarSaturation.setOnSeekBarChangeListener(this);
         mSeekbarLum.setOnSeekBarChangeListener(this);
@@ -71,13 +72,13 @@ public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeLis
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         switch (seekBar.getId()) {
-            case R.id.seekbarHue:
+            case R.id.seekbarHue3:
                 mHue = (progress - MID_VALUE) * 1.0F / MID_VALUE * 180;
                 break;
-            case R.id.seekbarSaturation:
+            case R.id.seekbarSaturation3:
                 mStauration = progress * 1.0F / MID_VALUE;
                 break;
-            case R.id.seekbatLum:
+            case R.id.seekbatLum3:
                 mLum = progress * 1.0F / MID_VALUE;
                 break;
         }
@@ -85,27 +86,10 @@ public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeLis
         Bitmap bitmap2=ImageHelper.handleImageEffect(bitmap, mHue, mStauration, mLum);
         uri2 = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap2, null,null));
 
-        Button r =findViewById(R.id.reset_b);
-        r.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSeekbarhue.setProgress(MID_VALUE);
-                mSeekbarSaturation.setProgress(MID_VALUE);
-                mSeekbarLum.setProgress(MID_VALUE);
-            }
-        });
-        ;
-        Button c =findViewById(R.id.store_continue_b);
-        c.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(PrimaryColor.this,ChangePixel.class);
-                intent.putExtra("uri",uri2);
-                //intent.putExtra("bitmap",bitmap);
-                startActivity(intent);
-                finish();
-            }
-        });
+        Button r= findViewById(R.id.reset_b);
+        r.setOnClickListener(this);
+        Button c=findViewById(R.id.store_continue_b);
+        c.setOnClickListener(this);
 
 
     }
@@ -118,5 +102,18 @@ public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeLis
     public void onStopTrackingTouch(SeekBar seekBar) {
     }
 
-
+    @Override
+    public void onClick(View v){
+        int i = v.getId();
+        if (i == R.id.reset_b){
+            mSeekbarhue.setProgress(MID_VALUE);
+            mSeekbarSaturation.setProgress(MID_VALUE);
+            mSeekbarLum.setProgress(MID_VALUE);
+        }
+        else if(i==R.id.store_continue_b){
+            Intent intent= new Intent(this,ChangePixel.class);
+            intent.putExtra("uri",uri2);
+            startActivity(intent);
+        }
+    }
 }
