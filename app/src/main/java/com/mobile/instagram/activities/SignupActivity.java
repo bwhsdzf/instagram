@@ -13,13 +13,10 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.content.Intent;
 import android.net.Uri;
-
 import com.google.android.gms.tasks.*;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.*;
-
-
 import com.google.firebase.database.*;
 import com.mobile.instagram.R;
 import com.mobile.instagram.models.Post;
@@ -27,7 +24,6 @@ import  com.mobile.instagram.models.User;
 import com.mobile.instagram.models.relationalModels.UserFollower;
 import com.mobile.instagram.models.relationalModels.UserFollowing;
 import com.mobile.instagram.models.relationalModels.UserPosts;
-
 import java.util.ArrayList;
 import java.io.*;
 

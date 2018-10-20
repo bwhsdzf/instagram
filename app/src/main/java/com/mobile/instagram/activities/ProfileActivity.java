@@ -3,39 +3,23 @@ package com.mobile.instagram.activities;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.mobile.instagram.R;
-import com.mobile.instagram.activities.NavigationActivity;
-import com.mobile.instagram.activities.PostActivity;
 import com.mobile.instagram.models.*;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import	android.support.v4.graphics.drawable.*;
-
-import android.content.Context;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.GridView;
-
 import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
-import com.mobile.instagram.models.relationalModels.UserFollower;
-import com.mobile.instagram.models.relationalModels.UserFollowing;
-import com.mobile.instagram.models.relationalModels.UserPosts;
-
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
