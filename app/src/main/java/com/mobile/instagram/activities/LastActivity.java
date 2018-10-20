@@ -214,9 +214,6 @@ public class LastActivity extends AppCompatActivity implements View.OnClickListe
     private void getGPS(){
         if (ls == null) ls = LocationService.getLocationManager(this);
         coor = ls.getCoordinates();
-       // gpsX.setText(Double.toString(coor[0]));
-       // gpsY.setText(Double.toString(coor[1]));
-        System.out.println(ls.getCity(coor[0],coor[1]));
     }
     private void uploadPost(){
         if(!validateForm()){

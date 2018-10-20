@@ -2,8 +2,6 @@ package com.mobile.instagram.fragments;
 
 import com.mobile.instagram.R;
 import com.mobile.instagram.activities.ImagePagerActivity;
-import com.mobile.instagram.activities.PostActivity;
-import com.mobile.instagram.activities.ProfileActivity;
 import com.mobile.instagram.models.*;
 
 import android.os.Parcelable;
@@ -33,7 +31,6 @@ import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
 import com.mobile.instagram.adapters.PostWallAdapter;
-import com.mobile.instagram.util.Recommendation;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -72,8 +69,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
     private ImageView iv;
     private GridView pictureView;
     private boolean hasProfile = false;
-
-    private Recommendation reco;
 
 
 
@@ -120,8 +115,6 @@ public class FragmentProfile extends Fragment implements View.OnClickListener{
 
         posts = new ArrayList<Post>();
         postsCount.setText("0");
-
-        reco = new Recommendation();
 
 
         username.setText(currentUser.getUsername());

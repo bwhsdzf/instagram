@@ -37,8 +37,8 @@ public class ActivityAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
         this.userActivities = userActivities;
         options1 = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.mipmap.ic_img_ept)
-                .showImageOnFail(R.mipmap.ic_img_err)
+                .showImageForEmptyUri(R.drawable.ic_profile)
+                .showImageOnFail(R.drawable.ic_profile)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .considerExifParams(true)

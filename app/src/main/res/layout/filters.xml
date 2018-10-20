@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="@drawable/snow"
+    android:background="@color/black"
     android:layout_height="match_parent">
 
     <Button
@@ -14,7 +14,9 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="12dp"
         android:layout_marginTop="1dp"
-        android:background="@drawable/cancel" />
+        android:text="Back"
+        android:textColor="@color/black"
+        android:background="@drawable/roundedbutton" />
 
     <Button
         android:id="@+id/store_continue_f"
@@ -26,7 +28,9 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="14dp"
         android:layout_marginRight="14dp"
-        android:background="@drawable/continue1" />
+        android:text="Next"
+        android:textColor="@color/black"
+        android:background="@drawable/roundedbutton"  />
 
     <ImageView
         android:id="@+id/imageView_f"
@@ -44,10 +48,10 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="42dp"
-        android:layout_marginLeft="42dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginLeft="25dp"
         android:layout_marginBottom="69dp"
-        android:text="Button" />
+        android:text="Film" />
 
     <Button
         android:id="@+id/fi_2"
@@ -56,10 +60,10 @@
         android:layout_alignBottom="@+id/fi_1"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginStart="149dp"
-        android:layout_marginLeft="149dp"
-        android:layout_marginBottom="-3dp"
-        android:text="Button" />
+        android:layout_marginStart="130dp"
+        android:layout_marginLeft="130dp"
+        android:layout_marginBottom="0dp"
+        android:text="Classical" />
 
     <Button
         android:id="@+id/fi_3"
@@ -68,9 +72,9 @@
         android:layout_alignBottom="@+id/fi_1"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="36dp"
-        android:layout_marginRight="36dp"
-        android:layout_marginBottom="-4dp"
-        android:text="Button" />
+        android:layout_marginEnd="11dp"
+        android:layout_marginRight="11dp"
+        android:layout_marginBottom="0dp"
+        android:text="Stone_Caving" />
 
 </RelativeLayout>

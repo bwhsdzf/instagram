@@ -4,9 +4,10 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="fill_parent"
 android:layout_height="fill_parent"
  >
+
         <Button
             android:id="@+id/on"
-            android:layout_width="wrap_content"
+            android:layout_width="132dp"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
@@ -15,10 +16,10 @@ android:layout_height="fill_parent"
 
         <Button
             android:id="@+id/off"
-            android:layout_width="wrap_content"
+            android:layout_width="132dp"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/on"
             android:layout_below="@+id/on"
+            android:layout_alignLeft="@+id/on"
             android:layout_marginTop="500dp"
             android:text="grid off" />
         <Button
@@ -42,9 +43,9 @@ android:layout_height="fill_parent"
             />
 
         <com.mobile.instagram.activities.GridLine
-                android:id="@+id/grid"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@android:color/transparent"/>
+            android:id="@+id/grid"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@android:color/transparent" />
 
 </FrameLayout>
