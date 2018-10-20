@@ -51,17 +51,7 @@ public class ResultActivity extends Activity/* implements View.OnClickListener*/
             e.printStackTrace();
         }
 
-        Button a;
-        a=(Button)findViewById(R.id.finishcapture);
-        a.setOnClickListener(new View.OnClickListener() {
-
-        public void onClick(View view) {
-           Intent intent=new Intent(ResultActivity.this,PrimaryColor.class);
-             intent.putExtra("bitmap",bitmap2);
-               startActivity(intent);
-               finish();
-             }
-           });
+      
         }
     }
 

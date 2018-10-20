@@ -32,7 +32,7 @@ public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.primary_color);
+        setContentView(R.layout.brightness_etc);
         Intent intent=getIntent();
         //if(intent!=null) {
         //    bitmap = intent.getParcelableExtra("bitmap");
@@ -53,7 +53,7 @@ public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeLis
         }
         //byte[] x=intent.getByteArrayExtra("bitmap");
         //bitmap=BitmapFactory.decodeByteArray(x, 0, x.length);
-        mImageView = (ImageView) findViewById(R.id.imageview);
+        mImageView = (ImageView) findViewById(R.id.imageView_b);
         mSeekbarhue = (SeekBar) findViewById(R.id.seekbarHue);
         mSeekbarSaturation = (SeekBar) findViewById(R.id.seekbarSaturation);
         mSeekbarLum = (SeekBar) findViewById(R.id.seekbatLum);
@@ -85,9 +85,19 @@ public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeLis
         mImageView.setImageBitmap(ImageHelper.handleImageEffect(bitmap, mHue, mStauration, mLum));
         Bitmap bitmap2=ImageHelper.handleImageEffect(bitmap, mHue, mStauration, mLum);
         uri2 = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap2, null,null));
-        Button a;
-        a=(Button)findViewById(R.id.a);
-        a.setOnClickListener(new View.OnClickListener() {
+
+        Button r =findViewById(R.id.reset_b);
+        r.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSeekbarhue.setProgress(MID_VALUE);
+                mSeekbarSaturation.setProgress(MID_VALUE);
+                mSeekbarLum.setProgress(MID_VALUE);
+            }
+        });
+        ;
+        Button c =findViewById(R.id.store_continue_b);
+        c.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent=new Intent(PrimaryColor.this,ChangePixel.class);
@@ -97,39 +107,8 @@ public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeLis
                 finish();
             }
         });
-        Button b;
-        b=(Button)findViewById(R.id.b);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(PrimaryColor.this,ChangePixel2.class);
-                intent.putExtra("uri",uri2);
-                startActivity(intent);
-                finish();
-            }
-        });
-        Button c;
-        c=(Button)findViewById(R.id.c);
-        c.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(PrimaryColor.this,ChangePixel3.class);
-                intent.putExtra("uri",uri2);
-                startActivity(intent);
-                finish();
-            }
-        });
-        Button d;
-        d=(Button)findViewById(R.id.d);
-        d.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=new Intent(PrimaryColor.this,LastActivity.class);
-                intent.putExtra("uri",uri2);
-                startActivity(intent);
-                finish();
-            }
-        });
+
+
     }
 
     @Override
