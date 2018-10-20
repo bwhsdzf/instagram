@@ -7,23 +7,35 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="capture"
-        android:text="capture with flash" />
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="capture2"
-        android:text="capture2 without flash" />
-
 
     <SurfaceView
         android:id="@+id/preview"
         android:layout_width="match_parent"
         android:layout_height="424dp" />
 
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="是否闪光灯" />
+
+    <Switch
+        android:id="@+id/flashlight"
+        android:layout_width="224dp"
+        android:layout_height="17dp"
+        android:text="Switch" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="是否网格线" />
+
+    <Switch
+        android:id="@+id/grid_line"
+        android:layout_width="221dp"
+        android:layout_height="wrap_content"
+        android:text="Switch" />
 
 
 </LinearLayout>
