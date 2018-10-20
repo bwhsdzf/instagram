@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<<<<<<< HEAD
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -53,5 +54,29 @@
                 android:textSize="16sp" />
         </LinearLayout>
     </RelativeLayout>
+=======
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/snow"
+    tools:context=".fragments.FragmentUserFeed">
+
+    <ToggleButton
+        android:id="@+id/locationSortToggle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:textOff="Time"
+        android:textOn="Location"
+        android:disabledAlpha="@android:integer/config_longAnimTime"
+        android:text="ToggleButton" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/postList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/locationSortToggle"/>
+
+>>>>>>> eric_branch
 
 </RelativeLayout>

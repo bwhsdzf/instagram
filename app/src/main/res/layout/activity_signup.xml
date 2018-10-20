@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/snow"
     tools:context=".activities.SignupActivity">
 
     <ProgressBar
@@ -20,6 +21,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
         android:contentDescription="@string/title_profile"
+        android:scaleType="centerCrop"
         android:src="@mipmap/ic_upload_profile" />
 
     <ScrollView
@@ -104,6 +106,7 @@
                 <Button
                     android:id="@+id/emailCreateAccountButton"
                     style="@style/Widget.AppCompat.Button.Colored"
+
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

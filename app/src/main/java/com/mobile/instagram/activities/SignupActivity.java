@@ -1,6 +1,8 @@
 package com.mobile.instagram.activities;
 
 import android.support.annotation.NonNull;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
+import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -30,6 +32,9 @@ public class SignupActivity extends AppCompatActivity implements
     View.OnClickListener{
 
     private static final String TAG = "EmailPassword";
+
+    private static final int SELECT_PHOTO  = 1;
+    private static final int CROP_PHOTO = 0;
 
     private EditText mEmailField;
     private EditText mPasswordField;
@@ -74,7 +79,8 @@ public class SignupActivity extends AppCompatActivity implements
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             String userId = mAuth.getUid();
-                            final User newUser = new User(userId, username, email,"");
+                            final User newUser = new User(userId, username, email,"",
+                                    0,0);
                             Log.d(TAG, "User id is "+userId);
                             mDatabase.child("users").child(userId).setValue(newUser);
                             Log.d(TAG, "write to db success");
@@ -83,7 +89,7 @@ public class SignupActivity extends AppCompatActivity implements
                             if (selectedPhoto) {
                                 mProfilePhoto.setDrawingCacheEnabled(true);
                                 mProfilePhoto.buildDrawingCache();
-                                Bitmap bitmap = ((BitmapDrawable) mProfilePhoto.getDrawable()).getBitmap();
+                                Bitmap bitmap = ((RoundedBitmapDrawable) mProfilePhoto.getDrawable()).getBitmap();
                                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                                 bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos);
                                 final byte[] data = baos.toByteArray();
@@ -111,6 +117,8 @@ public class SignupActivity extends AppCompatActivity implements
                                         finish();
                                     }
                                 });
+                            }else{
+                                finish();
                             }
                         } else {
                             // If sign in fails, display a message to the user.
@@ -128,18 +136,18 @@ public class SignupActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
         switch(requestCode) {
-            case 0:
+            case CROP_PHOTO:
                 if(resultCode == RESULT_OK){
-                    Uri selectedImage = imageReturnedIntent.getData();
-                    mProfilePhoto.setImageURI(selectedImage);
+                    selectedPhoto = true;
+                    Bundle b = imageReturnedIntent.getExtras();
+                    Bitmap bitmap = b.getParcelable("data");
+                    setCircleProfile(bitmap);
                 }
 
                 break;
-            case 1:
+            case SELECT_PHOTO:
                 if(resultCode == RESULT_OK){
-                    selectedPhoto = true;
-                    Uri selectedImage = imageReturnedIntent.getData();
-                    mProfilePhoto.setImageURI(selectedImage);
+                    doCrop(imageReturnedIntent.getData());
                 }
                 break;
         }
@@ -178,6 +186,32 @@ public class SignupActivity extends AppCompatActivity implements
         return valid;
     }
 
+    private void doCrop(Uri uri){
+        //call the standard crop action intent (the user device may not support it)
+        Intent cropIntent = new Intent("com.android.camera.action.CROP");
+        //indicate image type and Uri
+        cropIntent.setDataAndType(uri, "image/*");
+        //set crop properties
+        cropIntent.putExtra("crop", "true");
+        //indicate aspect of desired crop
+        cropIntent.putExtra("aspectX", 1);
+        cropIntent.putExtra("aspectY", 1);
+        //indicate output X and Y
+        cropIntent.putExtra("outputX", 256);
+        cropIntent.putExtra("outputY", 256);
+        //retrieve data on return
+        cropIntent.putExtra("return-data", true);
+        //start the activity - we handle returning in onActivityResult
+        startActivityForResult(cropIntent, CROP_PHOTO);
+    }
+
+    // Set the profile pic to circular
+    private void setCircleProfile(Bitmap bitmap){
+        RoundedBitmapDrawable mDrawable = RoundedBitmapDrawableFactory.create(getResources(), bitmap);
+        mDrawable.setCircular(true);
+        mProfilePhoto.setImageDrawable(mDrawable);
+    }
+
     @Override
     public void onClick(View v) {
         int i = v.getId();
@@ -186,10 +220,9 @@ public class SignupActivity extends AppCompatActivity implements
                     mUsernameField.getText().toString());
             Log.d(TAG, "creating account");
         }else if (i == R.id.profilePhoto){
-
             Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
+            startActivityForResult(pickPhoto , SELECT_PHOTO);//one can be replaced with any action code
         }
     }
 }

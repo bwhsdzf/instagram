@@ -20,6 +20,7 @@ import com.mobile.instagram.fragments.FragmentPhoto;
 import com.mobile.instagram.fragments.FragmentProfile;
 import com.mobile.instagram.fragments.FragmentUserFeed;
 import com.mobile.instagram.R;
+import com.mobile.instagram.models.User;
 
 public class NavigationActivity extends AppCompatActivity implements
         FragmentUserFeed.OnFragmentInteractionListener,
@@ -29,6 +30,7 @@ public class NavigationActivity extends AppCompatActivity implements
         FragmentProfile.OnFragmentInteractionListener
 {
 
+    private User currentUser;
     private FragmentUserFeed userFeed;
     private FragmentDiscover discover;
     private FragmentPhoto photo;
@@ -70,6 +72,10 @@ public class NavigationActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
+        Bundle b = getIntent().getBundleExtra("bundle");
+        if (b!= null){
+            currentUser = b.getParcelable("user");
+        }
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         context = getApplicationContext();
@@ -85,11 +91,11 @@ public class NavigationActivity extends AppCompatActivity implements
 
 
     private void init(){
-        userFeed =new FragmentUserFeed();
-        discover =new FragmentDiscover();
-        photo =new FragmentPhoto();
-        activityFeed = new FragmentActivityFeed();
-        profile = FragmentProfile.newInstance(mAuth,mDatabase);
+        userFeed =FragmentUserFeed.newInstance(currentUser);
+        discover =FragmentDiscover.newInstance(currentUser);
+        photo =FragmentPhoto.newInstance(currentUser);
+        activityFeed = FragmentActivityFeed.newInstance(currentUser);
+        profile = FragmentProfile.newInstance(currentUser);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.add(R.id.fragment_container,userFeed);

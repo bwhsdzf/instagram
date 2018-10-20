@@ -16,7 +16,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.*;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mobile.instagram.R;
+import com.mobile.instagram.models.User;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -75,7 +81,7 @@ public class LoginActivity extends AppCompatActivity implements
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser!=null){
             Log.d("LoginActivity", "Already logged in");
-            toNavigation(currentUser.getEmail());
+            toNavigation();
         }
     }
     // [END on_start_check_user]
@@ -99,13 +105,12 @@ public class LoginActivity extends AppCompatActivity implements
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            toNavigation(email);
+                            toNavigation();
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            updateUI(null);
                         }
                     }
                 });
@@ -133,22 +138,28 @@ public class LoginActivity extends AppCompatActivity implements
 
         return valid;
     }
-    private void updateUI(FirebaseUser user) {
-//        hideProgressDialog();
-        if (user != null) {
-            findViewById(com.mobile.instagram.R.id.emailPasswordButtons).setVisibility(View.GONE);
-            findViewById(com.mobile.instagram.R.id.password).setVisibility(View.GONE);
-            findViewById(com.mobile.instagram.R.id.emailSignInButton).setVisibility(View.VISIBLE);
-        } else {
-            findViewById(com.mobile.instagram.R.id.emailPasswordButtons).setVisibility(View.VISIBLE);
-            findViewById(com.mobile.instagram.R.id.password).setVisibility(View.VISIBLE);
-        }
-    }
 
-    public void toNavigation(String username){
-        Intent intent = new Intent(LoginActivity.this, NavigationActivity.class);
-        intent.putExtra("Username",username);
-        startActivity(intent);
+
+    public void toNavigation(){
+        this.progress.setVisibility(View.GONE);
+        DatabaseReference df = FirebaseDatabase.getInstance().getReference();
+        df.child("users").child(mAuth.getUid()).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        User user = dataSnapshot.getValue(User.class);
+                        Intent intent = new Intent(LoginActivity.this, NavigationActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("user",user);
+                        intent.putExtra("bundle",bundle);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
+                }
+        );
     }
 
     @Override

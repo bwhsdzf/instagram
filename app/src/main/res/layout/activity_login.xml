@@ -10,6 +10,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/snow"
     tools:context=".activities.LoginActivity">
 
     <!-- Login progress -->
@@ -85,7 +86,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="@string/sign_in" />
+                    android:background="@drawable/roundedbutton"
+                    android:text="@string/sign_in"
+                    android:textColor="@color/black" />
 
                 <Button
                     android:id="@+id/signUpButton"
@@ -93,6 +96,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:textColor="@color/black"
+                    android:background="@drawable/roundedbutton"
                     android:text="@string/sign_up" />
 
             </LinearLayout>

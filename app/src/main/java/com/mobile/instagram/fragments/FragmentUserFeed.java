@@ -4,13 +4,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+<<<<<<< HEAD
 import android.widget.Button;
+=======
+import android.widget.CompoundButton;
+import android.widget.ToggleButton;
+>>>>>>> eric_branch
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mobile.instagram.R;
+<<<<<<< HEAD
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Rect;
@@ -36,6 +54,19 @@ import com.mobile.instagram.contral.CirclePublicCommentContral;
 import com.mobile.instagram.listener.SwpipeListViewOnScrollListener;
 import com.mobile.instagram.utils.CommonUtils;
 import com.mobile.instagram.utils.DatasUtil;
+=======
+import com.mobile.instagram.models.Comment;
+import com.mobile.instagram.models.Post;
+import com.mobile.instagram.models.User;
+import com.mobile.instagram.util.FirebasePushController;
+import com.mobile.instagram.adapters.PostAdapter;
+import com.mobile.instagram.util.PostLocationSorter;
+import com.mobile.instagram.util.PostTimeSorter;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+>>>>>>> eric_branch
 
 import java.util.List;
 
@@ -47,6 +78,7 @@ import java.util.List;
  * Use the {@link FragmentUserFeed#newInstance} factory method to
  * create an instance of this fragment.
  */
+<<<<<<< HEAD
 public class FragmentUserFeed extends Fragment{
 
     // TODO: Rename parameter arguments, choose names that match
@@ -77,6 +109,20 @@ public class FragmentUserFeed extends Fragment{
     private int mEditTextBodyHeight;
     private CirclePublicCommentContral mCirclePublicCommentContral;
 
+=======
+public class FragmentUserFeed extends Fragment implements View.OnClickListener{
+
+    private OnFragmentInteractionListener mListener;
+
+    private ArrayList<Post> posts;
+
+    private User currentUser;
+
+    private RecyclerView recyclerView;
+
+
+    private PostAdapter pa;
+>>>>>>> eric_branch
 
     public FragmentUserFeed() {
         // Required empty public constructor
@@ -85,36 +131,34 @@ public class FragmentUserFeed extends Fragment{
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment FragmentUserFeed.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentUserFeed newInstance(String param1, String param2) {
+    public static FragmentUserFeed newInstance(User currentUser) {
         FragmentUserFeed fragment = new FragmentUserFeed();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+        fragment.currentUser = currentUser;
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+<<<<<<< HEAD
 
 
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+=======
+>>>>>>> eric_branch
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+<<<<<<< HEAD
         View view=inflater.inflate(R.layout.fragment_userfeed, container, false);
         mCircleLv = (ListView) view.findViewById(R.id.circleLv);
         mEditTextBody = (LinearLayout)view.findViewById(R.id.editTextBodyLl);
@@ -123,6 +167,178 @@ public class FragmentUserFeed extends Fragment{
         initView();
         loadData();
 
+=======
+        View view = inflater.inflate(R.layout.fragment_userfeed, container, false);
+        this.recyclerView = view.findViewById(R.id.postList);
+        this.posts = new ArrayList<>();
+        this.pa = new PostAdapter(this.getActivity(), posts, currentUser, new PostAdapter.ClickListener() {
+            @Override
+            public void onLikeClicked(int position) {
+                posts.get(position).addLike(currentUser.getUsername());
+                FirebasePushController.likePost(posts.get(position));
+                pa.notifyDataSetChanged();
+            }
+            @Override
+            public void onCommentClicked(int position, String content){
+                long time = Calendar.getInstance().getTimeInMillis();
+                Comment comment1 = new Comment(currentUser.getUsername(),
+                        posts.get(position).getPostId(),content,time);
+                posts.get(position).addComment(currentUser.getUsername(),content,time);
+                FirebasePushController.writeComment(comment1, posts.get(position));
+                pa.notifyDataSetChanged();
+            }
+            @Override
+            public void onUnlikeClicked(int position){
+                posts.get(position).removeLike(currentUser.getUsername());
+                FirebasePushController.unlikePost(posts.get(position));
+                pa.notifyDataSetChanged();
+            }
+        });
+        RecyclerView.LayoutManager lm = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(lm);
+        recyclerView.setAdapter(pa);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(),
+                ((LinearLayoutManager) lm).getOrientation());
+        recyclerView.addItemDecoration(dividerItemDecoration);
+        final DatabaseReference df = FirebaseDatabase.getInstance().getReference();
+        df.child("users").child(FirebaseAuth.getInstance().getUid())
+                .addValueEventListener( new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentUser = dataSnapshot.getValue(User.class);
+                df.child("user-following").child(currentUser.getUid()).addChildEventListener(
+                        new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                User following = dataSnapshot.getValue(User.class);
+                                final String userId = following.getUid();
+                                df.child("user-posts").child(userId).orderByChild("time").limitToFirst(10)
+                                        .addChildEventListener(new ChildEventListener() {
+                                            @Override
+                                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                                Post p = dataSnapshot.getValue(Post.class);
+                                                posts.add(0,p);
+                                                Collections.sort(posts, new PostTimeSorter());
+                                                pa.notifyDataSetChanged();
+                                            }
+
+                                            @Override
+                                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                                Post post = dataSnapshot.getValue(Post.class);
+                                                System.out.println(post.getPostId());
+                                                for(Post p : posts){
+                                                    if (p.getPostId().equals(post)){
+                                                        posts.remove(p);
+                                                        posts.add(post);
+                                                        System.out.println("removed and added");
+                                                        Collections.sort(posts, new PostTimeSorter());
+                                                        pa.notifyDataSetChanged();
+                                                        break;
+                                                    }
+                                                }
+
+
+                                            }
+
+                                            @Override
+                                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                                            }
+
+                                            @Override
+                                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+                            }
+
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        }
+                );
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        df.child("user-posts").child(currentUser.getUid()).orderByChild("time").limitToFirst(20).addChildEventListener(
+                new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        Post post = dataSnapshot.getValue(Post.class);
+                        posts.add(0,post);
+                        Collections.sort(posts, new PostTimeSorter());
+                        pa.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        Post post = dataSnapshot.getValue(Post.class);
+                        System.out.println(post.getPostId());
+                        for(Post p : posts){
+                            if (p.getPostId().equals(post)){
+                                posts.remove(p);
+                                posts.add(post);
+                                System.out.println("removed and added");
+                                Collections.sort(posts, new PostTimeSorter());
+                                pa.notifyDataSetChanged();
+                                break;
+                            }
+                        }
+                    }
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                }
+        );
+        ToggleButton sortButtom = view.findViewById(R.id.locationSortToggle);
+        sortButtom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    Collections.sort(posts, new PostLocationSorter());
+                }else{
+                    Collections.sort(posts, new PostTimeSorter());
+                }
+            }
+        });
+>>>>>>> eric_branch
         return view;
     }
 
@@ -246,4 +462,11 @@ public class FragmentUserFeed extends Fragment{
 
     }
 
+<<<<<<< HEAD
+=======
+    @Override
+    public void onClick(View v) {
+        int i = v.getId();
+    }
+>>>>>>> eric_branch
 }

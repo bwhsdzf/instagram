@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
 
     <application
@@ -22,29 +23,36 @@
         <activity
             android:name=".activities.LoginActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan"
-            >
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+<<<<<<< HEAD
 
         <service
             android:name=".Login"
             android:exported="false" />
 
+=======
+>>>>>>> eric_branch
         <activity
             android:name=".activities.NavigationActivity"
-            android:label="@string/title_activity_main"/>
+            android:label="@string/title_activity_main" />
         <activity android:name=".activities.SignupActivity" />
         <activity android:name=".activities.PostActivity" />
+<<<<<<< HEAD
         <activity android:name=".activities.ProfileActivity"></activity>
 
         <activity android:name=".activities.User_Feed.ImagePagerActivity"
             android:launchMode="singleTop"
             android:theme="@android:style/Theme.Black.NoTitleBar"></activity>
+=======
+        <activity android:name=".activities.ProfileActivity" />
+        <activity android:name=".activities.ImagePagerActivity" />
+>>>>>>> eric_branch
 
     </application>
 

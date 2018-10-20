@@ -3,39 +3,30 @@ import com.google.firebase.database.ChildEventListener;
 import com.mobile.instagram.models.UserActivity;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.mobile.instagram.R;
 import com.mobile.instagram.models.User;
-import com.mobile.instagram.models.Util.ActivityTimeSorter;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.display.CircleBitmapDisplayer;
+import com.mobile.instagram.adapters.ActivityAdapter;
+import com.mobile.instagram.util.ActivityTimeSorter;
 
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 
 /**
@@ -48,15 +39,17 @@ import java.util.Comparator;
  */
 public class FragmentActivityFeed extends Fragment {
 
+    private static final String TAG = "FragmentActivityFeed";
+
     private DatabaseReference mDatabaseRef;
     private User currentUser;
 
     private ListView activityList;
 
     private ArrayList<UserActivity> activities;
+    private ArrayList<UserActivity> activitiesNotify;
 
-    private ImageAdapter ia;
-
+    private ActivityAdapter ia;
 
     private OnFragmentInteractionListener mListener;
 
@@ -71,10 +64,9 @@ public class FragmentActivityFeed extends Fragment {
      * @return A new instance of fragment FragmentActivityFeed.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentActivityFeed newInstance() {
+    public static FragmentActivityFeed newInstance(User currentUser) {
         FragmentActivityFeed fragment = new FragmentActivityFeed();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
+        fragment.currentUser = currentUser;
         return fragment;
     }
 
@@ -91,85 +83,86 @@ public class FragmentActivityFeed extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_activityfeed, container, false);
         activityList = view.findViewById(R.id.activityList);
-        ia = new ImageAdapter(getActivity(),activities);
-        mDatabaseRef.child("users").child(FirebaseAuth.getInstance().getUid()).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        currentUser = dataSnapshot.getValue(User.class);
-                        activities = new ArrayList<>();
-                        final ArrayList<String> following = new ArrayList<>();
-                        mDatabaseRef.child("user-following").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                if (!dataSnapshot.exists()){
-                                }
-                                else{
-                                    for (DataSnapshot ds: dataSnapshot.getChildren()){
-                                        User followedUser = ds.getValue(User.class);
-                                        System.out.println("folloinh user" + followedUser.getUid());
-                                        mDatabaseRef.child("user-activities").child(followedUser.getUid())
-                                                .addChildEventListener(
-                                                new ChildEventListener() {
-                                                    @Override
-                                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                                        UserActivity ua = dataSnapshot.getValue(UserActivity.class);
-                                                        System.out.println(ua.getUid1() + "u1" + ua.getUid2() + "u2");
-                                                        activities.add(ua);
-                                                        ia.notifyDataSetChanged();
-                                                    }
-
-                                                    @Override
-                                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                                    }
-
-                                                    @Override
-                                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                                                        ia.notifyDataSetChanged();
-                                                    }
-
-                                                    @Override
-                                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                    }
+        activities = new ArrayList<>();
+        activitiesNotify = new ArrayList<>();
+        ia = new ActivityAdapter(getActivity(),activities);
+        mDatabaseRef.child("user-following").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()){
+                }
+                else{
+                    for (DataSnapshot ds: dataSnapshot.getChildren()){
+                        try {
+                            User followedUser = ds.getValue(User.class);
+                            mDatabaseRef.child("user-activities").child(followedUser.getUid()).orderByChild("time")
+                                    .addChildEventListener(
+                                            new ChildEventListener() {
+                                                @Override
+                                                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                                    UserActivity ua = dataSnapshot.getValue(UserActivity.class);
+                                                    activities.add(0, ua);
+                                                    Collections.sort(activities, new ActivityTimeSorter());
+                                                    ia.notifyDataSetChanged();
                                                 }
-                                        );
-                                    }
-                                }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                            }
-                        });
+                                                @Override
+                                                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                        Collections.sort(activities, new ActivityTimeSorter());
-                        activityList.setAdapter(new ImageAdapter(getActivity(), activities));
+                                                }
+
+                                                @Override
+                                                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                                                }
+
+                                                @Override
+                                                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                }
+                                            }
+                                    );
+                        }catch(Exception e){
+                            Log.d(TAG, e.getMessage());
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+        mDatabaseRef.child("activities-user").child(currentUser.getUid()).orderByChild("time").limitToFirst(20)
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        UserActivity ua = dataSnapshot.getValue(UserActivity.class);
+                        activities.add(ua);
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-
                     }
-                }
-        );
-
-
-
+                });
+        activityList.setAdapter(ia);
         return view;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -202,109 +195,5 @@ public class FragmentActivityFeed extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
-    }
-    private static class ImageAdapter extends BaseAdapter {
-
-        private ArrayList<UserActivity> userActivities;
-
-        private LayoutInflater inflater;
-
-        private DisplayImageOptions options;
-
-        ImageAdapter(Context context, ArrayList<UserActivity> userActivities) {
-            inflater = LayoutInflater.from(context);
-            this.userActivities = userActivities;
-            options = new DisplayImageOptions.Builder()
-                    .showImageForEmptyUri(R.mipmap.ic_img_ept)
-                    .showImageOnFail(R.mipmap.ic_img_err)
-                    .cacheInMemory(true)
-                    .cacheOnDisk(true)
-                    .considerExifParams(true)
-                    .displayer(new CircleBitmapDisplayer(Color.WHITE, 5))
-                    .build();
-        }
-
-        @Override
-        public int getCount() {
-            return userActivities.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return position;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            View view = convertView;
-            final ViewHolder holder;
-            if (convertView == null) {
-                view = inflater.inflate(R.layout.layout_activity, parent, false);
-                holder = new ViewHolder();
-                holder.activityText = view.findViewById(R.id.activityText);
-                holder.username1 = view.findViewById(R.id.username1);
-                holder.username2 = view.findViewById(R.id.username2);
-                holder.user1= view.findViewById(R.id.user1);
-                holder.user2= view.findViewById(R.id.user2);
-                view.setTag(holder);
-            } else {
-                holder = (ViewHolder) view.getTag();
-            }
-            DatabaseReference df = FirebaseDatabase.getInstance().getReference();
-            UserActivity ua = userActivities.get(position);
-            df.child("users").child(ua.getUid1()).addListenerForSingleValueEvent(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            User user1 = dataSnapshot.getValue(User.class);
-                            ImageLoader.getInstance().displayImage(user1.getProfileUrl(),
-                                    holder.user1, options);
-                            holder.username1.setText(user1.getUsername());
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    }
-            );
-            df.child("users").child(ua.getUid2()).addListenerForSingleValueEvent(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            User user2 = dataSnapshot.getValue(User.class);
-                            ImageLoader.getInstance().displayImage(user2.getProfileUrl(),
-                                    holder.user2, options);
-                            holder.username2.setText(user2.getUsername());
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    }
-            );
-            if (ua.isLike()){
-                holder.activityText.setText(" liked post from ");
-            } else{
-                holder.activityText.setText("followed");
-            }
-
-
-            return view;
-        }
-    }
-
-    static class ViewHolder {
-        ImageView user1;
-        ImageView user2;
-        TextView activityText;
-        TextView username1;
-        TextView username2;
     }
 }
