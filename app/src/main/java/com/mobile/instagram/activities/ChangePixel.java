@@ -20,6 +20,7 @@ public class ChangePixel extends Activity implements View.OnClickListener {
     private Bitmap bitmap2;
     private Uri uri;
     private Uri uri2;
+    private boolean hasClick=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,25 +81,35 @@ public class ChangePixel extends Activity implements View.OnClickListener {
         int i = v.getId();
         if (i == R.id.reset_f){
             imageView.setImageBitmap(bitmap);
+            hasClick=false;
         }
         else if(i==R.id.fi_1){
             imageView.setImageBitmap(ImageHelper.handleImageNegative(bitmap));
             uri2 = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), ImageHelper.handleImageNegative(bitmap), null,null));
+            hasClick=true;
         }
         else if(i==R.id.fi_2){
             imageView.setImageBitmap(ImageHelper.handleImagePixelsOldPhoto(bitmap));
             uri2 = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), ImageHelper.handleImagePixelsOldPhoto(bitmap), null,null));
-
+            hasClick=true;
         } else if(i==R.id.fi_3){
             imageView.setImageBitmap(ImageHelper.handleImagePixelsRelief(bitmap));
             uri2 = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), ImageHelper.handleImagePixelsRelief(bitmap), null,null));
-
+            hasClick=true;
         }else if(i==R.id.store_continue_f){
-            uri2=uri;
-            Intent intent= new Intent(this,LastActivity.class);
-            intent.putExtra("uri",uri2);
-            startActivity(intent);
-            finish();
+            if(hasClick==false){
+                uri2=uri;
+                Intent intent= new Intent(this,LastActivity.class);
+                intent.putExtra("uri",uri2);
+                startActivity(intent);
+
+            }
+            if(hasClick==true){
+                Intent intent= new Intent(this,LastActivity.class);
+                intent.putExtra("uri",uri2);
+                startActivity(intent);
+
+            }
         }
     }
 
