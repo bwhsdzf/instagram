@@ -94,7 +94,7 @@ public class ChangePixel extends Activity implements View.OnClickListener {
             uri2 = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), ImageHelper.handleImagePixelsRelief(bitmap), null,null));
 
         }else if(i==R.id.store_continue_f){
-
+            uri2=uri;
             Intent intent= new Intent(this,LastActivity.class);
             intent.putExtra("uri",uri2);
             startActivity(intent);

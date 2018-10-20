@@ -1,8 +1,11 @@
 package com.mobile.instagram.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -26,6 +29,8 @@ import com.mobile.instagram.fragments.FragmentUserFeed;
 import com.mobile.instagram.R;
 import com.mobile.instagram.models.User;
 import com.mobile.instagram.util.LocationService;
+
+import java.io.IOException;
 
 public class NavigationActivity extends AppCompatActivity implements
         FragmentUserFeed.OnFragmentInteractionListener,
@@ -92,9 +97,12 @@ public class NavigationActivity extends AppCompatActivity implements
         showNav(R.id.navigation_user_feed);
     }
 
-    public static Context getContext(){
-        return context;
-    }
+    public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
+        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+        if(requestCode==1) { }
+        else if(requestCode==2){ }}
+
+        public static Context getContext(){return context; }
 
 
     private void init(){
