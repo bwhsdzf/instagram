@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/snow"
     tools:context=".activities.PostActivity">
 
     <EditText
@@ -13,70 +14,63 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="137dp"
-        android:layout_marginLeft="137dp"
-        android:layout_marginTop="75dp"
+        android:layout_marginStart="139dp"
+        android:layout_marginLeft="139dp"
+        android:layout_marginTop="93dp"
         android:ems="10"
         android:inputType="textMultiLine" />
 
     <ImageView
         android:id="@+id/postImage"
-        android:layout_width="183dp"
-        android:layout_height="215dp"
+        android:layout_width="349dp"
+        android:layout_height="366dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="169dp"
+        android:layout_marginBottom="72dp"
         app:srcCompat="@mipmap/ic_upload_profile" />
 
     <Button
         android:id="@+id/button7"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="59dp"
+        android:layout_height="57dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="14dp"
-        android:layout_marginLeft="14dp"
-        android:text="Button" />
+        android:layout_marginStart="9dp"
+        android:layout_marginLeft="9dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/cancel" />
 
     <Button
         android:id="@+id/post"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="59dp"
+        android:layout_height="57dp"
         android:layout_alignParentTop="true"
+        android:layout_marginStart="-55dp"
+        android:layout_marginTop="7dp"
         android:layout_toEndOf="@+id/postImage"
-        android:text="Button" />
+        android:background="@drawable/continue" />
 
     <TextView
         android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="92dp"
+        android:layout_height="36dp"
         android:layout_alignStart="@+id/button7"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="90dp"
-        android:text="content" />
-
-    <TextView
-        android:id="@+id/是否加Gps"
-        android:layout_width="128dp"
-        android:layout_height="44dp"
-        android:layout_alignEnd="@+id/button7"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="-70dp"
-        android:layout_marginBottom="66dp"
-        android:text="TextView" />
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="102dp"
+        android:text="Post content:" />
 
     <Switch
         android:id="@+id/gps_switch"
-        android:layout_width="wrap_content"
+        android:layout_width="175dp"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/postButton"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="61dp"
-        android:layout_marginRight="61dp"
-        android:layout_marginBottom="78dp"
-        android:text="Switch" />
+        android:layout_marginEnd="106dp"
+        android:layout_marginRight="106dp"
+        android:layout_marginBottom="33dp"
+        android:text="Need GPS or not?" />
 
 </RelativeLayout>
