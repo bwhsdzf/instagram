@@ -88,6 +88,11 @@
 
         </LinearLayout>
 
+        <android:View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark" />
+
         <LinearLayout
             android:id="@+id/profileFollowing"
             android:layout_width="0dp"
@@ -114,6 +119,10 @@
                 android:text="@string/title_following" />
         </LinearLayout>
 
+        <android:View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark" />
 
         <LinearLayout
             android:id="@+id/profileFollowers"
@@ -142,12 +151,19 @@
         </LinearLayout>
 
     </LinearLayout>
+    <android:View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/profileStatus"
+        android:layout_margin="5dp"
+        android:background="@color/colorPrimaryDark"/>
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/profileStatus"
+        android:layout_below="@+id/line"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_marginStart="17dp"
@@ -162,9 +178,10 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
-        android:columnWidth="90dip"
+        android:columnWidth="90dp"
         android:gravity="center"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="10dip" />
+        android:horizontalSpacing="2dp"
+        android:verticalSpacing="2dp" />
 </RelativeLayout>

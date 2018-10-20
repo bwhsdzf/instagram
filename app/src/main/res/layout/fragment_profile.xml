@@ -15,6 +15,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:contentDescription="@string/prompt_username"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_profile" />
 
     <TextView
@@ -38,7 +39,7 @@
         android:layout_marginTop="55dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:background="@android:color/holo_red_light"
+        android:background="@drawable/logout_roundedbutton"
         android:text="@string/sign_out" />
 
     <LinearLayout
@@ -77,6 +78,11 @@
 
         </LinearLayout>
 
+        <android:View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark" />
+
         <LinearLayout
             android:id="@+id/FragmentFollowing"
             android:layout_width="0dp"
@@ -103,6 +109,10 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
+        <android:View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimaryDark" />
 
         <LinearLayout
             android:id="@+id/FragmentFollowers"
@@ -132,11 +142,19 @@
 
     </LinearLayout>
 
+    <android:View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/fragmentStatus"
+        android:layout_margin="5dp"
+        android:background="@color/colorPrimaryDark"/>
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fragmentStatus"
+        android:layout_below="@+id/line"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_marginStart="17dp"
@@ -145,40 +163,18 @@
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/toPost"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="-1dp"
-        android:layout_marginEnd="152dp"
-        android:layout_marginRight="152dp"
-        android:text="Button" />
-
     <GridView
         android:id="@+id/fragmentPictureView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toPost"
+        android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
-        android:columnWidth="90dip"
+        android:columnWidth="90dp"
         android:gravity="center"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="10dip" />
-
-    <Button
-        android:id="@+id/toProfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginStart="33dp"
-        android:layout_marginLeft="33dp"
-        android:text="Button" />
+        android:horizontalSpacing="2dp"
+        android:verticalSpacing="2dp" />
 
 
 </RelativeLayout>

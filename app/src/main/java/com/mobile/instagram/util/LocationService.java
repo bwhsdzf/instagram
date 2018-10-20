@@ -5,6 +5,16 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +42,7 @@ public class LocationService {
     /**
      * Local constructor
      */
-    private LocationService(Context context )     {
+    private LocationService( Context context )     {
         selfContext = context;
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         geocoder = new Geocoder(context, Locale.getDefault());

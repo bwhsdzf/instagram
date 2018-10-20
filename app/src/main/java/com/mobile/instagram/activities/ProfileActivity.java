@@ -1,5 +1,7 @@
 package com.mobile.instagram.activities;
 
+import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.mobile.instagram.R;
@@ -8,9 +10,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import	android.support.v4.graphics.drawable.*;
+
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +24,10 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
+import com.mobile.instagram.adapters.PostWallAdapter;
+
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,14 +39,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private String uidString;
     private User currentUser;
 
+    private ArrayList<Post> posts;
+
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private StorageReference mStorageRef;
 
-    private boolean followed;
-
     private TextView username;
-    private TextView posts;
+    private TextView postsCount;
+    private int postsCountInt;
     private TextView followers;
     private TextView following;
     private ImageView profilePhoto;
@@ -57,6 +66,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         Intent it = getIntent();
         uidString = it.getStringExtra("uid");
         System.out.print("uid is" + uidString);
+        Bundle bundle = it.getBundleExtra("bundle");
+        if(bundle!= null){
+            currentUser = bundle.getParcelable("currentUser");
+        }
 
         followButton = findViewById(R.id.profileFollowButton);
         followButton.setOnClickListener(this);
@@ -64,63 +77,32 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         unfollowButton.setOnClickListener(this);
         unfollowButton.setVisibility(View.GONE);
 
+
+
         this.username = findViewById(R.id.profileUserName);
-        this.posts = findViewById(R.id.profilePostsNum);
+        this.postsCount = findViewById(R.id.profilePostsNum);
         this.followers = findViewById(R.id.profileFollowerNum);
         this.following = findViewById(R.id.profileFollowingNum);
         this.profilePhoto = findViewById(R.id.userProfile);
+        this.pictureView = findViewById(R.id.pictureView);
+        postsCount.setText("0");
         init();
     }
-//    @Override
-//    public void onStart(){
-//        super.onResume();
-//        init();
-//    }
+
 
     private void init(){
-        mDatabase.child("users").child(uidString).addListenerForSingleValueEvent(new ValueEventListener() {
+        posts = new ArrayList<>();
+        mDatabase.child("users").child(uidString).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 User getUser = dataSnapshot.getValue(User.class);
-                username.setText(getUser.getUsername());
                 user = getUser;
-//                Log.d(TAG, user.posts.toString() );
-//                Integer num = new Integer(user.posts.size()-1);
-//                following.setText(new Integer(user.following.size()-1).toString());
-//                followers.setText(new Integer(user.followers.size()-1).toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User getUser = dataSnapshot.getValue(User.class);
-                currentUser = getUser;
-//                Log.d(TAG, user.posts.toString() );
-//                Integer num = new Integer(user.posts.size()-1);
-//                following.setText(new Integer(user.following.size()-1).toString());
-//                followers.setText(new Integer(user.followers.size()-1).toString());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-        mDatabase.child("user-posts").child(uidString).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
-                    posts.setText("0");
-                }
-                else{
-                    int postsCount = 0;
-                    for (DataSnapshot ds: dataSnapshot.getChildren()){
-                        postsCount ++;
-                    }
-                    posts.setText(Integer.toString(postsCount));
+                username.setText(user.getUsername());
+                following.setText(Integer.toString(user.getFollowingCount()));
+                followers.setText(Integer.toString(user.getFollowerCount()));
+                if (mAuth.getUid().equals( getUser.getUid())){
+                    followButton.setVisibility(View.GONE);
+                    unfollowButton.setVisibility(View.GONE);
                 }
             }
 
@@ -128,48 +110,57 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
-        mDatabase.child("user-follower").child(uidString).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("user-posts").child(uidString).limitToFirst(50).addChildEventListener(new ChildEventListener() {
+
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
-                    followers.setText("0");
-                }
-                else{
-                    int followerCount = 0;
-                    for (DataSnapshot ds: dataSnapshot.getChildren()){
-                        followerCount ++;
-                        if (ds.getValue(User.class)!= null){
-                            if (ds.getValue(User.class).getUid().equals(currentUser.getUid())){
-                                followButton.setVisibility(View.GONE);
-                                unfollowButton.setVisibility(View.VISIBLE);
-                            }
-                        }
-                    }
-                    followers.setText(Integer.toString(followerCount));
-                }
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, String s) {
+                postsCountInt ++;
+                postsCount.setText(Integer.toString(postsCountInt));
+                posts.add(dataSnapshot.getValue(Post.class));
+            }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            }
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
             }
         });
-        mDatabase.child("user-following").child(uidString).addValueEventListener(new ValueEventListener() {
+        mDatabase.child("user-following").child(mAuth.getUid()).addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (!dataSnapshot.exists()){
-                    following.setText("0");
-                }
-                else{
-                    int followingCount = 0;
-                    for (DataSnapshot ds: dataSnapshot.getChildren()){
-                        followingCount ++;
-                    }
-                    following.setText(Integer.toString(followingCount));
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                User following = dataSnapshot.getValue(User.class);
+                if(uidString.equals(following.getUid())){
+                    followButton.setVisibility(View.GONE);
+                    unfollowButton.setVisibility(View.VISIBLE);
                 }
             }
 
             @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
 
@@ -187,11 +178,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 Log.d(TAG, exception.getMessage());
             }
         });
-
-//        if(followed){
-//            followButton.setVisibility(View.GONE);
-//            unfollowButton.setVisibility(View.VISIBLE);
-//        }
+        pictureView.setAdapter(new PostWallAdapter(this,this.posts));
+        pictureView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                startImagePagerActivity(i);
+            }
+        });
     }
 
     @Override
@@ -209,7 +202,17 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void followUser(){
         Map<String, Object> childUpdate = new HashMap<String, Object>();
         childUpdate.put("user-following/"+currentUser.getUid()+"/"+user.getUid(), user);
+        childUpdate.put("users/"+currentUser.getUid()+"/"+"followingCount",
+                currentUser.getFollowingCount()+1);
         childUpdate.put("user-follower/"+user.getUid()+"/"+currentUser.getUid(), currentUser);
+        childUpdate.put("users/"+user.getUid()+"/"+"followerCount",
+                user.getFollowerCount()+1);
+        UserActivity ua = new UserActivity(currentUser.getUid(),user.getUid(),
+                false,"0", Calendar.getInstance().getTimeInMillis());
+        String activityKey = mDatabase.child("user-activities").child(currentUser.getUid()).push().
+                getKey();
+        childUpdate.put("user-activities/"+ currentUser.getUid()+"/"+activityKey, ua);
+        childUpdate.put("activities-user/"+user.getUid()+"/"+activityKey,ua);
         mDatabase.updateChildren(childUpdate);
         Toast.makeText(ProfileActivity.this, "Followed this user",
                 Toast.LENGTH_LONG).show();
@@ -220,10 +223,25 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void unfollowUser(){
         mDatabase.child("user-following").child(currentUser.getUid()).child(user.getUid()).removeValue();
         mDatabase.child("user-follower").child(user.getUid()).child(currentUser.getUid()).removeValue();
+        Map<String, Object> childUpdate = new HashMap<String, Object>();
+        childUpdate.put("users/"+currentUser.getUid()+"/"+"followingCount",
+                currentUser.getFollowingCount()-1);
+        childUpdate.put("users/"+user.getUid()+"/"+"followerCount",
+                user.getFollowerCount()-1);
+        mDatabase.updateChildren(childUpdate);
         Toast.makeText(ProfileActivity.this, "Unfollowed this user",
                 Toast.LENGTH_LONG).show();
         unfollowButton.setVisibility(View.GONE);
         followButton.setVisibility(View.VISIBLE);
+    }
+
+    private void startImagePagerActivity(int position) {
+        Intent intent = new Intent(this, ImagePagerActivity.class);
+        Bundle b = new Bundle();
+        b.putParcelableArrayList("posts", (ArrayList<? extends Parcelable>) posts);
+        intent.putExtra("bundle",b);
+        intent.putExtra("position",position);
+        startActivity(intent);
     }
 
     @Override
@@ -235,4 +253,5 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             unfollowUser();
         }
     }
+
 }

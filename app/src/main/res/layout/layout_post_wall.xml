@@ -9,6 +9,15 @@
         android:layout_height="90dip"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
         android:src="@drawable/ic_photo" />
+
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
 
 </RelativeLayout>

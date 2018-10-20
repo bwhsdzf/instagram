@@ -1,13 +1,23 @@
 package com.mobile.instagram.fragments;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mobile.instagram.R;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,7 +31,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.*;
 import com.google.firebase.database.*;
 import com.mobile.instagram.models.User;
-import com.mobile.instagram.models.relationalModels.UserPosts;
 import com.mobile.instagram.activities.PermissionsChecker;
 import android.Manifest;
 import android.content.ContentUris;
@@ -59,6 +68,13 @@ import com.mobile.instagram.activities.PermissionsActivity;
 
 
 
+import com.mobile.instagram.models.User;
+import com.mobile.instagram.util.LocationService;
+
+import java.util.List;
+import java.util.Locale;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 
 /**
@@ -70,19 +86,14 @@ import com.mobile.instagram.activities.PermissionsActivity;
  * create an instance of this fragment.
  */
 public class FragmentPhoto extends Fragment implements View.OnClickListener{
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private EditText postMessage;
-    private ImageView photo;
-
-    private FirebaseUser currentUser;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
 
-    private User userModel;
-    private UserPosts userposts;
+    private static final String TAG = "FragmentPhoto";
+    private static final int REQUEST_GPS = 1;
+    private LocationService ls;
+
+    private User currentUser;
 
     private boolean hasPicture = false;
     private Button album,camera,post;
@@ -97,6 +108,7 @@ public class FragmentPhoto extends Fragment implements View.OnClickListener{
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.CAMERA};
     private boolean isClickCamera;
+
     public FragmentPhoto() {
         // Required empty public constructor
     }
@@ -108,16 +120,17 @@ public class FragmentPhoto extends Fragment implements View.OnClickListener{
      * @return A new instance of fragment FragmentPhoto.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentPhoto newInstance() {
+    public static FragmentPhoto newInstance(User currentUser) {
         FragmentPhoto fragment = new FragmentPhoto();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
+        fragment.currentUser = currentUser;
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
     }
 
     @Override
@@ -133,33 +146,8 @@ public class FragmentPhoto extends Fragment implements View.OnClickListener{
 
         isClickCamera=true;
         mPermissionsChecker = new PermissionsChecker(getActivity());
-        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        mDatabaseRef.child("user-posts").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserPosts up = dataSnapshot.getValue(UserPosts.class);
-                userposts = up;
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        mDatabaseRef.child("user-posts").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                UserPosts up = dataSnapshot.getValue(UserPosts.class);
-                userposts = up;
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
         return view;
     }
 
@@ -174,17 +162,6 @@ public class FragmentPhoto extends Fragment implements View.OnClickListener{
                 handleImageBeforeKitKat(imageReturnedIntent);
             }
             cropPhoto();}
-                /*if(resultCode == RESULT_OK){
-                    Uri selectedImage = imageReturnedIntent.getData();
-                    try {
-                        Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(this.getContentResolver(),
-                                selectedImage);
-                        photo.setImageBitmap(bitmap);
-                        hasPicture = true;
-                    } catch (Exception e){
-                        Log.d(TAG, "context not found");
-                    }
-                }*/
 
         else if(requestCode==2){
             try{
@@ -192,11 +169,6 @@ public class FragmentPhoto extends Fragment implements View.OnClickListener{
             }catch(IOException e){
                 e.printStackTrace();
             }
-            //photo.setImageBitmap(bitmap);
-            //hasPicture=true;
-            //ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            //bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            //byte[] datas = baos.toByteArray();
             Intent intent=new Intent(getActivity(),PrimaryColor.class);
             intent.putExtra("uri",outputUri);
             startActivity(intent);
@@ -314,6 +286,22 @@ public class FragmentPhoto extends Fragment implements View.OnClickListener{
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_GPS: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    ls = LocationService.getLocationManager(this.getActivity());
+                } else {
+                }
+                return;
+            }
+        }
     }
 
     /**

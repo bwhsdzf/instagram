@@ -8,8 +8,8 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.*;
 import com.google.firebase.database.*;
-import com.mobile.instagram.models.User;
-import com.mobile.instagram.models.relationalModels.UserPosts;
+import com.mobile.instagram.util.LocationService;
+
 import android.Manifest;
 import android.content.ContentUris;
 import android.database.Cursor;
@@ -22,7 +22,6 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,9 +47,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     private FirebaseUser currentUser;
     private StorageReference mStorageRef;
     private DatabaseReference mDatabaseRef;
-
-    private User userModel;
-    private UserPosts userposts;
 
     private boolean hasPicture = false;
     private Button album,camera,post;
@@ -82,35 +78,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
-
-
-        mDatabaseRef.child("users").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            User user = dataSnapshot.getValue(User.class);
-            userModel = user;
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    });
-
-        mDatabaseRef.child("user-posts").child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            UserPosts up = dataSnapshot.getValue(UserPosts.class);
-            userposts = up;
-        }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-        }
-    });
-
-}
+    }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
@@ -167,23 +135,14 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                 }}
         }
 
-
     private void uploadPost(){
         if(!validateForm()){
         }
         else{
-
-            long time = Calendar.getInstance().getTimeInMillis();
-            String uid = currentUser.getUid();
-            String key = mDatabaseRef.child("posts").push().getKey();
-            Post post = new Post(time,key,uid,postMessage.getText().toString(),"0",
-                    new ArrayList<String>(),new ArrayList<Comment>());
-            Map<String, Object> postValue = post.toMap();
-
-            Map<String, Object> childUpdates = new HashMap<>();
-            childUpdates.put("posts/"+key, postValue);
-            childUpdates.put("user-posts/"+uid+"/"+key, postValue);
-            mDatabaseRef.updateChildren(childUpdates);
+            final long time = Calendar.getInstance().getTimeInMillis();
+            final String uid = currentUser.getUid();
+            final String key = mDatabaseRef.child("posts").push().getKey();
+            final double[] coor = LocationService.getCoordinates();
 
             Bitmap bitmap = ((BitmapDrawable) photo.getDrawable()).getBitmap();
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -191,8 +150,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             final byte[] data = baos.toByteArray();
             Toast.makeText(PostActivity.this, "Uploading photo",
                     Toast.LENGTH_LONG).show();
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-            StorageReference profileRef = storageRef.child("post_images/" + key + ".jpg");
+            StorageReference profileRef = mStorageRef.child("post_images/" + key + ".jpg");
             UploadTask uploadTask = profileRef.putBytes(data);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -205,6 +163,18 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Toast.makeText(PostActivity.this, "Upload success",
                             Toast.LENGTH_LONG).show();
+                    Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+                    while (!urlTask.isSuccessful());
+                    String downloadUrl = urlTask.getResult().toString();
+                    Post post = new Post(time,key,uid,postMessage.getText().toString(),
+                            downloadUrl,coor[0],coor[1],
+                            new ArrayList<String>(),new ArrayList<Comment>());
+                    Map<String, Object> postValue = post.toMap();
+
+                    Map<String, Object> childUpdates = new HashMap<>();
+                    childUpdates.put("posts/"+key, postValue);
+                    childUpdates.put("user-posts/"+uid+"/"+key, postValue);
+                    mDatabaseRef.updateChildren(childUpdates);
                     finish();
                 }
             });
