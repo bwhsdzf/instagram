@@ -1,4 +1,4 @@
-package com.mobile.instagram.util;
+package com.mobile.instagram.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.mobile.instagram.R;
 import com.mobile.instagram.models.Post;
 import com.mobile.instagram.models.User;
+import com.mobile.instagram.util.LocationService;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;

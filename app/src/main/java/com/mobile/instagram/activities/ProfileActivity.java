@@ -26,7 +26,7 @@ import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
 import com.google.firebase.storage.*;
-import com.mobile.instagram.util.PostWallAdapter;
+import com.mobile.instagram.adapters.PostWallAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -69,6 +69,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         Intent it = getIntent();
         uidString = it.getStringExtra("uid");
         System.out.print("uid is" + uidString);
+        Bundle bundle = it.getBundleExtra("bundle");
+        if(bundle!= null){
+            currentUser = bundle.getParcelable("currentUser");
+        }
 
         followButton = findViewById(R.id.profileFollowButton);
         followButton.setOnClickListener(this);
@@ -87,11 +91,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         postsCount.setText("0");
         init();
     }
-//    @Override
-//    public void onStart(){
-//        super.onResume();
-//        init();
-//    }
 
     private void init(){
         mDatabase.child("users").child(uidString).addValueEventListener(new ValueEventListener() {
@@ -108,16 +107,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
-        mDatabase.child("users").child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User getUser = dataSnapshot.getValue(User.class);
-                currentUser = getUser;
-            }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
@@ -224,6 +213,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         String activityKey = mDatabase.child("user-activities").child(currentUser.getUid()).push().
                 getKey();
         childUpdate.put("user-activities/"+ currentUser.getUid()+"/"+activityKey, ua);
+        childUpdate.put("activities-user/"+user.getUid()+"/"+activityKey,ua);
         mDatabase.updateChildren(childUpdate);
         Toast.makeText(ProfileActivity.this, "Followed this user",
                 Toast.LENGTH_LONG).show();

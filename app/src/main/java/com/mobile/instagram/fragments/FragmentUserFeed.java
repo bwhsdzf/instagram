@@ -27,7 +27,7 @@ import com.mobile.instagram.models.Comment;
 import com.mobile.instagram.models.Post;
 import com.mobile.instagram.models.User;
 import com.mobile.instagram.util.FirebasePushController;
-import com.mobile.instagram.util.PostAdapter;
+import com.mobile.instagram.adapters.PostAdapter;
 import com.mobile.instagram.util.PostLocationSorter;
 import com.mobile.instagram.util.PostTimeSorter;
 
