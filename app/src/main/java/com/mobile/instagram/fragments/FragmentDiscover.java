@@ -228,7 +228,6 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
                         recommendList.add(0,user);
                         if (recommendList.size()>10) recommendList.remove(10);
                         recommendAdaptor.notifyDataSetChanged();
-                        System.out.println("found recommend");
                     }
 
                     @Override
@@ -293,63 +292,6 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
         super.onDetach();
         mListener = null;
     }
-
-//    public void findMayKnow(User user){
-//        result.clear();
-//        final DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
-//        // Find followers are following who
-//        mDatabaseRef.child("user-follower").child(user.getUid()).addListenerForSingleValueEvent(
-//                new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        if(!dataSnapshot.exists()){
-//                        }else{
-//                            System.out.println("Looking at this user ");
-//                            for(DataSnapshot ds : dataSnapshot.getChildren()){
-//                                final User u = ds.getValue(User.class);
-//                                mDatabaseRef.child("user-following").child(u.getUid()).addChildEventListener(
-//                                        new ChildEventListener() {
-//                                            @Override
-//                                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                                                System.out.println("Found one following for " + u.getUsername());
-//                                                User following = dataSnapshot.getValue(User.class);
-//                                                if (result.size() < 100){
-//                                                    result.add(following);
-//                                                }
-//                                            }
-//
-//                                            @Override
-//                                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//                                            }
-//
-//                                            @Override
-//                                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-//
-//                                            }
-//
-//                                            @Override
-//                                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//
-//                                            }
-//
-//                                            @Override
-//                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                                            }
-//                                        }
-//                                );
-//                            }
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                }
-//        );
-//    }
 
     /**
      * This interface must be implemented by activities that contain this
