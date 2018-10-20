@@ -278,7 +278,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             } else if (v.getId() == commentButton.getId()){
                 if (!TextUtils.isEmpty(commentField.getText().toString())){
                 listenerRef.get().onCommentClicked(getAdapterPosition(), commentField.getText().toString());
-                commentField.clearComposingText();
+                commentField.getText().clear();
                 }
             } else if (v.getId() == unlikeButton.getId()){
                 listenerRef.get().onUnlikeClicked(getAdapterPosition());

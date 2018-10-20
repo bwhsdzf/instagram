@@ -105,6 +105,7 @@ public class FragmentActivityFeed extends Fragment {
         return view;
     }
 
+
     private void initBothList(){
         activities = new ArrayList<>();
         activitiesNotify = new ArrayList<>();
