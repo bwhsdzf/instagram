@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/snow"
     tools:context=".activities.PostActivity">
 
     <EditText
@@ -14,36 +13,53 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="24dp"
+        android:layout_marginStart="85dp"
         android:layout_marginLeft="24dp"
-        android:layout_marginTop="41dp"
+        android:layout_marginTop="80dp"
         android:ems="10"
         android:inputType="textMultiLine" />
 
     <ImageView
         android:id="@+id/postImage"
-        android:layout_width="129dp"
-        android:layout_height="128dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:layout_alignBottom="@+id/postMessage"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="4dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginBottom="-74dp"
+        android:layout_marginEnd="85dp"
+        android:layout_marginRight="205dp"
+        android:layout_marginBottom="-275dp"
         app:srcCompat="@mipmap/ic_upload_profile" />
 
-    <Button
-        android:id="@+id/postButton"
-        style="@style/Widget.AppCompat.Button.Small"
-        android:layout_width="109dp"
-        android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/postMessage"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="-15dp"
-        android:layout_marginBottom="231dp"
-        android:background="@drawable/button_post"
-        android:text="Post"
-        android:textColor="@color/common_google_signin_btn_text_dark_pressed"
-        android:textColorLink="@color/common_google_signin_btn_text_dark_default" />
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:gravity="bottom"
+        android:stretchColumns="0,1,2">
+
+        <TableRow>
+
+            <Button
+                android:id="@+id/takephoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="takePhoto" />
+
+            <Button
+                android:id="@+id/album"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="album" />
+
+            <Button
+                android:id="@+id/post"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="post" />
+        </TableRow>
+    </TableLayout>
 
 </RelativeLayout>
