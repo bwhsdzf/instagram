@@ -4,29 +4,35 @@ import com.google.firebase.auth.FirebaseUser;
 import com.mobile.instagram.R;
 import com.mobile.instagram.models.Comment;
 import com.mobile.instagram.models.Post;
-
 import com.google.android.gms.tasks.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.*;
 import com.google.firebase.database.*;
 import com.mobile.instagram.util.LocationService;
 
+import android.Manifest;
+import android.content.ContentUris;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.location.Location;
 import android.net.Uri;
+import android.os.Build;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
@@ -43,6 +49,16 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     private DatabaseReference mDatabaseRef;
 
     private boolean hasPicture = false;
+    private Button album,camera,post;
+    private Uri imageUri;
+    private Uri outputUri;
+    private Bitmap bitmap;
+    private String imagePath;
+    private PermissionsChecker mPermissionsChecker; // permission detecter
+    static final String[] PERMISSIONS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.CAMERA};
+    private boolean isClickCamera;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,10 +66,15 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_post);
         postMessage = findViewById(R.id.postMessage);
         photo = findViewById(R.id.postImage);
-
-        findViewById(R.id.postButton).setOnClickListener(this);
+        album = (Button) findViewById(R.id.album);
+        camera=(Button) findViewById(R.id.takephoto);
+        post=(Button)findViewById(R.id.post);
+        post.setOnClickListener(this);
         photo.setOnClickListener(this);
-
+        album.setOnClickListener(this);
+        camera.setOnClickListener(this);
+        isClickCamera=true;
+        mPermissionsChecker = new PermissionsChecker(this);
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mDatabaseRef = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
@@ -61,9 +82,15 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
     protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-        switch(requestCode) {
-            case 1:
-                if(resultCode == RESULT_OK){
+        if(requestCode==1) {
+
+                if (Build.VERSION.SDK_INT >= 19) {
+                    handleImageOnKitKat(imageReturnedIntent);
+                } else {
+                    handleImageBeforeKitKat(imageReturnedIntent);
+                }
+                cropPhoto();}
+                /*if(resultCode == RESULT_OK){
                     Uri selectedImage = imageReturnedIntent.getData();
                     try {
                         Bitmap bitmap = android.provider.MediaStore.Images.Media.getBitmap(this.getContentResolver(),
@@ -73,10 +100,40 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                     } catch (Exception e){
                         Log.d(TAG, "context not found");
                     }
+                }*/
+
+            else if(requestCode==2){
+                try{
+                    bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(outputUri));
+                }catch(IOException e){
+                    e.printStackTrace();
                 }
-                break;
+                //photo.setImageBitmap(bitmap);
+                //hasPicture=true;
+                //ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                //bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                //byte[] datas = baos.toByteArray();
+                Intent intent=new Intent(this,PrimaryColor.class);
+                intent.putExtra("uri",outputUri);
+                startActivity(intent);
+                finish();
+            }
+
+
+            else if(requestCode==3){
+                if (resultCode == PermissionsActivity.PERMISSIONS_DENIED) {
+                    finish();
+                }
+                else {
+                    if (isClickCamera) {
+                        startActivity(new Intent(this,CustomCamera.class));
+                        finish();
+                    }
+                    else {
+                        selectFromAlbum();
+                    }
+                }}
         }
-    }
 
     private void uploadPost(){
         if(!validateForm()){
@@ -146,13 +203,111 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v){
+        photo.setImageBitmap(bitmap);
         int i = v.getId();
-        if (i == R.id.postImage){
-            Intent pickPhoto = new Intent(Intent.ACTION_PICK,
-                    android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
-        } else if (i == R.id.postButton){
+        if (i == R.id.album){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (mPermissionsChecker.lacksPermissions(PERMISSIONS)) {
+                    startPermissionsActivity();
+                }
+                else {
+                    selectFromAlbum();
+                }
+            }
+            else {
+                selectFromAlbum();
+            }
+            isClickCamera = false;
+            //Intent pickPhoto = new Intent(Intent.ACTION_PICK,
+            //        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            //startActivityForResult(pickPhoto , 1);//one can be replaced with any action code
+        }
+        else if (i == R.id.post){
             uploadPost();
         }
+        else if(i==R.id.takephoto){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (mPermissionsChecker.lacksPermissions(PERMISSIONS)) {
+                    startPermissionsActivity();
+                }
+                else {
+                    startActivity(new Intent(this,CustomCamera.class));
+                    finish();
+                }
+            }
+            else {
+                startActivity(new Intent(this,CustomCamera.class));
+                finish();
+            }
+        }
+    }
+
+    private void selectFromAlbum() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+        startActivityForResult(intent, 1);
+    }
+
+    private void cropPhoto() {
+        File file = new FileStorage().createCropFile();
+        outputUri = Uri.fromFile(file);
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        intent.setDataAndType(imageUri, "image/*");
+        intent.putExtra("crop", "true");
+        intent.putExtra("aspectX", 98);
+        intent.putExtra("aspectY", 99);
+        intent.putExtra("scale", true);
+        intent.putExtra("return-data", false);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,outputUri);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+        intent.putExtra("noFaceDetection", true);
+        startActivityForResult(intent, 2);
+    }
+
+    private void handleImageOnKitKat(Intent data) {
+        imagePath = null;
+        imageUri = data.getData();
+        if (DocumentsContract.isDocumentUri(this, imageUri)) {
+            String docId = DocumentsContract.getDocumentId(imageUri);
+            if ("com.android.providers.media.documents".equals(imageUri.getAuthority())) {
+                String id = docId.split(":")[1];
+                String selection = MediaStore.Images.Media._ID + "=" + id;
+                imagePath = getImagePath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, selection);
+            }
+            else if ("com.android.downloads.documents".equals(imageUri.getAuthority())) {
+                Uri contentUri = ContentUris.withAppendedId(Uri.parse("content://downloads/public_downloads"), Long.valueOf(docId));
+                imagePath = getImagePath(contentUri, null);
+            }
+        }
+        else if ("content".equalsIgnoreCase(imageUri.getScheme())) {
+            imagePath = getImagePath(imageUri, null);
+        }
+        else if ("file".equalsIgnoreCase(imageUri.getScheme())) {
+            imagePath = imageUri.getPath();
+        }
+    }
+
+    private void handleImageBeforeKitKat(Intent intent) {
+        imageUri = intent.getData();
+        imagePath = getImagePath(imageUri, null);
+    }
+
+    private String getImagePath(Uri uri, String selection) {
+        String path = null;
+        Cursor cursor = getContentResolver().query(uri, null, selection, null, null);
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            }
+            cursor.close();
+        }
+        return path;
+    }
+
+    private void startPermissionsActivity() {
+        PermissionsActivity.startActivityForResult(this, 3, PERMISSIONS);
     }
 }

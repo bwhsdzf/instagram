@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/snow"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/reset_f"
+        android:layout_width="59dp"
+        android:layout_height="57dp"
+        android:layout_alignTop="@+id/store_continue_f"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/cancel" />
+
+    <Button
+        android:id="@+id/store_continue_f"
+        android:layout_width="59dp"
+        android:layout_height="57dp"
+        android:layout_alignEnd="@+id/spinner_f"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/continue1"
+        android:layout_marginEnd="7dp"
+        />
+
+    <ImageView
+        android:id="@+id/imageView_f"
+        android:layout_width="368dp"
+        android:layout_height="484dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="21dp" />
+
+    <Spinner
+        android:id="@+id/spinner_f"
+        android:layout_width="363dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="432dp" />
+</RelativeLayout>

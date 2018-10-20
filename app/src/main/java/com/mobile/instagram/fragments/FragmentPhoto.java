@@ -48,8 +48,6 @@ public class FragmentPhoto extends Fragment implements  View.OnClickListener{
     private LocationManager locationManager;
     private String provider;
     private Location location;
-    private TextView gpsX;
-    private TextView gpsY;
 
     private OnFragmentInteractionListener mListener;
 
@@ -83,9 +81,6 @@ public class FragmentPhoto extends Fragment implements  View.OnClickListener{
         // Inflate the layout for this fragment
 
         View view = inflater.inflate(R.layout.fragment_photo, container, false);
-        gpsX = view.findViewById(R.id.gpsX);
-        gpsY =view.findViewById(R.id.gpsY);
-        view.findViewById(R.id.gpsTest).setOnClickListener(this);
 
         return view;
     }
@@ -148,16 +143,11 @@ public class FragmentPhoto extends Fragment implements  View.OnClickListener{
     private void printGPS(){
         if (ls == null) ls = LocationService.getLocationManager(getActivity());
         double[] coor = ls.getCoordinates();
-        gpsX.setText(Double.toString(coor[0]));
-        gpsY.setText(Double.toString(coor[1]));
         System.out.println(ls.getCity(coor[0],coor[1]));
     }
 
     public void onClick(View view){
         int i = view.getId();
-        if( i == R.id.gpsTest){
-            printGPS();
-        }
     }
 
 }

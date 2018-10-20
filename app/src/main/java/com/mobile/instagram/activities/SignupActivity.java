@@ -15,17 +15,13 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.content.Intent;
 import android.net.Uri;
-
 import com.google.android.gms.tasks.*;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.*;
-
-
 import com.google.firebase.database.*;
 import com.mobile.instagram.R;
 import  com.mobile.instagram.models.User;
-
 import java.io.*;
 
 public class SignupActivity extends AppCompatActivity implements
@@ -86,6 +82,7 @@ public class SignupActivity extends AppCompatActivity implements
                             Log.d(TAG, "write to db success");
                             Toast.makeText(SignupActivity.this, "Successfully created user",
                                     Toast.LENGTH_SHORT).show();
+
                             if (selectedPhoto) {
                                 mProfilePhoto.setDrawingCacheEnabled(true);
                                 mProfilePhoto.buildDrawingCache();

@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import com.mobile.instagram.R;
 import com.mobile.instagram.models.*;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -21,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.GridView;
-
 import com.google.android.gms.tasks.*;
 import com.google.firebase.database.*;
 import com.google.firebase.auth.*;
@@ -91,11 +89,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         init();
     }
 
-//    @Override
-//    public void onResume(){
-//        super.onResume();
-//        init();
-//    }
 
     private void init(){
         posts = new ArrayList<>();
