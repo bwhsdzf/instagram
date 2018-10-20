@@ -1,7 +1,6 @@
 package com.mobile.instagram.activities;
 
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.app.Activity;
@@ -18,24 +17,25 @@ import android.widget.ImageView;
 import android.net.Uri;
 import com.mobile.instagram.R;
 
-public class ResultActivity extends Activity/* implements View.OnClickListener*/{
+
+public class ResultActivity extends Activity implements View.OnClickListener{
     private Uri outputUri;
-    private Uri imageUri;
+    private Uri olduri;
     private Bitmap bitmap2;
-    private Bitmap bitmap3;
-    private Bitmap bitmap4;
     private Uri uri;
     private Uri uri2;
-    //private Button a;
+    private Button a;
+    private ImageView imageView;
+    private String name="test";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.result);
-        //a=(Button)findViewById(R.id.finishcapture);
-        //a.setOnClickListener(ResultActivity.this);
+        a = (Button) findViewById(R.id.finishcapture);
+        a.setOnClickListener(ResultActivity.this);
         String path = getIntent().getStringExtra("picPath");
-        imageUri = Uri.fromFile(new File(path));
-        ImageView imageView = (ImageView) findViewById(R.id.pic);
+        olduri = Uri.fromFile(new File(path));
+        imageView = (ImageView) findViewById(R.id.pic);
         try {
             FileInputStream fis = new FileInputStream(path);
             Bitmap bitmap = BitmapFactory.decodeStream(fis);
@@ -43,73 +43,56 @@ public class ResultActivity extends Activity/* implements View.OnClickListener*/
             matrix.setRotate(90);
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             bitmap2 = bitmap;
-            imageView.setImageBitmap(bitmap2);
+            imageView.setImageBitmap(bitmap);
+            System.out.println("111");
+            //saveMyBitmap(bitmap2,name);
             //bitmap4 = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-            //uri2 = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap4, null,null));
+            uri2 = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap2, null, null));
             //System.out.println("333");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
 
-        Button a;
-        a=(Button)findViewById(R.id.finishcapture);
-        a.setOnClickListener(new View.OnClickListener() {
-
-        public void onClick(View view) {
-           Intent intent=new Intent(ResultActivity.this,PrimaryColor.class);
-             intent.putExtra("bitmap",bitmap2);
-               startActivity(intent);
-               finish();
-             }
-           });
         }
     }
+        public void onClick (View v){
+            int i = v.getId();
+            if (i == R.id.finishcapture) {
+                cropPhoto(uri2);
+            }
+        }
 
-    /*public void onClick(View v) {
+        protected void onActivityResult ( int requestCode, int resultCode, Intent
+        imageReturnedIntent){
+            super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
+            switch (requestCode) {
+                case 2:
+                    if (resultCode == RESULT_OK) {
+                        Intent intent = new Intent(this, PrimaryColor.class);
+                        intent.putExtra("uri", outputUri);
+                        startActivity(intent);
+                        finish();
+                    }
+                    break;
+            }
+        }
 
-        int i = v.getId();
-        if (i == R.id.finishcapture) {
-            System.out.println("222");
-            Intent intent = new Intent();
-
-            intent.putExtra("uri",uri2);
-            System.out.println("222222");
-            startActivityForResult(intent, 1);
+        private void cropPhoto (Uri imageUri){
+            File file = new FileStorage().createCropFile();
+            outputUri = Uri.fromFile(file);
+            Intent intent = new Intent("com.android.camera.action.CROP");
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            }
+            intent.setDataAndType(uri, "image/*");
+            intent.setDataAndType(imageUri, "image/*");
+            intent.putExtra("crop", "true");
+            intent.putExtra("aspectX", 98);
+            intent.putExtra("aspectY", 99);
+            intent.putExtra("scale", true);
+            intent.putExtra("return-data", false);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri);
+            intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+            intent.putExtra("noFaceDetection", true);
+            startActivityForResult(intent, 2);
         }
     }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
-        super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
-        switch (requestCode) {
-            case 2:
-                if (resultCode == RESULT_OK) {
-                    Bundle b = imageReturnedIntent.getExtras();
-                    bitmap3 = b.getParcelable("data");
-                    outputUri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap3, null,null));
-                    Intent intent=new Intent(this,PrimaryColor.class);
-                    intent.putExtra("uri",outputUri);
-                    startActivity(intent);
-                    finish();
-                }
-                break;
-            case 1:
-                System.out.println("111");
-                Intent intent=getIntent();
-                uri=intent.getParcelableExtra("uri");
-                doCrop(uri);
-                break;
-        }
-    }
-
-    private void doCrop(Uri uri){
-        Intent cropIntent = new Intent("com.android.camera.action.CROP");
-        cropIntent.setDataAndType(uri, "image/*");
-        cropIntent.putExtra("crop", "true");
-        cropIntent.putExtra("aspectX", 1);
-        cropIntent.putExtra("aspectY", 1);
-        cropIntent.putExtra("outputX", 256);
-        cropIntent.putExtra("outputY", 256);
-        cropIntent.putExtra("return-data", true);
-        startActivityForResult(cropIntent, 2);
-    }*/
-

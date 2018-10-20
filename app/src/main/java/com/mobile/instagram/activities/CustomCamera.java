@@ -144,9 +144,11 @@ public class CustomCamera extends Activity implements SurfaceHolder.Callback {
         if(mCamera!=null){
             mCamera.setPreviewCallback(null);
             mCamera.stopPreview();
+            mPreView.getHolder().removeCallback(this);
             mCamera.release();
             mCamera=null;
         }
+
     }
 
     public void surfaceCreated(SurfaceHolder holder){

@@ -13,7 +13,6 @@ import com.mobile.instagram.R;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-
 import java.io.IOException;
 
 public class PrimaryColor extends Activity implements SeekBar.OnSeekBarChangeListener{

@@ -1,18 +1,15 @@
 package com.mobile.instagram.activities;
 
-
 import com.google.firebase.auth.FirebaseUser;
 import com.mobile.instagram.R;
 import com.mobile.instagram.models.Comment;
 import com.mobile.instagram.models.Post;
-
 import com.google.android.gms.tasks.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.*;
 import com.google.firebase.database.*;
 import com.mobile.instagram.models.User;
 import com.mobile.instagram.models.relationalModels.UserPosts;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -27,7 +24,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
