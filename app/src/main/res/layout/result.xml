@@ -6,18 +6,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
+
     <Button
         android:id="@+id/finishcapture"
-        android:text="nextstep"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="Capture Result"
-        android:textSize="30sp" />
+        android:text="NEXT"
+        android:background="@drawable/roundedbutton"
+        android:textSize="30dp"/>
+
     <ImageView
         android:id="@+id/pic"
         android:layout_width="match_parent"

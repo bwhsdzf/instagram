@@ -28,9 +28,9 @@
             android:layout_height="57dp"
             android:layout_alignParentTop="true"
             android:layout_marginRight="10dp"
-            android:text="Back"
-            android:textColor="@color/black"
-            android:background="@drawable/roundedbutton" />
+            android:background="@drawable/roundedbutton"
+            android:text="Reset"
+            android:textColor="@color/black" />
     </RelativeLayout>
 
     <ImageView
