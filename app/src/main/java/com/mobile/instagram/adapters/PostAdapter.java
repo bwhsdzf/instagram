@@ -80,8 +80,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 .build();
 
         option2 = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.mipmap.ic_img_ept)
-                .showImageOnFail(R.mipmap.ic_img_err)
+                .showImageForEmptyUri(R.drawable.ic_profile)
+                .showImageOnFail(R.drawable.ic_profile)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .considerExifParams(true)

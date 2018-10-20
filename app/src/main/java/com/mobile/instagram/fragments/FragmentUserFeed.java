@@ -157,12 +157,10 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
                                     @Override
                                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                         Post post = dataSnapshot.getValue(Post.class);
-                                        System.out.println(post.getPostId());
                                         for(Post p : posts){
                                             if (p.getPostId().equals(post)){
                                                 posts.remove(p);
                                                 posts.add(post);
-                                                System.out.println("removed and added");
                                                 Collections.sort(posts, new PostTimeSorter());
                                                 pa.notifyDataSetChanged();
                                                 break;
@@ -212,12 +210,10 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
                     @Override
                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         Post post = dataSnapshot.getValue(Post.class);
-                        System.out.println(post.getPostId());
                         for(Post p : posts){
                             if (p.getPostId().equals(post)){
                                 posts.remove(p);
                                 posts.add(post);
-                                System.out.println("removed and added");
                                 Collections.sort(posts, new PostTimeSorter());
                                 pa.notifyDataSetChanged();
                                 break;
