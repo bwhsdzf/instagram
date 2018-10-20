@@ -41,10 +41,11 @@
 
     <ImageView
         android:id="@+id/postImageView"
-        android:layout_width="250dp"
+        android:layout_width="match_parent"
         android:layout_height="213dp"
         android:layout_below="@id/userView"
         android:layout_centerHorizontal="true"
+        android:background="@color/black"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="4dp"
@@ -75,18 +76,27 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="5dp"
-        android:textSize="15dp" />
+        android:textSize="13dp" />
 
     <Button
         android:id="@+id/commentButton"
         android:layout_width="wrap_content"
         android:layout_height="38dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/commentInput"
+        android:layout_alignTop="@+id/commentInput"
+        android:text="Comment" />
+
+    <EditText
+        android:id="@+id/commentInput"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/likeListView"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="10dp"
-        android:layout_marginTop="17dp"
-        android:text="Comment" />
-
+        android:layout_marginTop="12dp"
+        android:hint="Write down your comment" />
 
     <ProgressBar
         android:id="@+id/progressBar2"
@@ -97,16 +107,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="118dp" />
 
-    <EditText
-        android:id="@+id/commentInput"
-        android:layout_width="250dp"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/commentButton"
-        android:layout_marginStart="15dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="0dp"
-        android:layout_toRightOf="@+id/commentButton"
-        android:hint="Write down your comment" />
+
 
     <ImageView
         android:id="@+id/likeButton"

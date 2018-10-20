@@ -34,7 +34,7 @@ public class SearchListAdapter extends BaseAdapter {
         inflater = LayoutInflater.from(context);
         this.users = users;
         options = new DisplayImageOptions.Builder()
-                .showImageForEmptyUri(R.mipmap.ic_img_ept)
+                .showImageForEmptyUri(R.drawable.ic_profile)
                 .showImageOnFail(R.drawable.ic_profile)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)

@@ -1,6 +1,5 @@
 package com.mobile.instagram.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -18,7 +17,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.mobile.instagram.R;
-import com.mobile.instagram.fragments.FragmentActivityFeed;
 import com.mobile.instagram.models.User;
 import com.mobile.instagram.models.UserActivity;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -33,12 +31,12 @@ public class ActivityAdapter extends BaseAdapter {
 
     private LayoutInflater inflater;
 
-    private DisplayImageOptions options;
+    private DisplayImageOptions options1, options2;
 
     public ActivityAdapter(Context context, ArrayList<UserActivity> userActivities) {
         inflater = LayoutInflater.from(context);
         this.userActivities = userActivities;
-        options = new DisplayImageOptions.Builder()
+        options1 = new DisplayImageOptions.Builder()
                 .showImageForEmptyUri(R.mipmap.ic_img_ept)
                 .showImageOnFail(R.mipmap.ic_img_err)
                 .cacheInMemory(true)
@@ -85,7 +83,7 @@ public class ActivityAdapter extends BaseAdapter {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         User user1 = dataSnapshot.getValue(User.class);
                         ImageLoader.getInstance().displayImage(user1.getProfileUrl(),
-                                holder.user1, options);
+                                holder.user1, options1);
                         holder.activityText.setText(user1.getUsername());
 
                         if (ua.isLike()){
@@ -108,7 +106,7 @@ public class ActivityAdapter extends BaseAdapter {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         User user2 = dataSnapshot.getValue(User.class);
                         ImageLoader.getInstance().displayImage(user2.getProfileUrl(),
-                                holder.user2, options);
+                                holder.user2, options1);
                         if (user2.getUid().equals(FirebaseAuth.getInstance().getUid())) {
                             if (ua.isLike()){
                                 holder.activityText.setText(holder.activityText.getText().toString()

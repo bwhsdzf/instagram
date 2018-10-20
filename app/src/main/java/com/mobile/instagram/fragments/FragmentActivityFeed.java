@@ -12,7 +12,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.ToggleButton;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -44,11 +46,12 @@ public class FragmentActivityFeed extends Fragment {
     private User currentUser;
 
     private ListView activityList;
+    private ListView activityNotifyList;
 
     private ArrayList<UserActivity> activities;
     private ArrayList<UserActivity> activitiesNotify;
 
-    private ActivityAdapter ia;
+    private ActivityAdapter ia1, ia2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -82,9 +85,31 @@ public class FragmentActivityFeed extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_activityfeed, container, false);
         activityList = view.findViewById(R.id.activityList);
+        activityNotifyList = view.findViewById(R.id.activityNotifyList);
+        activityList.setVisibility(View.GONE);
+        ToggleButton toggleButton = view.findViewById(R.id.toggleFollowing);
+        initBothList();
+
+        toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    activityNotifyList.setVisibility(View.GONE);
+                    activityList.setVisibility(View.VISIBLE);
+                }else{
+                    activityNotifyList.setVisibility(View.VISIBLE);
+                    activityList.setVisibility(View.GONE);
+                }
+            }
+        });
+        return view;
+    }
+
+    private void initBothList(){
         activities = new ArrayList<>();
         activitiesNotify = new ArrayList<>();
-        ia = new ActivityAdapter(getActivity(),activities);
+        ia1 = new ActivityAdapter(getActivity(),activities);
+        ia2 = new ActivityAdapter(getActivity(),activitiesNotify);
         mDatabaseRef.child("user-following").child(currentUser.getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -101,8 +126,11 @@ public class FragmentActivityFeed extends Fragment {
                                                 public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                                     UserActivity ua = dataSnapshot.getValue(UserActivity.class);
                                                     activities.add(0, ua);
+                                                    if (activities.size()>20){
+                                                        activities.remove(20);
+                                                    }
                                                     Collections.sort(activities, new ActivityTimeSorter());
-                                                    ia.notifyDataSetChanged();
+                                                    ia1.notifyDataSetChanged();
                                                 }
 
                                                 @Override
@@ -140,7 +168,12 @@ public class FragmentActivityFeed extends Fragment {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         UserActivity ua = dataSnapshot.getValue(UserActivity.class);
-                        activities.add(ua);
+                        activitiesNotify.add(0,ua);
+                        if (activitiesNotify.size()>20){
+                            activitiesNotify.remove(20);
+                        }
+                        Collections.sort(activitiesNotify, new ActivityTimeSorter());
+                        ia2.notifyDataSetChanged();
                     }
 
                     @Override
@@ -160,8 +193,8 @@ public class FragmentActivityFeed extends Fragment {
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                     }
                 });
-        activityList.setAdapter(ia);
-        return view;
+        activityList.setAdapter(ia1);
+        activityNotifyList.setAdapter(ia2);
     }
 
     @Override

@@ -86,23 +86,7 @@ public class FragmentPhoto extends Fragment implements  View.OnClickListener{
         gpsX = view.findViewById(R.id.gpsX);
         gpsY =view.findViewById(R.id.gpsY);
         view.findViewById(R.id.gpsTest).setOnClickListener(this);
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-            } else {
-                ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        REQUEST_GPS);
-
-            }
-        }else{
-            Log.d(TAG, "Permission on GPS granted");
-            ls = LocationService.getLocationManager(this.getActivity());
-        }
         return view;
     }
 
@@ -143,9 +127,6 @@ public class FragmentPhoto extends Fragment implements  View.OnClickListener{
                 }
                 return;
             }
-
-            // other 'case' lines to check for other
-            // permissions this app might request
         }
     }
 

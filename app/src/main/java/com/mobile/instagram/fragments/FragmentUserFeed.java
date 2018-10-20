@@ -83,6 +83,24 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_userfeed, container, false);
+
+        init(view);
+
+        ToggleButton sortButtom = view.findViewById(R.id.locationSortToggle);
+        sortButtom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                if (b){
+                    Collections.sort(posts, new PostLocationSorter());
+                }else{
+                    Collections.sort(posts, new PostTimeSorter());
+                }
+            }
+        });
+        return view;
+    }
+
+    private void init(View view){
         this.recyclerView = view.findViewById(R.id.postList);
         this.posts = new ArrayList<>();
         this.pa = new PostAdapter(this.getActivity(), posts, currentUser, new PostAdapter.ClickListener() {
@@ -117,89 +135,89 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
         final DatabaseReference df = FirebaseDatabase.getInstance().getReference();
         df.child("users").child(FirebaseAuth.getInstance().getUid())
                 .addValueEventListener( new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                currentUser = dataSnapshot.getValue(User.class);
-                df.child("user-following").child(currentUser.getUid()).addChildEventListener(
-                        new ChildEventListener() {
-                            @Override
-                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                User following = dataSnapshot.getValue(User.class);
-                                final String userId = following.getUid();
-                                df.child("user-posts").child(userId).orderByChild("time").limitToFirst(10)
-                                        .addChildEventListener(new ChildEventListener() {
-                                            @Override
-                                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                                Post p = dataSnapshot.getValue(Post.class);
-                                                posts.add(0,p);
-                                                Collections.sort(posts, new PostTimeSorter());
-                                                pa.notifyDataSetChanged();
-                                            }
-
-                                            @Override
-                                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                                Post post = dataSnapshot.getValue(Post.class);
-                                                System.out.println(post.getPostId());
-                                                for(Post p : posts){
-                                                    if (p.getPostId().equals(post)){
-                                                        posts.remove(p);
-                                                        posts.add(post);
-                                                        System.out.println("removed and added");
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        currentUser = dataSnapshot.getValue(User.class);
+                        df.child("user-following").child(currentUser.getUid()).addChildEventListener(
+                                new ChildEventListener() {
+                                    @Override
+                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                        User following = dataSnapshot.getValue(User.class);
+                                        final String userId = following.getUid();
+                                        df.child("user-posts").child(userId).orderByChild("time").limitToFirst(10)
+                                                .addChildEventListener(new ChildEventListener() {
+                                                    @Override
+                                                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                                        Post p = dataSnapshot.getValue(Post.class);
+                                                        posts.add(0,p);
                                                         Collections.sort(posts, new PostTimeSorter());
                                                         pa.notifyDataSetChanged();
-                                                        break;
                                                     }
-                                                }
+
+                                                    @Override
+                                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                                        Post post = dataSnapshot.getValue(Post.class);
+                                                        System.out.println(post.getPostId());
+                                                        for(Post p : posts){
+                                                            if (p.getPostId().equals(post)){
+                                                                posts.remove(p);
+                                                                posts.add(post);
+                                                                System.out.println("removed and added");
+                                                                Collections.sort(posts, new PostTimeSorter());
+                                                                pa.notifyDataSetChanged();
+                                                                break;
+                                                            }
+                                                        }
 
 
-                                            }
+                                                    }
 
-                                            @Override
-                                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                                                    @Override
+                                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                                            }
+                                                    }
 
-                                            @Override
-                                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                                    @Override
+                                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                                            }
+                                                    }
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                            }
-                                        });
-                            }
+                                                    }
+                                                });
+                                    }
 
-                            @Override
-                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                    @Override
+                                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                            }
+                                    }
 
-                            @Override
-                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                                    @Override
+                                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                            }
+                                    }
 
-                            @Override
-                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                    @Override
+                                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                            }
+                                    }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            }
-                        }
-                );
+                                    }
+                                }
+                        );
 
-            }
+                    }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                    }
+                });
         df.child("user-posts").child(currentUser.getUid()).orderByChild("time").limitToFirst(20).addChildEventListener(
                 new ChildEventListener() {
                     @Override
@@ -241,18 +259,6 @@ public class FragmentUserFeed extends Fragment implements View.OnClickListener{
                     }
                 }
         );
-        ToggleButton sortButtom = view.findViewById(R.id.locationSortToggle);
-        sortButtom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b){
-                    Collections.sort(posts, new PostLocationSorter());
-                }else{
-                    Collections.sort(posts, new PostTimeSorter());
-                }
-            }
-        });
-        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

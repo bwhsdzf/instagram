@@ -47,7 +47,8 @@ public class PostWallAdapter extends BaseAdapter{
 
         @Override
         public int getCount() {
-            return posts.size();
+            if (posts == null) return 0;
+            else return  posts.size();
         }
 
         @Override

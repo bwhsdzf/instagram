@@ -81,6 +81,7 @@ public class LoginActivity extends AppCompatActivity implements
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser!=null){
             Log.d("LoginActivity", "Already logged in");
+            progress.setVisibility(View.VISIBLE);
             toNavigation();
         }
     }
@@ -141,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements
 
 
     public void toNavigation(){
-        this.progress.setVisibility(View.GONE);
+
         DatabaseReference df = FirebaseDatabase.getInstance().getReference();
         df.child("users").child(mAuth.getUid()).addListenerForSingleValueEvent(
                 new ValueEventListener() {
@@ -152,6 +153,7 @@ public class LoginActivity extends AppCompatActivity implements
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("user",user);
                         intent.putExtra("bundle",bundle);
+                        progress.setVisibility(View.GONE);
                         startActivity(intent);
                     }
 

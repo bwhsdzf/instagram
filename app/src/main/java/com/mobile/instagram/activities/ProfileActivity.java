@@ -224,6 +224,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     private void unfollowUser(){
         mDatabase.child("user-following").child(currentUser.getUid()).child(user.getUid()).removeValue();
         mDatabase.child("user-follower").child(user.getUid()).child(currentUser.getUid()).removeValue();
+        Map<String, Object> childUpdate = new HashMap<String, Object>();
+        childUpdate.put("users/"+currentUser.getUid()+"/"+"followingCount",
+                currentUser.getFollowingCount()-1);
+        childUpdate.put("users/"+user.getUid()+"/"+"followerCount",
+                user.getFollowerCount()-1);
+        mDatabase.updateChildren(childUpdate);
         Toast.makeText(ProfileActivity.this, "Unfollowed this user",
                 Toast.LENGTH_LONG).show();
         unfollowButton.setVisibility(View.GONE);

@@ -12,17 +12,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.mobile.instagram.activities.ImagePagerActivity;
 import com.mobile.instagram.activities.ProfileActivity;
+import com.mobile.instagram.adapters.PostWallAdapter;
+import com.mobile.instagram.models.Post;
 import com.mobile.instagram.models.User;
-import com.mobile.instagram.util.Recommendation;
 
 import com.mobile.instagram.R;
 import com.mobile.instagram.adapters.SearchListAdapter;
@@ -40,9 +43,7 @@ import java.util.ArrayList;
  */
 public class FragmentDiscover extends Fragment implements View.OnClickListener {
 
-    private Recommendation recommendation;
-    private ArrayList<User> result;
-    private ArrayList<User> list;
+    private ArrayList<User> recommendList;
     private User currentUser;
 
     private ArrayList<User> searchResult;
@@ -50,7 +51,11 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
     private SearchView searchView;
     private ListView resultView;
 
-    private SearchListAdapter sla;
+    private PostWallAdapter newsAdaptor;
+    private ArrayList<Post> news;
+
+    private SearchListAdapter searchListAdapter;
+    private SearchListAdapter recommendAdaptor;
 
     private OnFragmentInteractionListener mListener;
 
@@ -73,9 +78,9 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        result = new ArrayList<>();
-        list = new ArrayList<>();
         searchResult = new ArrayList<>();
+        news = new ArrayList<>();
+        recommendList = new ArrayList<>();
     }
 
     @Override
@@ -85,41 +90,59 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
         View view =  inflater.inflate(R.layout.fragment_discover, container, false);
         searchView = view.findViewById(R.id.searchview);
         resultView = view.findViewById(R.id.searchResultView);
-        sla = new SearchListAdapter(this.getActivity(), searchResult);
-        resultView.setAdapter(sla);
+        initSearchView(searchView,resultView);
+//        RelativeLayout whatsNew = view.findViewById(R.id.whatsNewViewLayout);
+//        View newsView = inflater.inflate(R.layout.layout_whats_new, whatsNew);
+        RelativeLayout recommend = view.findViewById(R.id.recommendLayout);
+        View recommendView = inflater.inflate(R.layout.layout_recommend, recommend);
+//        initNewView(newsView);
+        initRecommend(recommendView);
+        return view;
+    }
+
+
+    private void initSearchView(SearchView searchVIew, ListView resultView){
+        searchListAdapter = new SearchListAdapter(this.getActivity(), searchResult);
         final DatabaseReference df = FirebaseDatabase.getInstance().getReference();
+        resultView.setAdapter(searchListAdapter);
+        searchVIew.setQueryHint(getActivity().getResources().getString(R.string.search_hint));
+        searchView.setIconifiedByDefault(true);
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                searchResult.clear();
+                searchListAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchResult.clear();
-                sla.notifyDataSetChanged();
+                searchListAdapter.notifyDataSetChanged();
                 df.child("users").orderByChild("username").equalTo(query).limitToFirst(10)
                         .addChildEventListener(new ChildEventListener() {
                             @Override
                             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                                 User user = dataSnapshot.getValue(User.class);
                                 searchResult.add(user);
-                                sla.notifyDataSetChanged();
+                                searchListAdapter.notifyDataSetChanged();
                             }
 
                             @Override
                             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                             }
 
                             @Override
                             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
                             }
 
                             @Override
                             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                             }
 
                             @Override
                             public void onCancelled(@NonNull DatabaseError databaseError) {
-
                             }
                         });
                 return true;
@@ -128,6 +151,9 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
             public boolean onQueryTextChange(String newText) {
                 return false;
             }
+//
+//            @Override
+//            public boolean onQuery
         });
 
         resultView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -141,9 +167,105 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
                 startActivity(intent);
             }
         });
-        return view;
     }
 
+    private void initNewView(View view){
+        GridView postWall = view.findViewById(R.id.whatsNewView);
+        newsAdaptor = new PostWallAdapter(this.getActivity(), news);
+        final DatabaseReference df = FirebaseDatabase.getInstance().getReference();
+        df.child("posts").orderByChild("time").limitToFirst(12).addChildEventListener(
+                new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        Post post = dataSnapshot.getValue(Post.class);
+                        news.add(0,post);
+                        if(news.size()>12){
+                            news.remove(12);
+                        }
+                        newsAdaptor.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                }
+        );
+        postWall.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                startImagePagerActivity(i);
+            }
+        });
+        postWall.setAdapter(newsAdaptor);
+
+    }
+
+    private void initRecommend(View view){
+        ListView recommendView = view.findViewById(R.id.recommendResultView);
+        recommendAdaptor = new SearchListAdapter(getActivity(),recommendList);
+        final DatabaseReference df = FirebaseDatabase.getInstance().getReference();
+        df.child("users").orderByChild("followerCount").limitToFirst(10).addChildEventListener(
+                new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        User user = dataSnapshot.getValue(User.class);
+                        recommendList.add(0,user);
+                        if (recommendList.size()>10) recommendList.remove(10);
+                        recommendAdaptor.notifyDataSetChanged();
+                        System.out.println("found recommend");
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                }
+        );
+        recommendView.setAdapter(recommendAdaptor);
+
+        recommendView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent = new Intent(getActivity(), ProfileActivity.class);
+                intent.putExtra("uid",recommendList.get(i).getUid());
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("currentUser",currentUser);
+                intent.putExtra("bundle",bundle);
+                startActivity(intent);
+            }
+        });
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -156,26 +278,14 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
         }
     }
 
-    public void printRecommend(){
-        for(User u : result){
-            System.out.println(u.getUsername());
-        }
-        System.out.println("result size is "+ result.size());
-        removeDup();
-        for(User u : list){
-            System.out.print(u.getUsername());
-        }
-        System.out.println("result size is "+ list.size());
-    }
 
-    private void removeDup(){
-        list.add(result.get(0));
-        for(User u : result){
-            for( User l: list){
-                while(u.getUid().equals(l.getUid()));
-            }
-            list.add(u);
-        }
+    private void startImagePagerActivity(int position) {
+        Intent intent = new Intent(this.getActivity(), ImagePagerActivity.class);
+        Bundle b = new Bundle();
+        b.putParcelableArrayList("posts", news);
+        intent.putExtra("bundle",b);
+        intent.putExtra("position",0);
+        startActivity(intent);
     }
 
     @Override
@@ -184,62 +294,62 @@ public class FragmentDiscover extends Fragment implements View.OnClickListener {
         mListener = null;
     }
 
-    public void findMayKnow(User user){
-        result.clear();
-        final DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
-        // Find followers are following who
-        mDatabaseRef.child("user-follower").child(user.getUid()).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if(!dataSnapshot.exists()){
-                        }else{
-                            System.out.println("Looking at this user ");
-                            for(DataSnapshot ds : dataSnapshot.getChildren()){
-                                final User u = ds.getValue(User.class);
-                                mDatabaseRef.child("user-following").child(u.getUid()).addChildEventListener(
-                                        new ChildEventListener() {
-                                            @Override
-                                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                                System.out.println("Found one following for " + u.getUsername());
-                                                User following = dataSnapshot.getValue(User.class);
-                                                if (result.size() < 100){
-                                                    result.add(following);
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                            }
-
-                                            @Override
-                                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                                            }
-
-                                            @Override
-                                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                            }
-                                        }
-                                );
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                }
-        );
-    }
+//    public void findMayKnow(User user){
+//        result.clear();
+//        final DatabaseReference mDatabaseRef = FirebaseDatabase.getInstance().getReference();
+//        // Find followers are following who
+//        mDatabaseRef.child("user-follower").child(user.getUid()).addListenerForSingleValueEvent(
+//                new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                        if(!dataSnapshot.exists()){
+//                        }else{
+//                            System.out.println("Looking at this user ");
+//                            for(DataSnapshot ds : dataSnapshot.getChildren()){
+//                                final User u = ds.getValue(User.class);
+//                                mDatabaseRef.child("user-following").child(u.getUid()).addChildEventListener(
+//                                        new ChildEventListener() {
+//                                            @Override
+//                                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                                                System.out.println("Found one following for " + u.getUsername());
+//                                                User following = dataSnapshot.getValue(User.class);
+//                                                if (result.size() < 100){
+//                                                    result.add(following);
+//                                                }
+//                                            }
+//
+//                                            @Override
+//                                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                                            }
+//
+//                                            @Override
+//                                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+//
+//                                            }
+//
+//                                            @Override
+//                                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//
+//                                            }
+//
+//                                            @Override
+//                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                                            }
+//                                        }
+//                                );
+//                            }
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                    }
+//                }
+//        );
+//    }
 
     /**
      * This interface must be implemented by activities that contain this

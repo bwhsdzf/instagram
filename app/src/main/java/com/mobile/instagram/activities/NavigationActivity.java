@@ -1,10 +1,16 @@
 package com.mobile.instagram.activities;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.content.Context;
 
@@ -21,6 +27,7 @@ import com.mobile.instagram.fragments.FragmentProfile;
 import com.mobile.instagram.fragments.FragmentUserFeed;
 import com.mobile.instagram.R;
 import com.mobile.instagram.models.User;
+import com.mobile.instagram.util.LocationService;
 
 public class NavigationActivity extends AppCompatActivity implements
         FragmentUserFeed.OnFragmentInteractionListener,
@@ -30,6 +37,8 @@ public class NavigationActivity extends AppCompatActivity implements
         FragmentProfile.OnFragmentInteractionListener
 {
 
+    private static final int REQUEST_GPS = 1;
+    private LocationService ls;
     private User currentUser;
     private FragmentUserFeed userFeed;
     private FragmentDiscover discover;
@@ -105,6 +114,23 @@ public class NavigationActivity extends AppCompatActivity implements
         ft.add(R.id.fragment_container,profile);
         ft.hide(discover).hide(photo).hide(activityFeed).hide(profile);
         ft.commit();
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_GPS);
+
+            }
+        }else{
+            ls = LocationService.getLocationManager(this);
+        }
     }
 
     @Override
