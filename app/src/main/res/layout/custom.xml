@@ -1,29 +1,50 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
 
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+ >
+        <Button
+            android:id="@+id/on"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="450dp"
+            android:text="grid on" />
 
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+        <Button
+            android:id="@+id/off"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/on"
+            android:layout_below="@+id/on"
+            android:layout_marginTop="500dp"
+            android:text="grid off" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="capture"
+            android:layout_marginTop="450dp"
+            android:layout_marginLeft="250dp"
+            android:text="capture with flash" />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="capture2"
+            android:layout_marginTop="500dp"
+            android:layout_marginLeft="250dp"
+            android:text="capture2 without flash" />
+        <SurfaceView
+            android:id="@+id/preview"
+            android:layout_width="match_parent"
+            android:layout_height="424dp"
+            />
 
+        <com.mobile.instagram.activities.GridLine
+                android:id="@+id/grid"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@android:color/transparent"/>
 
-    <Switch
-        android:id="@+id/grid_line"
-        android:layout_width="226dp"
-        android:layout_height="wrap_content"
-        android:text="Need grid line or not?" />
-
-    <Switch
-        android:id="@+id/flashlight"
-        android:layout_width="226dp"
-        android:layout_height="17dp"
-        android:text="Need flashlight  or  not?" />
-
-    <SurfaceView
-        android:id="@+id/preview"
-        android:layout_width="match_parent"
-        android:layout_height="504dp" />
-
-
-</LinearLayout>
+</FrameLayout>
