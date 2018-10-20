@@ -79,7 +79,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         unfollowButton.setOnClickListener(this);
         unfollowButton.setVisibility(View.GONE);
 
-        posts = new ArrayList<>();
+
 
         this.username = findViewById(R.id.profileUserName);
         this.postsCount = findViewById(R.id.profilePostsNum);
@@ -91,13 +91,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         init();
     }
 
-    @Override
-    public void onResume(){
-        super.onResume();
-        init();
-    }
+//    @Override
+//    public void onResume(){
+//        super.onResume();
+//        init();
+//    }
 
     private void init(){
+        posts = new ArrayList<>();
         mDatabase.child("users").child(uidString).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
