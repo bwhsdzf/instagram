@@ -4,42 +4,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/snow"
     tools:context=".fragments.FragmentProfile">
 
     <!-- TODO: Update blank fragment layout -->
 
-    <ImageView
-        android:id="@+id/fragmentProfile"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        android:contentDescription="@string/prompt_username"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_profile" />
-
     <TextView
         android:id="@+id/fragmentUserName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/fragmentProfile"
-        android:layout_centerHorizontal="true"
+        android:layout_width="99dp"
+        android:layout_height="42dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
-        android:textSize="20sp"
-        android:text="@string/sample_string" />
+        android:layout_marginEnd="64dp"
+        android:layout_marginRight="64dp"
+        android:text="@string/sample_string"
+        android:textSize="20sp" />
 
     <Button
         android:id="@+id/signOutButton"
         style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_width="82dp"
+        android:layout_height="33dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginTop="55dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:background="@drawable/logout_roundedbutton"
+        android:layout_marginTop="83dp"
+        android:layout_marginEnd="70dp"
+        android:layout_marginRight="70dp"
+        android:background="@drawable/button_1"
         android:text="@string/sign_out" />
 
     <LinearLayout
@@ -47,8 +40,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/fragmentUserName"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="129dp"
+        android:baselineAligned="false"
+        android:orientation="horizontal">
 
 
         <LinearLayout
@@ -157,24 +153,40 @@
         android:layout_below="@+id/line"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginStart="17dp"
-        android:layout_marginLeft="17dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginTop="-100dp"
         android:text="@string/title_my_posts"
         android:textColor="@android:color/black"
         android:textSize="20sp" />
 
     <GridView
         android:id="@+id/fragmentPictureView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="285dp"
         android:layout_below="@+id/textView"
         android:layout_alignParentStart="true"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="102dp"
         android:columnWidth="90dp"
         android:gravity="center"
+        android:horizontalSpacing="2dp"
         android:numColumns="auto_fit"
         android:stretchMode="columnWidth"
-        android:horizontalSpacing="2dp"
         android:verticalSpacing="2dp" />
+
+    <ImageView
+        android:id="@+id/fragmentProfile"
+        aleType="centerCrop"
+        android:layout_width="186dp"
+        android:layout_height="136dp"
+        android:layout_alignEnd="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="-105dp"
+        android:contentDescription="@string/prompt_username"
+        android:sc
+        android:src="@drawable/ic_profile" />
 
 
 </RelativeLayout>

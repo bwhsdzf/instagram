@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/snow"
     tools:context=".activities.PostActivity">
 
     <EditText
@@ -26,18 +27,23 @@
         android:layout_alignBottom="@+id/postMessage"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_marginEnd="5dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="-75dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="-74dp"
         app:srcCompat="@mipmap/ic_upload_profile" />
 
     <Button
         android:id="@+id/postButton"
-        android:layout_width="wrap_content"
+        style="@style/Widget.AppCompat.Button.Small"
+        android:layout_width="109dp"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@+id/postMessage"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="219dp"
-        android:text="Post" />
+        android:layout_marginEnd="-15dp"
+        android:layout_marginBottom="231dp"
+        android:background="@drawable/button_post"
+        android:text="Post"
+        android:textColor="@color/common_google_signin_btn_text_dark_pressed"
+        android:textColorLink="@color/common_google_signin_btn_text_dark_default" />
 
 </RelativeLayout>
