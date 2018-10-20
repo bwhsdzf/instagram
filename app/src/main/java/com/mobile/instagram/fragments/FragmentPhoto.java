@@ -68,6 +68,7 @@ import com.mobile.instagram.activities.PermissionsActivity;
 
 
 
+
 import com.mobile.instagram.models.User;
 import com.mobile.instagram.util.LocationService;
 
@@ -155,24 +156,26 @@ public class FragmentPhoto extends Fragment implements View.OnClickListener{
     public void onActivityResult(int requestCode, int resultCode, Intent imageReturnedIntent) {
         super.onActivityResult(requestCode, resultCode, imageReturnedIntent);
         if(requestCode==1) {
-
+            if(resultCode==getActivity().RESULT_OK){
             if (Build.VERSION.SDK_INT >= 19) {
                 handleImageOnKitKat(imageReturnedIntent);
             } else {
                 handleImageBeforeKitKat(imageReturnedIntent);
             }
-            cropPhoto();}
+            cropPhoto();}}
 
         else if(requestCode==2){
-            try{
-                bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(outputUri));
-            }catch(IOException e){
-                e.printStackTrace();
+            if(resultCode==getActivity().RESULT_OK) {
+                try {
+                    bitmap = BitmapFactory.decodeStream(getActivity().getContentResolver().openInputStream(outputUri));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Intent intent = new Intent(getActivity(), PrimaryColor.class);
+                intent.putExtra("uri", outputUri);
+                startActivity(intent);
+
             }
-            Intent intent=new Intent(getActivity(),PrimaryColor.class);
-            intent.putExtra("uri",outputUri);
-            startActivity(intent);
-            getActivity().finish();
         }
 
 
