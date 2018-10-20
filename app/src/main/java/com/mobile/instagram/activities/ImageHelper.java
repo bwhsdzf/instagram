@@ -55,26 +55,11 @@ public class ImageHelper {
             g = Color.green(color);
             b = Color.blue(color);
             a = Color.alpha(color);
+            if((r+g+b)/3>100){
+                r=g=b=255;
+            }
+            else{r=g=b=0;}
 
-            r = 255 - r;
-            g = 255 - g;
-            b = 255 - b;
-
-            if (r > 255) {
-                r = 255;
-            } else if (r < 0) {
-                r = 0;
-            }
-            if (g > 255) {
-                g = 255;
-            } else if (g < 0) {
-                g = 0;
-            }
-            if (b > 255) {
-                b = 255;
-            } else if (b < 0) {
-                b = 0;
-            }
             newPx[i] = Color.argb(a, r, g, b);
         }
         bmp.setPixels(newPx, 0, width, 0, 0, width, height);
@@ -126,26 +111,48 @@ public class ImageHelper {
         int width = bm.getWidth();
         int height = bm.getHeight();
         int color = 0, colorBefore = 0;
-        int a, r, g, b;
-        int r1, g1, b1;
+        int a,r, g, b;
+
 
         int[] oldPx = new int[width * height];
         int[] newPx = new int[width * height];
 
         bm.getPixels(oldPx, 0, bm.getWidth(), 0, 0, width, height);
-        for (int i = 1; i < width * height; i++) {
-            colorBefore = oldPx[i - 1];
-            a = Color.alpha(colorBefore);
-            r = Color.red(colorBefore);
-            g = Color.green(colorBefore);
-            b = Color.blue(colorBefore);
+        for (int i = 0; i < width * height; i++) {
+            //colorBefore = oldPx[i - 1];
+            //a = Color.alpha(colorBefore);
+            //r = Color.red(colorBefore);
+            //g = Color.green(colorBefore);
+            //b = Color.blue(colorBefore);
 
             color = oldPx[i];
-            r1 = Color.red(color);
-            g1 = Color.green(color);
-            b1 = Color.blue(color);
-
-            r = (r - r1 + 127);
+            a=Color.alpha(color);
+            r = Color.red(color);
+            g = Color.green(color);
+            b = Color.blue(color);
+            int tmp=999;
+            if(r<tmp){
+                tmp=r;
+            }
+            if(g<tmp){
+                tmp=g;
+            }
+            if(b<tmp){
+                tmp=b;
+            }
+            int tmp2=0;
+            if(r>tmp){
+                tmp=r;
+            }
+            if(g>tmp){
+                tmp=g;
+            }
+            if(b>tmp){
+                tmp=b;
+            }
+            int avg=((tmp + tmp2) / 2);
+            r=g=b=avg;
+            /*r = (r - r1 + 127);
             g = (g - g1 + 127);
             b = (b - b1 + 127);
             if (r > 255) {
@@ -156,7 +163,7 @@ public class ImageHelper {
             }
             if (b > 255) {
                 b = 255;
-            }
+            }*/
             newPx[i] = Color.argb(a, r, g, b);
         }
         bmp.setPixels(newPx, 0, width, 0, 0, width, height);
